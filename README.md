@@ -20,6 +20,7 @@ bun run dev
 
 ## :shipit: Special Thanks
 * To this church's flock.
+* To my mom and my sister for their artistic wit.
 
 ## :brain: Acknowledgments
 
