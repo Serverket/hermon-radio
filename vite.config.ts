@@ -10,7 +10,6 @@ export default defineConfig({
       manifest: {
         name: 'Radio Hermon',
         short_name: 'Radio Hermon',
-        description: 'La Radio Que Te Educa',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
