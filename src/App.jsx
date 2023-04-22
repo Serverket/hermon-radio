@@ -8,6 +8,10 @@ function App() {
       <div className="flex items-center justify-center">
         <div className={`h-screen w-full ${darkToggle && "dark"}`}>
           <div className="h-screen w-full flex items-center justify-center flex-col bg-gray-300 dark:bg-gray-800">
+            <img
+              src="/charlie-brown.svg"
+              className="absolute h-screen w-full bg-no-repeat bg-cover object-cover bg-center opacity-5 dark:opacity-10"
+            />
             <label className="toggleDarkBtn">
               <input
                 type="checkbox"
@@ -41,7 +45,7 @@ function App() {
                 </div>
                 <div className="flex flex-row items-center justify-center space-x-2 text-center pt-2">
                   <a
-                    href="https://www.facebook.com/profile.php?id=100064624004737"
+                    href="https://www.facebook.com/Hermon95.3"
                     className="pointer-cursor"
                     target="_blank"
                     rel="noreferrer"
@@ -67,7 +71,7 @@ function App() {
                     </button>
                   </a>
                   <a
-                    href="https://www.instagram.com/iglesiaevangelicahermon/"
+                    href="https://www.instagram.com/radiohermon/"
                     className="pointer-cursor"
                     target="_blank"
                     rel="noreferrer"
