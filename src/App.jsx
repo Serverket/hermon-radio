@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import "./styles/tailwind.css";
+import Church from "./assets/hermon-church.webp";
+import { Disclosure } from "@headlessui/react";
 
 function App() {
   const [darkToggle, setDarkToggle] = React.useState(false);
@@ -22,7 +25,7 @@ function App() {
             <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-xl mt-4 text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80">
               <div className="md:w-1/3 flex items-start justify-center">
                 {/* <div id="fb-root"></div>
-            <div className="fb-like-box mb-5 border-4 rounded-sm border-blue-500 z-10"
+            <div className="fb-like-box mb-5 border-4 rounded-sm border-blue-500"
                data-href="https://m.facebook.com/people/Iglesia-Evangelica-Hermon/100064624004737"
                data-width="292" 
                data-show-faces="false" 
@@ -58,19 +61,6 @@ function App() {
                     </button>
                   </a>
                   <a
-                    href="https://twitter.com/IglesiaHermon/"
-                    className="pointer-cursor"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <button
-                      type="button"
-                      className="text-white text-md sm:text-sm hover:text-[#00aced] bg-[#00aced] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-twitter-3 active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200"
-                    >
-                      Twitter<div></div>
-                    </button>
-                  </a>
-                  <a
                     href="https://www.instagram.com/radiohermon/"
                     className="pointer-cursor"
                     target="_blank"
@@ -85,6 +75,74 @@ function App() {
                   </a>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="fixed bottom-0 inset-x-0 flex items-center justify-center no-underline focus:underline-none focus:no-underline">
+            <div className="mx-auto w-[370px] sm:w-96 bg-transparent no-underline">
+              <Disclosure>
+                {({ open }) => (
+                  <>
+                    <Disclosure.Button className="py-4 px-4 w-[370px] sm:w-96 overflow-hidden rounded-l-full rounded-r-full rounded-bl-none rounded-br-none text-gray-800 dark:text-gray-200 font-bold text-lg md:text-xl bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80">
+                      <img
+                        className="absolute inset-0 h-full w-1/3 object-cover"
+                        src={Church}
+                      />
+                      <i
+                        className={
+                          open
+                            ? "icon-angle-double-down animate-pulse"
+                            : "icon-home-circled"
+                        }
+                      />
+                      <span>La Iglesia</span>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className="w-[370px] sm:w-96 rounded-l-xl rounded-r-xl rounded-bl-none rounded-br-none rounded-tl-none rounded-tr-none bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 px-4 pb-4">
+                      <div className="flex flex-row items-center justify-center space-x-2 text-center pt-2">
+                        <a
+                          href="https://www.facebook.com/people/Iglesia-Evangelica-Hermon/100064624004737/"
+                          className="pointer-cursor"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <button
+                            type="button"
+                            className="text-white text-md sm:text-sm hover:text-[#3b5998] bg-[#3b5998] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-facebook-squared active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200"
+                          >
+                            Facebook<div></div>
+                          </button>
+                        </a>
+                        <a
+                          href="https://twitter.com/IglesiaHermon/"
+                          className="pointer-cursor"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <button
+                            type="button"
+                            className="text-white text-md sm:text-sm hover:text-[#00aced] bg-[#00aced] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-twitter-2 active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200"
+                          >
+                            Twitter<div></div>
+                          </button>
+                        </a>
+                        <a
+                          href="https://instagram.com/iglesiaevangelicahermon/"
+                          className="pointer-cursor"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <button
+                            type="button"
+                            className="text-white text-md sm:text-sm hover:text-[#bc2a8d] bg-[#bc2a8d] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-instagram-1 active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200"
+                          >
+                            Instagram<div></div>
+                          </button>
+                        </a>
+                      </div>
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
             </div>
           </div>
         </div>
