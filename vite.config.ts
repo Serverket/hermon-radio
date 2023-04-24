@@ -10,6 +10,7 @@ export default defineConfig({
       manifest: {
         name: 'Radio Hermon',
         short_name: 'Radio Hermon',
+        description: 'Un rocío que desciende de lo alto',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
