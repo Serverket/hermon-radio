@@ -88,6 +88,7 @@ function App() {
                         className="absolute inset-0 h-full w-1/3 object-cover"
                         src={Church}
                       />
+                      <div className="ml-2 space-x-1">
                       <i
                         className={
                           open
@@ -96,6 +97,7 @@ function App() {
                         }
                       />
                       <span>La Iglesia</span>
+                      </div>
                     </Disclosure.Button>
                     <Disclosure.Panel className="w-[370px] sm:w-96 rounded-l-xl rounded-r-xl rounded-bl-none rounded-br-none rounded-tl-none rounded-tr-none bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 px-4 pb-4">
                       <div className="flex flex-row items-center justify-center space-x-2 text-center pt-2">
@@ -138,6 +140,9 @@ function App() {
                             Instagram<div></div>
                           </button>
                         </a>
+                      </div>
+                      <div className="flex flex-row justify-center items-center mt-4 text-md text-gray-800 dark:text-gray-400 ">
+                        {`© ${new Date().getFullYear()}`} Fundación Cultural Hermón RTV
                       </div>
                     </Disclosure.Panel>
                   </>
