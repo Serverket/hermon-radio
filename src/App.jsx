@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import "./styles/tailwind.css";
 import Church from "./assets/hermon-church.webp";
 import { Disclosure } from "@headlessui/react";
+import moment from "moment";
 
 function App() {
   /* Dark Mode */
@@ -15,9 +16,223 @@ function App() {
     localStorage.setItem("darkMode", newDarkMode.toString());
   };
 
-  /* Cover Schedule */
-  /*   const img1 = "/public/programas/jueves_8.jpg";
-       const img2 = "/public/programas/domingos_1-250.jpg"; */
+  // Example image URLs (replace with your actual image URLs)
+  const imageUrls = [
+    "AlfayOmega.png",
+    "Diosysusmaravillas.jpg",
+    "EnondaconCristo.jpg",
+    "VivenciasenCristo.jpeg",
+  ];
+
+  /* THIS CODE CAN BE USED FOR AN SPECIAL EVENT OR SOMETHING TO SHOW ONCE
+  // State to keep track of the currently displayed image
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [showImage, setShowImage] = useState(true);
+
+  // Function to check if the current image should be hidden
+  const shouldHideImage = (startTime) => {
+    const currentTime = moment();
+    const endTime = moment(startTime).add(1, "hour");
+    return currentTime.isAfter(endTime);
+  };
+
+  // Function to update the displayed image based on the current time
+  const updateDisplayedImage = () => {
+    const currentTime = moment();
+    const scheduledImages = [
+      { time: moment("2023-11-22T23:04:00"), index: 0 }, // Monday 14:00
+      { time: moment("2023-11-22T19:47:00"), index: 1 }, // Thursday 19:30
+      { time: moment("2023-11-22T22:15:00"), index: 2 }, // Saturday 18:50
+    ];
+
+    const visibleImage = scheduledImages.find(({ time, index }) => {
+      const startTime = moment().startOf("day").set({
+        day: time.day(),
+        hours: time.hours(),
+        minutes: time.minutes(),
+      });
+      const endTime = startTime.clone().add(1, "hour");
+
+      return (
+        showImage &&
+        currentTime.isSameOrAfter(startTime) &&
+        currentTime.isBefore(endTime)
+      );
+    });
+
+    if (visibleImage) {
+      setCurrentImageIndex(visibleImage.index);
+    } else {
+      setCurrentImageIndex(null);
+    }
+  };
+
+  // Update the displayed image on component mount
+  useEffect(() => {
+    updateDisplayedImage();
+  }, [showImage]);
+
+  // Hide the image after 1 hour
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowImage(false);
+    }, 60 * 60 * 1000); // 1 hour in milliseconds
+
+    // Clear the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, [showImage]); */
+
+  // State to keep track of the currently displayed image
+  const [currentImageIndex, setCurrentImageIndex] = useState(null);
+  const [showImage, setShowImage] = useState(true);
+  const [streamIcon, setStreamIcon] = useState("");
+  const [HeaderText, setHeaderText] = useState("");
+  const [FooterText, setFooterText] = useState("");
+
+  // Function to check if the current image should be hidden
+  const shouldHideImage = (startTime) => {
+    const currentTime = moment();
+    const endTime = moment(startTime).add(1, "hour");
+    return currentTime.isAfter(endTime);
+  };
+
+  // Function to update the displayed image based on the current time
+  const updateDisplayedImage = () => {
+    const currentTime = moment();
+    const scheduledImages = [
+      /* ALFA Y OMEGA */
+      {
+        dayOfWeek: "Friday",
+        time: { hours: 18, minutes: 0 },
+        index: 0,
+        icon: "bg-green-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
+        header: "Estás en sintonía de",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      /* PUBLICIDAD */
+      {
+        dayOfWeek: "Saturday",
+        time: { hours: 19, minutes: 0 },
+        index: 0,
+        icon: "bg-gradient-to-r from-blue-300 to-purple-300 dark:bg-slate-300 rounded-full icon-podcast-1 filter drop-shadow-md animate-pulse",
+        header: "No te pierdas el programa",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      {
+        dayOfWeek: "Sunday",
+        time: { hours: 19, minutes: 0 },
+        index: 0,
+        icon: "bg-gradient-to-r from-blue-300 to-purple-300 dark:bg-slate-300 rounded-full icon-podcast-1 filter drop-shadow-md animate-pulse",
+        header: "No te pierdas el programa",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      {
+        dayOfWeek: "Monday",
+        time: { hours: 19, minutes: 0 },
+        index: 0,
+        icon: "bg-gradient-to-r from-blue-300 to-purple-300 dark:bg-slate-300 rounded-full icon-podcast-1 filter drop-shadow-md animate-pulse",
+        header: "No te pierdas el programa",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      {
+        dayOfWeek: "Tuesday",
+        time: { hours: 19, minutes: 0 },
+        index: 0,
+        icon: "bg-gradient-to-r from-blue-300 to-purple-300 dark:bg-slate-300 rounded-full icon-podcast-1 filter drop-shadow-md animate-pulse",
+        header: "No te pierdas el programa",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      {
+        dayOfWeek: "Thursday",
+        time: { hours: 19, minutes: 0 },
+        index: 0,
+        icon: "bg-gradient-to-r from-blue-300 to-purple-300 dark:bg-slate-300 rounded-full icon-podcast-1 filter drop-shadow-md animate-pulse",
+        header: "No te pierdas el programa",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      /* ALFA Y OMEGA */
+
+      /* VIVENCIAS EN CRISTO */
+      {
+        dayOfWeek: "Saturday",
+        time: { hours: 21, minutes: 0 },
+        index: 3,
+        icon: "bg-green-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
+        header: "Estás en sintonía de",
+        footer: "¡Comunícate con nosotros para patrocinarnos!",
+      },
+      /* VIVENCIAS EN CRISTO */
+
+      /* DIOS Y SYS MARAVILLAS */
+      {
+        dayOfWeek: "Monday",
+        time: { hours: 13, minutes: 0 },
+        index: 1,
+        icon: "bg-gradient-to-r from-red-300 to-pink-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
+        header: "Estás en sintonía de",
+        footer: "Charlas | Música en vivo | Consejos | Reflexión",
+      },
+      /* EN ONDA CON CRISTO */
+      {
+        dayOfWeek: "Sunday",
+        time: { hours: 13, minutes: 0 },
+        index: 2,
+        icon: "bg-gradient-to-r from-green-300 to-teal-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
+        header: "Estás en sintonía de",
+        footer: "Dios te bendiga",
+      },
+    ];
+
+    const visibleImage = scheduledImages.find(({ dayOfWeek, time, index }) => {
+      const startTime = moment().startOf("week").day(dayOfWeek).set({
+        hours: time.hours,
+        minutes: time.minutes,
+      });
+      const endTime = startTime.clone().add(1, "hour");
+
+      return (
+        showImage &&
+        currentTime.isSameOrAfter(startTime) &&
+        currentTime.isBefore(endTime)
+      );
+    });
+
+    if (visibleImage) {
+      setCurrentImageIndex(visibleImage.index);
+      setStreamIcon(visibleImage.icon);
+      setHeaderText(visibleImage.header);
+      setFooterText(visibleImage.footer);
+    } else {
+      setCurrentImageIndex(null);
+      setStreamIcon("");
+      setHeaderText("");
+      setFooterText("");
+    }
+  };
+
+  // Update the displayed image on component mount
+  useEffect(() => {
+    updateDisplayedImage();
+  }, [showImage]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateDisplayedImage();
+    }, 1000); // 1 second in milliseconds
+
+    // Clear the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  // Hide the image after 1 hour
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowImage(false);
+    }, 60 * 60 * 1000); // 1 hour in milliseconds
+
+    // Clear the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, [showImage]);
 
   return (
     <>
@@ -50,19 +265,37 @@ function App() {
                data-show-border="true">
             </div> */}
               </div>
-              <div className="px-6 space-y-4 sm:space-y-8 text-center">
+              <div className="px-6 space-y-2 sm:space-y-3 text-center">
                 <div className="text-gray-800 dark:text-gray-200 font-bold text-3xl md:text-2xl filter drop-shadow-md">
                   Radio Hermón
                 </div>
-                {/*  <div className="flex flex-col items-center justify-center space-y-2">
-                  <span className="text-sm text-slate-700 dark:text-slate-600 font-bold">
-                    <span className="bg-green-300 dark:bg-slate-300 rounded-full mr-1">
-                      <i className="icon-podcast filter drop-shadow-md animate-pulse" />
-                    </span>
-                    Estás en sintonía de
-                  </span>
+                <p className="text-slate-700 font-bold"></p>
+                <div>
+                  {currentImageIndex !== null && showImage ? (
+                    <div className="w-full flex items-center justify-center">
+                      <div className="flex flex-col items-center justify-center space-y-2">
+                        <span className="text-sm text-slate-700 dark:text-slate-600 font-bold">
+                          <span className="mr-1">
+                            <i className={streamIcon} />
+                          </span>
+                          {HeaderText}
+                        </span>
+                        <img
+                          className="h-48 md:h-80 rounded-xl hover:scale-110 sm:hover:scale-100 transition-all ease-in-out z-40"
+                          src={imageUrls[currentImageIndex]}
+                          alt={`Image ${currentImageIndex + 1}`}
+                        />
+                        <marquee className="w-8/12 md:w-full text-gray-800 dark:text-gray-200 drop-shadow-md">
+                          {FooterText}
+                        </marquee>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* <h2>No scheduled image at the moment.</h2> */}
+                    </div>
+                  )}
                 </div>
-                <p className="text-slate-700 font-bold"></p> */}
                 <div className="flex justify-center text-sm text-grey-darker">
                   <audio
                     className="w-64 sm:w-full rounded-full bg-gradient-to-t from-gray-200 to-gray-600 dark:bg-gradient-to-t dark:from-blue-500 dark:to-blue-100 dark:shadow-lg dark:shadow-blue-500/30 shadow-lg shadow-blue-500/50 border-[1px] border-blue-400 dark:border-none"
