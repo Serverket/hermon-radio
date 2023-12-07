@@ -4,6 +4,8 @@ import "./styles/tailwind.css";
 import Church from "./assets/hermon-church.webp";
 import { Disclosure } from "@headlessui/react";
 import moment from "moment";
+import "aos/dist/aos.css";
+import AOS from "aos";
 
 function App() {
   /* Dark Mode */
@@ -22,65 +24,8 @@ function App() {
     "Diosysusmaravillas.jpg",
     "EnondaconCristo.jpg",
     "VivenciasenCristo.jpeg",
+    "LaFeeslaPalabradeDios.jpeg",
   ];
-
-  /* THIS CODE CAN BE USED FOR AN SPECIAL EVENT OR SOMETHING TO SHOW ONCE
-  // State to keep track of the currently displayed image
-  const [currentImageIndex, setCurrentImageIndex] = useState(null);
-  const [showImage, setShowImage] = useState(true);
-
-  // Function to check if the current image should be hidden
-  const shouldHideImage = (startTime) => {
-    const currentTime = moment();
-    const endTime = moment(startTime).add(1, "hour");
-    return currentTime.isAfter(endTime);
-  };
-
-  // Function to update the displayed image based on the current time
-  const updateDisplayedImage = () => {
-    const currentTime = moment();
-    const scheduledImages = [
-      { time: moment("2023-11-22T23:04:00"), index: 0 }, // Monday 14:00
-      { time: moment("2023-11-22T19:47:00"), index: 1 }, // Thursday 19:30
-      { time: moment("2023-11-22T22:15:00"), index: 2 }, // Saturday 18:50
-    ];
-
-    const visibleImage = scheduledImages.find(({ time, index }) => {
-      const startTime = moment().startOf("day").set({
-        day: time.day(),
-        hours: time.hours(),
-        minutes: time.minutes(),
-      });
-      const endTime = startTime.clone().add(1, "hour");
-
-      return (
-        showImage &&
-        currentTime.isSameOrAfter(startTime) &&
-        currentTime.isBefore(endTime)
-      );
-    });
-
-    if (visibleImage) {
-      setCurrentImageIndex(visibleImage.index);
-    } else {
-      setCurrentImageIndex(null);
-    }
-  };
-
-  // Update the displayed image on component mount
-  useEffect(() => {
-    updateDisplayedImage();
-  }, [showImage]);
-
-  // Hide the image after 1 hour
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setShowImage(false);
-    }, 60 * 60 * 1000); // 1 hour in milliseconds
-
-    // Clear the timeout on component unmount
-    return () => clearTimeout(timeout);
-  }, [showImage]); */
 
   // State to keep track of the currently displayed image
   const [currentImageIndex, setCurrentImageIndex] = useState(null);
@@ -181,6 +126,15 @@ function App() {
         header: "Estás en sintonía de",
         footer: "Dios te bendiga",
       },
+      /* LA FE ES POR EL OIR LA PALABRA DE DIOS */
+      {
+        dayOfWeek: "Monday",
+        time: [{ hours: 22, minutes: 0 }],
+        index: 4,
+        icon: "bg-gradient-to-r from-green-300 to-teal-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
+        header: "Estás en sintonía de",
+        footer: "Dios te bendiga",
+      },
     ];
 
     const visibleImage = scheduledImages.find(({ dayOfWeek, time, index }) => {
@@ -234,9 +188,20 @@ function App() {
     return () => clearTimeout(timeout);
   }, [showImage]);
 
+  useEffect(() => {
+    AOS.init({
+      once: true,
+      easing: "ease-out-cubic",
+    });
+  });
+
   return (
     <>
-      <div className="flex items-center justify-center">
+      <div
+        className="flex items-center justify-center"
+        data-aos="fade-in"
+        data-aos-delay="200"
+      >
         <div className={`h-screen w-full ${darkToggle && "dark"}`}>
           <div className="h-screen w-full flex items-center justify-center flex-col dark:bg-gray-800">
             {/* original background in previous tag is: bg-gray-300 */}
@@ -244,7 +209,11 @@ function App() {
               src="/charlie-brown.svg"
               className="absolute h-screen w-full bg-no-repeat bg-cover object-cover bg-center opacity-5 dark:opacity-10"
             />
-            <label className="toggleDarkBtn">
+            <label
+              className="toggleDarkBtn"
+              data-aos="fade-left"
+              data-aos-delay="500"
+            >
               <input
                 type="checkbox"
                 checked={darkToggle}
@@ -253,7 +222,11 @@ function App() {
               <span className="slideBtnTg bg-gray-400 round"></span>
             </label>
             {/* Previous opacity from next tag: bg-opacity-40 firefox:bg-opacity-50 opacity-80 */}
-            <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-xl mt-4 text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50">
+            <div
+              className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-xl mt-4 text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50"
+              data-aos="zoom-in"
+              data-aos-delay="700"
+            >
               <div className="w-full flex text-center items-center justify-center">
                 {/* <div id="fb-root"></div>
             <div className="fb-like-box mb-5 border-4 rounded-sm border-blue-500"
@@ -292,11 +265,36 @@ function App() {
                     </div>
                   ) : (
                     <div>
-                      {/* <h2>No scheduled image at the moment.</h2> */}
+                      <div className="w-full flex items-center justify-center">
+                        <div className="flex flex-col items-center justify-center space-y-2">
+                          <span className="text-sm text-slate-700 dark:text-slate-500 font-bold">
+                            ¡Únete a nuestra fiesta!
+                          </span>
+                          <img
+                            data-aos="zoom-in"
+                            data-aos-delay="1500"
+                            className="h-48 md:h-80 lg:h-96 rounded-xl hover:scale-110 sm:hover:scale-100 transition-all ease-in-out z-40"
+                            src="62aniversario.jpeg"
+                            alt="Publicación de 62° Aniversario"
+                          />
+                          <marquee
+                            className="w-8/12 md:w-full text-gray-800 dark:text-gray-200 drop-shadow-md"
+                            data-aos="fade-up"
+                            data-aos-delay="1000"
+                          >
+                            ¡Te invitamos a ser parte de este gran evento,
+                            visítanos!
+                          </marquee>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="flex justify-center text-sm text-grey-darker">
+                <div
+                  className="flex justify-center text-sm text-grey-darker"
+                  data-aos="fade-right"
+                  data-aos-delay="900"
+                >
                   <audio
                     className="w-64 sm:w-full rounded-full bg-gradient-to-t from-gray-200 to-gray-600 dark:bg-gradient-to-t dark:from-blue-500 dark:to-blue-100 dark:shadow-lg dark:shadow-blue-500/30 shadow-lg shadow-blue-500/50 border-[1px] border-blue-400 dark:border-none"
                     autoPlay
@@ -304,7 +302,11 @@ function App() {
                     src="https://radiointernet.co/8020/stream"
                   ></audio>
                 </div>
-                <div className="flex flex-row items-center justify-center space-x-2 text-center pt-2">
+                <div
+                  className="flex flex-row items-center justify-center space-x-2 text-center pt-2"
+                  data-aos="fade-up"
+                  data-aos-delay="800"
+                >
                   <a
                     href="https://www.facebook.com/Hermon95.3"
                     className="pointer-cursor"
