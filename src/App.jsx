@@ -265,7 +265,7 @@ function App() {
                     </div>
                   ) : (
                     <div>
-                      <div className="w-full flex items-center justify-center">
+                      {/* <div className="w-full flex items-center justify-center">
                         <div className="flex flex-col items-center justify-center space-y-2">
                           <span className="text-sm text-slate-700 dark:text-slate-500 font-bold">
                             ¡Únete a nuestra fiesta!
@@ -286,7 +286,7 @@ function App() {
                             visítanos!
                           </marquee>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   )}
                 </div>
