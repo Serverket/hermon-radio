@@ -51,7 +51,7 @@ function App() {
         time: { hours: 18, minutes: 0 },
         index: 0,
         icon: "bg-green-300 dark:bg-slate-300 rounded-full icon-podcast filter drop-shadow-md animate-pulse",
-        header: "Estás en sintonía de",
+        header: "Comenta en: https://ngl.link/radiohermon",
         footer: "¡Comunícate con nosotros para patrocinarnos!",
       },
       /* PUBLICIDAD */
