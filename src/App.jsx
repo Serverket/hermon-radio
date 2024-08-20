@@ -1,89 +1,102 @@
-import React, { useState, useEffect } from "react";
-import Church from "./assets/hermon-church.webp";
-import { Disclosure } from "@headlessui/react";
-import CustomPlayer from './CustomPlayer';
-import "./styles/tailwind.css";
-import moment from "moment";
-import "aos/dist/aos.css";
-import AOS from "aos";
+import React, { useState, useEffect } from "react";  
+import Church from "./assets/hermon-church.webp";  
+import { Disclosure } from "@headlessui/react";  
+import CustomPlayer from './CustomPlayer';  
+import "./styles/tailwind.css";  
+import moment from "moment";  
+import "aos/dist/aos.css";  
+import AOS from "aos";  
 
 // Image schedule configuration
 const imageSchedule = [
+  // Regular schedule
   // Monday
-  { day: 1, time: "13:00", duration: 60, image: "Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
-  { day: 1, time: "22:00", duration: 60, image: "LaFeeslaPalabradeDios.jpeg", name: "La Fe es la Palabra de Dios", header: "Estás en sintonía de", footer: "Dios te bendiga" },
+  { day: 1, time: "13:00", duration: 60, image: "Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },  
+  { day: 1, time: "22:00", duration: 60, image: "LaFeeslaPalabradeDios.jpeg", name: "La Fe es la Palabra de Dios", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
   // Tuesday
   // Wednesday
   // Thursday
   // Friday
-  { day: 5, time: "18:00", duration: 60, image: "AlfayOmega.png", name: "Alfa y Omega", header: "Comenta en: https://ngl.link/radiohermon", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "18:00", duration: 60, image: "AlfayOmega.png", name: "Alfa y Omega", header: "Comenta en: https://ngl.link/radiohermon", footer: "¡Comunícate con nosotros para patrocinarnos!" },  
   // Saturday
-  { day: 6, time: "21:00", duration: 60, image: "VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 6, time: "21:00", duration: 60, image: "VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },  
   // Sunday
-  { day: 0, time: "13:00", duration: 60, image: "EnondaconCristo.jpg", name: "En onda con Cristo", header: "Estás en sintonía de", footer: "Dios te bendiga" },
-];
+  { day: 0, time: "13:00", duration: 60, image: "EnondaconCristo.jpg", name: "En onda con Cristo", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
+  // Date range schedule (Anniversary) 
+  { startDate: "2024-08-19", endDate: "2024-08-24", image: "8voaniversarioradio.png", name: "8vo Aniversario", header: "Programación de aniversario del 19 al 24 de Agosto de 6:00 AM a 6:00 PM", footer: 'Hechos 13:47 "Te he puesto para luz de los gentiles, a fin de que seas para salvación hasta lo último de la tierra."' },  
+];  
 
-// Updated ad configuration with schedules
-const adSchedule = [
+// Ad configuration with schedules
+const adSchedule = [  
   { day: 1, time: "10:00", duration: 30 }, // Monday, 10:00 AM, 30 minutes
   { day: 3, time: "14:00", duration: 45 }, // Wednesday, 2:00 PM, 45 minutes
   { day: 0, time: "16:00", duration: 60 }, // Sunday, 4:00 PM, 60 minutes
-];
+];  
 
-const randomAds = [
-  { image: "AlfayOmega.png", name: "Alfa y Omega", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-];
+const randomAds = [  
+  { image: "AlfayOmega.png", name: "Alfa y Omega", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },  
+];  
 
-function App() {
-  const [currentImage, setCurrentImage] = useState(null);
-  const [darkToggle, setDarkToggle] = useState(
-    localStorage.getItem("darkMode") === "true"
-  );
+function App() {  
+  const [currentImage, setCurrentImage] = useState(null);  
+  const [darkToggle, setDarkToggle] = useState(  
+    localStorage.getItem("darkMode") === "true"  
+  );  
 
-  useEffect(() => {
-    // Function to get the current scheduled image, ad, or a fallback image
-    const getCurrentImage = () => {
-      const now = moment();
+  useEffect(() => {  
+    // Function to get the current scheduled image, ad, or a fallback image  
+    const getCurrentImage = () => {  
+      const now = moment();  
       const currentDay = now.day(); // 0 (Sunday) to 6 (Saturday)
-      const currentTime = now.format('HH:mm');
+      const currentTime = now.format('HH:mm');  
 
-      // Check if it's time for a scheduled ad
-      const scheduledAdTime = adSchedule.find(schedule => {
-        return schedule.day === currentDay &&
-          currentTime >= schedule.time &&
-          currentTime < moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes').format('HH:mm');
-      });
+      // Check for date range images first  
+      const dateRangeImage = imageSchedule.find(schedule => {  
+        return schedule.startDate && schedule.endDate &&  
+          now.isBetween(moment(schedule.startDate), moment(schedule.endDate).endOf('day'), null, '[]');  
+      });  
 
-      if (scheduledAdTime) {
+      if (dateRangeImage) {  
+        return dateRangeImage;  
+      }  
+
+      // Check if it's time for a scheduled ad  
+      const scheduledAdTime = adSchedule.find(schedule => {  
+        return schedule.day === currentDay &&  
+          currentTime >= schedule.time &&  
+          currentTime < moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes').format('HH:mm');  
+      });  
+
+      if (scheduledAdTime) {  
         // If it's ad time, return a random ad
-        return randomAds[Math.floor(Math.random() * randomAds.length)];
-      }
+        return randomAds[Math.floor(Math.random() * randomAds.length)];  
+      }  
 
-      // If it's not ad time, check for scheduled programs
-      const scheduledImage = imageSchedule.find(schedule => {
-        return schedule.day === currentDay &&
-          currentTime >= schedule.time &&
-          currentTime < moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes').format('HH:mm');
-      });
+      // If it's not ad time, check for scheduled programs  
+      const scheduledImage = imageSchedule.find(schedule => {  
+        return schedule.day === currentDay &&  
+          currentTime >= schedule.time &&  
+          currentTime < moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes').format('HH:mm');  
+      });  
 
       // If no scheduled image is found, return null
-      return scheduledImage || null;
-    };
+      return scheduledImage || null;  
+    };  
 
-    // Update the current image
-    const updateImage = () => {
-      setCurrentImage(getCurrentImage());
-    };
+    // Update the current image  
+    const updateImage = () => {  
+      setCurrentImage(getCurrentImage());  
+    };  
 
-    // Initial update
-    updateImage();
+    // Initial update  
+    updateImage();  
 
-    // Set interval to check every minute
-    const interval = setInterval(updateImage, 60000);
+    // Set interval to check every minute  
+    const interval = setInterval(updateImage, 60000);  
 
-    // Clean up interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
+    // Clean up interval on component unmount  
+    return () => clearInterval(interval);  
+  }, []);  
 
   useEffect(() => {
     AOS.init({
