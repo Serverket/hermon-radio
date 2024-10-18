@@ -11,7 +11,7 @@ import AOS from "aos";
 const imageSchedule = [
   // Regular schedule
   // Monday
-  { day: 1, time: "13:00", duration: 60, image: "Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },  
+  { day: 1, time: "13:00", duration: 180, image: "Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },  
   { day: 1, time: "22:00", duration: 60, image: "LaFeeslaPalabradeDios.jpeg", name: "La Fe es la Palabra de Dios", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
   // Tuesday
   // Wednesday
@@ -20,6 +20,7 @@ const imageSchedule = [
   { day: 5, time: "18:00", duration: 60, image: "AlfayOmega.png", name: "Alfa y Omega", header: "Comenta en: https://ngl.link/radiohermon", footer: "¡Comunícate con nosotros para patrocinarnos!" },  
   // Saturday
   { day: 6, time: "21:00", duration: 60, image: "VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },  
+  { day: 6, time: "05:00", duration: 120, image: "AmanecerConCristo.png", name: "Amanecer con Cristo", header: "Estás en sintonía de", footer: "Patrocinadores: Inversiones y Variedad Yalex A&B | Inversiones Karvican | Cerrajería El Cóndor" },  
   // Sunday
   { day: 0, time: "13:00", duration: 60, image: "EnondaconCristo.jpg", name: "En onda con Cristo", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
   // Date range schedule (Anniversary) 
