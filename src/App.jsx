@@ -25,7 +25,7 @@ const imageSchedule = [
   // Sunday
   { day: 0, time: "13:00", duration: 60, image: "EnondaconCristo.jpg", name: "En onda con Cristo", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
   // Date range schedule (Anniversary) 
-  { startDate: "2024-08-19", endDate: "2024-08-24", image: "8voaniversarioradio.png", name: "8vo Aniversario", header: "Programación de aniversario del 19 al 24 de Agosto de 6:00 AM a 6:00 PM", footer: 'Hechos 13:47 "Te he puesto para luz de los gentiles, a fin de que seas para salvación hasta lo último de la tierra."' },  
+  { startDate: "2024-12-04", endDate: "2024-12-07", image: "63aniversario.png", name: "63 Aniversario", header: "Programación de aniversario del 04 al 07 de Diciembre de 6:00 PM a 9:00 PM", footer: 'Deuteronomio 31:6 "Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo de ellos, porque Jehová tu Dios es el que va contigo; no te dejará, ni te desamparará."' },  
 ];  
 
 // Ad configuration with schedules
