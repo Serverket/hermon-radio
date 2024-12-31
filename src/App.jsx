@@ -25,7 +25,10 @@ const imageSchedule = [
   // Sunday
   { day: 0, time: "13:00", duration: 60, image: "EnondaconCristo.jpg", name: "En onda con Cristo", header: "Estás en sintonía de", footer: "Dios te bendiga" },  
   // Date range schedule (Anniversary) 
-  { startDate: "2024-12-04", endDate: "2024-12-07", image: "63aniversario.png", name: "63 Aniversario", header: "Programación de aniversario del 04 al 07 de Diciembre de 6:00 PM a 9:00 PM", footer: 'Deuteronomio 31:6 "Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo de ellos, porque Jehová tu Dios es el que va contigo; no te dejará, ni te desamparará."' },  
+  { startDate: "2024-12-04", endDate: "2024-12-07", image: "63aniversario.png", name: "63 Aniversario", header: "Programación de aniversario del 04 al 07 de Diciembre de 6:00 PM a 9:00 PM", footer: 'Deuteronomio 31:6 "Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo de ellos, porque Jehová tu Dios es el que va contigo; no te dejará, ni te desamparará."' },
+    // Date range schedule (For just a day) 
+  { startDate: "2024-12-31", endDate: "2024-12-31", image: "Cultodefin.jpeg", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes con el predicador Leobaldo Barradas.' },  
+
 ];  
 
 // Ad configuration with schedules
