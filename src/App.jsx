@@ -159,12 +159,12 @@ function App() {
   };
 
   return (
-    <div className="flex items-center justify-center" data-aos="fade-in" data-aos-delay="200">
+    <div className="flex justify-center items-center" data-aos="fade-in" data-aos-delay="200">
       <div className={`h-screen w-full ${darkToggle && "dark"}`}>
-        <div className="flex flex-col items-center justify-center w-full h-screen dark:bg-gray-800">
+        <div className="flex flex-col justify-center items-center w-full h-screen dark:bg-gray-800">
           <img
             src="/charlie-brown.svg"
-            className="absolute object-cover w-full h-screen bg-center bg-no-repeat bg-cover opacity-5 dark:opacity-10"
+            className="object-cover absolute w-full h-screen bg-center bg-no-repeat bg-cover opacity-5 dark:opacity-10"
             alt="Background"
           />
           <label className="toggleDarkBtn" data-aos="fade-left" data-aos-delay="500">
@@ -172,39 +172,39 @@ function App() {
             <span className="bg-gray-400 slideBtnTg round"></span>
           </label>
           <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-xl mt-4 text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50" data-aos="zoom-in" data-aos-delay="700">
-            <div className="flex items-center justify-between -mb-4">
+            <div className="flex justify-between items-center -mb-4">
               <button
                 onClick={shareApp}
                 title="Compartir"
-                className="p-2 text-gray-800 transition-all duration-300 rounded-full dark:text-gray-200 hover:text-blue-500 backdrop-blur-sm hover:scale-105"
+                className="p-2 text-gray-800 rounded-full backdrop-blur-sm transition-all duration-300 dark:text-gray-200 hover:text-blue-500 hover:scale-105"
               >
                 <i className="text-lg icon-share" />
               </button>
               <button
                 onClick={toggleDonationInfo}
                 title="Donar"
-                className="p-2 text-red-600 transition-all duration-300 rounded-full dark:text-red-400 hover:text-red-500 backdrop-blur-sm hover:scale-105"
+                className="p-2 text-red-600 rounded-full backdrop-blur-sm transition-all duration-300 dark:text-red-400 hover:text-red-500 hover:scale-105"
               >
                 <i className="text-lg icon-heart" />
               </button>
             </div>
             <div className="px-6 space-y-2 text-center sm:space-y-3">
-              <div className="text-3xl font-bold text-gray-800 dark:text-gray-200 md:text-2xl filter drop-shadow-md">
+              <div className="text-3xl font-bold text-gray-800 filter drop-shadow-md dark:text-gray-200 md:text-2xl">
                 Radio Hermón
               </div>
               <div>
                 {currentImage && (
-                  <div className="flex items-center justify-center w-full">
-                    <div className="flex flex-col items-center justify-center space-y-2">
+                  <div className="flex justify-center items-center w-full">
+                    <div className="flex flex-col justify-center items-center space-y-2">
                       <span className="text-sm font-bold text-slate-700 dark:text-slate-600">
                         {currentImage.header}
                       </span>
                       <img
-                        className="z-40 h-48 transition-all ease-in-out md:h-80 rounded-xl hover:scale-110 sm:hover:scale-100"
+                        className="z-40 h-48 rounded-xl transition-all ease-in-out md:h-80 hover:scale-110 sm:hover:scale-100"
                         src={currentImage.image}
                         alt={currentImage.name}
                       />
-                      <marquee className="w-8/12 text-gray-800 md:w-full dark:text-gray-200 drop-shadow-md">
+                      <marquee className="w-8/12 text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
                         {currentImage.footer}
                       </marquee>
                     </div>
@@ -214,10 +214,10 @@ function App() {
               <div className="flex justify-center text-sm text-grey-darker" data-aos="fade-right" data-aos-delay="900">
                 <CustomPlayer
                   darkMode={darkToggle}
-                  src="https://app0102.sonicpanelradio.com:8840/stream"
+                  src="https://app0102.sonicpanelradio.com/8840/stream"
                 />
               </div>
-              <div className="flex flex-row items-center justify-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
+              <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
                 <a href="https://www.facebook.com/Hermon95.3" className="pointer-cursor" target="_blank" rel="noreferrer">
                   <button type="button" className="text-white text-md sm:text-sm hover:text-[#3b5998] bg-[#3b5998] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-facebook-squared active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200">
                     Facebook
@@ -233,8 +233,8 @@ function App() {
 
             {/* Donation Info Popup */}
             {showDonationInfo && (
-              <div className="fixed inset-0 flex items-center justify-center transition-opacity duration-300 ease-in-out bg-black bg-opacity-50 backdrop-blur-sm"> {/* Overlay */}
-                <div className="w-full p-4 text-gray-800 transition-transform duration-300 ease-in-out transform scale-100 bg-gray-100 rounded-lg shadow-lg dark:bg-gray-900 dark:text-gray-200">
+              <div className="flex fixed inset-0 justify-center items-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-in-out"> {/* Overlay */}
+                <div className="p-4 w-full text-gray-800 bg-gray-100 rounded-lg shadow-lg transition-transform duration-300 ease-in-out transform scale-100 dark:bg-gray-900 dark:text-gray-200">
                   <h2 className="mb-2 text-xl font-bold text-center">Donaciones (Venezuela)</h2>
                   <ul className="pl-5 list-disc">
                     <li>
@@ -252,7 +252,7 @@ function App() {
                   </ul>
                   <button
                     onClick={toggleDonationInfo}
-                    className="w-full py-1 mt-4 text-white transition duration-200 bg-red-600 rounded-lg hover:bg-red-700"
+                    className="py-1 mt-4 w-full text-white bg-red-600 rounded-lg transition duration-200 hover:bg-red-700"
                   >
                     Cerrar
                   </button>
@@ -262,24 +262,24 @@ function App() {
           </div>
         </div>
 
-        <div className="fixed inset-x-0 bottom-0 flex items-center justify-center no-underline focus:underline-none focus:no-underline">
+        <div className="flex fixed inset-x-0 bottom-0 justify-center items-center no-underline focus:underline-none focus:no-underline">
           <div className="mx-auto w-[370px] sm:w-96 bg-transparent no-underline">
             <Disclosure>
               {({ open }) => (
                 <>
                   <Disclosure.Button className="py-2 px-4 w-[370px] sm:w-96 mb-2 overflow-hidden rounded-full text-gray-800 dark:text-gray-200 font-bold text-lg md:text-xl bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80">
                     <div className="ml-2 space-x-1">
-                      <i className={open ? "icon-angle-double-down animate-pulse" : "icon-home-circled"} />
+                      <i className={open ? "animate-pulse icon-angle-double-down" : "icon-home-circled"} />
                       <span className="filter drop-shadow-md">Iglesia Hermón</span>
                     </div>
                     <img
-                      className="absolute inset-0 object-cover w-full h-full transition-all duration-500 ease-in-out rounded-full opacity-10 hover:opacity-100 blur-sm hover:blur-none"
+                      className="object-cover absolute inset-0 w-full h-full rounded-full opacity-10 blur-sm transition-all duration-500 ease-in-out hover:opacity-100 hover:blur-none"
                       src={Church}
                       alt="Church"
                     />
                   </Disclosure.Button>
                   <Disclosure.Panel className="w-[370px] sm:w-96 rounded-bl-none rounded-br-none rounded-tl-3xl rounded-tr-3xl bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 px-4 pb-2">
-                    <div className="flex flex-row items-center justify-center pt-4 space-x-2 text-center">
+                    <div className="flex flex-row justify-center items-center pt-4 space-x-2 text-center">
                       <a href="https://www.facebook.com/people/Iglesia-Evangelica-Hermon/100064624004737/" className="pointer-cursor" target="_blank" rel="noreferrer">
                         <button type="button" className="text-white text-md sm:text-sm hover:text-[#3b5998] bg-[#3b5998] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-facebook-squared active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200">
                           Facebook
@@ -296,7 +296,7 @@ function App() {
                         </button>
                       </a>
                     </div>
-                    <div className="flex flex-row items-center justify-center mt-2 text-gray-800 text-md dark:text-gray-400">
+                    <div className="flex flex-row justify-center items-center mt-2 text-gray-800 text-md dark:text-gray-400">
                       © {new Date().getFullYear()} Fundación Cultural Hermón RTV
                     </div>
                   </Disclosure.Panel>
