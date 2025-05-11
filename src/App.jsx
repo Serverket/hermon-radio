@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from "react";
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
 import Footer from './Footer';
+import ConvaiAssistant from './ConvaiAssistant';
 import "./styles/tailwind.css";
 import moment from "moment";
 import "aos/dist/aos.css";
@@ -241,6 +243,11 @@ function App() {
               toggleDonationInfo={toggleDonationInfo}
               copyToClipboard={copyToClipboard}
             />
+          </div>
+          
+          {/* ElevenLabs Convai AI Assistant Widget - positioned at bottom */}
+          <div className="fixed right-4 bottom-16 z-50">
+            <ConvaiAssistant />
           </div>
         </div>
 
