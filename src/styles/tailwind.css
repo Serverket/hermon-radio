@@ -219,3 +219,20 @@ body::after {
   fill: #ffffff;
   enable-background: new;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00a6ffff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(0, 139, 214);
+}

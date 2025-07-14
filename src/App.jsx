@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from "react";
+/* import ConvaiAssistant from './ConvaiAssistant'; */
+import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
-import Footer from './Footer';
-import ConvaiAssistant from './ConvaiAssistant';
 import "./styles/tailwind.css";
+import Footer from './Footer';
 import moment from "moment";
 import "aos/dist/aos.css";
 import AOS from "aos";
@@ -55,6 +55,7 @@ function App() {
     localStorage.getItem("darkMode") === "true"
   );
   const [showDonationInfo, setShowDonationInfo] = useState(false); // Donation modal visibility
+  const [showBibleCard, setShowBibleCard] = useState(false); // Bible card visibility (closed by default)
 
   /**
    * Effect for scheduling content updates
@@ -131,6 +132,9 @@ function App() {
 
   // Toggle donation information modal visibility
   const toggleDonationInfo = () => setShowDonationInfo(prev => !prev);
+  
+  // Toggle Bible card visibility
+  const toggleBibleCard = () => setShowBibleCard(prev => !prev);
 
   /**
    * Copy text to clipboard with fallback for older browsers
@@ -169,25 +173,35 @@ function App() {
             <span className="bg-gray-400 slideBtnTg round"></span>
           </label>
 
-          {/* Main content card */}
-          <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-xl mt-4 text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50" data-aos="zoom-in" data-aos-delay="700">
-            {/* Header buttons */}
-            <div className="flex justify-between items-center -mb-4">
+          {/* Header panel buttons */}
+          <div className="flex justify-between w-[370px] sm:w-96 mb-0">
+            <div className="flex">
               <button
                 onClick={shareApp}
                 title="Compartir"
-                className="p-2 text-gray-800 rounded-full backdrop-blur-sm transition-all duration-300 dark:text-gray-200 hover:text-blue-500 hover:scale-105"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-all duration-300 dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 transform-gpu hover:translate-y-[-2px]"
               >
                 <i className="text-lg icon-share" />
               </button>
               <button
-                onClick={toggleDonationInfo}
-                title="Donar"
-                className="p-2 text-red-600 rounded-full backdrop-blur-sm transition-all duration-300 dark:text-red-400 hover:text-red-500 hover:scale-105"
+                onClick={toggleBibleCard}
+                title="Biblia"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-all duration-300 dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 transform-gpu hover:translate-y-[-2px]"
               >
-                <i className="text-lg icon-heart" />
+                <i className={`text-lg icon-book ${showBibleCard ? 'text-blue-500 dark:text-blue-400' : ''}`} />
               </button>
             </div>
+            <button
+              onClick={toggleDonationInfo}
+              title="Donar"
+              className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-all duration-300 dark:bg-gray-900 dark:text-red-400 hover:text-red-500 transform-gpu hover:translate-y-[-2px]"
+            >
+              <i className="text-lg icon-heart" />
+            </button>
+          </div>
+          
+          {/* Main content card */}
+          <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-b-xl text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50" data-aos="zoom-in" data-aos-delay="700">
 
             {/* Main content area */}
             <div className="px-6 space-y-2 text-center sm:space-y-3">
@@ -221,6 +235,9 @@ function App() {
                   src="https://app0102.sonicpanelradio.com/8840/stream"
                 />
               </div>
+              
+              {/* Bible Card */}
+              <MultiBibleCard isVisible={showBibleCard} darkMode={darkToggle} />
 
               {/* Social media links */}
               <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
@@ -246,9 +263,9 @@ function App() {
           </div>
           
           {/* ElevenLabs Convai AI Assistant Widget - positioned at bottom */}
-          <div className="fixed right-4 bottom-16 z-50">
+          {/* <div className="fixed right-4 bottom-16 z-50">
             <ConvaiAssistant />
-          </div>
+          </div> */}
         </div>
 
         {/* Footer component */}
