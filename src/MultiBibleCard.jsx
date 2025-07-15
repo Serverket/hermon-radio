@@ -123,7 +123,7 @@ function MultiBibleCard({ isVisible, darkMode }) {
   
   return (
     <div 
-      className={`w-full p-4 rounded-lg shadow-lg mb-4 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
+      className={`w-full p-4 rounded-lg mb-4 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white shadow-md' : 'bg-gray-100 text-gray-800 shadow-blue-500/30 shadow-md'}`}
     >
       <h2 className="text-xl font-bold mb-3 text-center">Santa Biblia</h2>
       <h3 className="text-sm text-center mb-4">Reina-Valera 1960</h3>
@@ -134,7 +134,7 @@ function MultiBibleCard({ isVisible, darkMode }) {
         <div>
           <label className="block text-sm font-medium mb-1">Libro</label>
           <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}
+            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
             value={selectedBook}
             onChange={handleBookChange}
             disabled={loading}
@@ -152,7 +152,7 @@ function MultiBibleCard({ isVisible, darkMode }) {
         <div>
           <label className="block text-sm font-medium mb-1">Capítulo</label>
           <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}
+            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
             value={selectedChapter}
             onChange={handleChapterChange}
             disabled={!selectedBook || loading}
@@ -169,7 +169,7 @@ function MultiBibleCard({ isVisible, darkMode }) {
         <div>
           <label className="block text-sm font-medium mb-1">Versículo</label>
           <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}
+            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
             value={selectedVerse}
             onChange={handleVerseChange}
             disabled={!selectedBook || !selectedChapter || loading}
@@ -186,7 +186,7 @@ function MultiBibleCard({ isVisible, darkMode }) {
       {/* Bible verse display area */}
       <div 
         ref={verseTextRef}
-        className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} overflow-y-auto`}
+        className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} overflow-y-auto`}
         style={{ height: '6em', minHeight: '6em' }}
       >
         {loading ? (

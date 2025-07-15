@@ -179,14 +179,20 @@ function App() {
               <button
                 onClick={shareApp}
                 title="Compartir"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-all duration-300 dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 transform-gpu hover:translate-y-[-2px]"
+                data-aos="fade-down"
+                data-aos-duration="700"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
               >
                 <i className="text-lg icon-share" />
               </button>
               <button
                 onClick={toggleBibleCard}
                 title="Biblia"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-all duration-300 dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 transform-gpu hover:translate-y-[-2px]"
+                data-aos="fade-down"
+                data-aos-duration="900"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
               >
                 <i className={`text-lg icon-book ${showBibleCard ? 'text-blue-500 dark:text-blue-400' : ''}`} />
               </button>
@@ -194,7 +200,10 @@ function App() {
             <button
               onClick={toggleDonationInfo}
               title="Donar"
-              className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-all duration-300 dark:bg-gray-900 dark:text-red-400 hover:text-red-500 transform-gpu hover:translate-y-[-2px]"
+              data-aos="fade-down"
+              data-aos-duration="1100"
+              data-aos-once="true"
+              className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
             >
               <i className="text-lg icon-heart" />
             </button>
