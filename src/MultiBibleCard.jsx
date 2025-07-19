@@ -117,6 +117,80 @@ function MultiBibleCard({ isVisible, darkMode }) {
   const handleVerseChange = (e) => {
     setSelectedVerse(Number(e.target.value));
   };
+  
+  // Navigate to the previous verse, or to the last verse of previous chapter if at first verse
+  const goToPreviousVerse = () => {
+    if (selectedVerse > 1) {
+      setSelectedVerse(selectedVerse - 1);
+    } else if (selectedChapter > 1) {
+      // Go to the last verse of the previous chapter
+      const prevChapter = selectedChapter - 1;
+      setSelectedChapter(prevChapter);
+      try {
+        const prevChapterVerses = bookData[prevChapter - 1];
+        if (prevChapterVerses && prevChapterVerses.length > 0) {
+          setSelectedVerse(prevChapterVerses.length);
+        }
+      } catch (err) {
+        console.error('Error navigating to previous chapter:', err);
+      }
+    } else if (selectedBook) {
+      // At first verse of first chapter, try to go to previous book
+      const bookIndex = bibleIndex.findIndex(b => b.key === selectedBook);
+      if (bookIndex > 0) {
+        const prevBook = bibleIndex[bookIndex - 1];
+        setSelectedBook(prevBook.key);
+        // The useEffect will handle loading the book data and setting the chapter
+      }
+    }
+  };
+  
+  // Navigate to the next verse, or to the first verse of next chapter if at last verse
+  const goToNextVerse = () => {
+    if (bookData && selectedChapter > 0) {
+      const currentChapterVerses = bookData[selectedChapter - 1];
+      if (currentChapterVerses && selectedVerse < currentChapterVerses.length) {
+        setSelectedVerse(selectedVerse + 1);
+      } else if (selectedBook) {
+        // At last verse of current chapter
+        const book = bibleIndex.find(b => b.key === selectedBook);
+        if (book && selectedChapter < book.chapters) {
+          // Go to first verse of next chapter
+          setSelectedChapter(selectedChapter + 1);
+          setSelectedVerse(1);
+        } else {
+          // At last verse of last chapter, try to go to next book
+          const bookIndex = bibleIndex.findIndex(b => b.key === selectedBook);
+          if (bookIndex < bibleIndex.length - 1) {
+            const nextBook = bibleIndex[bookIndex + 1];
+            setSelectedBook(nextBook.key);
+            // The useEffect will handle loading the book data and setting the chapter
+          }
+        }
+      }
+    }
+  };
+  
+  // Check if we're at the very first verse of the Bible (Genesis 1:1)
+  const isFirstVerse = () => {
+    if (!selectedBook || !bibleIndex.length) return true;
+    const bookIndex = bibleIndex.findIndex(b => b.key === selectedBook);
+    return bookIndex === 0 && selectedChapter === 1 && selectedVerse === 1;
+  };
+  
+  // Check if we're at the very last verse of the Bible (Revelation last chapter, last verse)
+  const isLastVerse = () => {
+    if (!selectedBook || !bookData || !bibleIndex.length) return true;
+    
+    const bookIndex = bibleIndex.findIndex(b => b.key === selectedBook);
+    if (bookIndex !== bibleIndex.length - 1) return false;
+    
+    const book = bibleIndex[bookIndex];
+    if (selectedChapter !== book.chapters) return false;
+    
+    const currentChapterVerses = bookData[selectedChapter - 1];
+    return currentChapterVerses && selectedVerse === currentChapterVerses.length;
+  };
 
   // Render null only if the component should not be visible at all
   if (!isVisible) return null;
@@ -189,30 +263,62 @@ function MultiBibleCard({ isVisible, darkMode }) {
         </div>
       </div>
 
-      {/* Bible verse display area */}
-      <div 
-        ref={verseTextRef}
-        className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} overflow-y-auto`}
-        style={{ height: '6em', minHeight: '6em' }}
-      >
-        {loading ? (
-          <div className="flex justify-center items-center h-24">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="text-red-500 text-center p-4">{error}</div>
-        ) : !selectedBook ? (
-          <div className="text-center p-4 text-gray-500">Selecciona un libro para comenzar</div>
-        ) : !currentVerseText ? (
-          <div className="text-center p-4 text-gray-500">Selecciona un capítulo y versículo</div>
-        ) : (
-          <div>
-            <p className="font-semibold mb-2">
-              {bibleIndex.find(b => b.key === selectedBook)?.shortTitle} {selectedChapter}:{selectedVerse}
-            </p>
-            <p className="leading-relaxed">{currentVerseText}</p>
+      {/* Bible verse display area - wrapper with positioning context */}
+      <div className={`mt-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} relative`}>
+        {/* Navigation arrows - fixed at the top, not part of the scrollable content */}
+        {selectedBook && !loading && !error && currentVerseText && (
+          <div className="absolute top-0 left-0 right-0 flex justify-between items-center">
+            {/* Left button */}
+            <button 
+              onClick={goToPreviousVerse}
+              disabled={isFirstVerse()}
+              className={`px-2 py-1 text-sm ${isFirstVerse() ? 
+                (darkMode ? 'text-gray-600' : 'text-gray-400') : 
+                (darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black')}`}
+              aria-label="Previous verse"
+            >
+              <span aria-hidden="true" className="font-bold">←</span>
+            </button>
+            
+            {/* Right button */}
+            <button 
+              onClick={goToNextVerse}
+              disabled={isLastVerse()}
+              className={`px-2 py-1 text-sm ${isLastVerse() ? 
+                (darkMode ? 'text-gray-600' : 'text-gray-400') : 
+                (darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black')}`}
+              aria-label="Next verse"
+            >
+              <span aria-hidden="true" className="font-bold">→</span>
+            </button>
           </div>
         )}
+        
+        {/* Scrollable text content */}
+        <div 
+          ref={verseTextRef}
+          className="overflow-y-auto px-3 pt-1 pb-3"
+          style={{ height: '6em', minHeight: '6em' }}
+        >
+          {loading ? (
+            <div className="flex justify-center items-center h-24">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : error ? (
+            <div className="text-red-500 text-center p-4">{error}</div>
+          ) : !selectedBook ? (
+            <div className="text-center p-4 text-gray-500">Selecciona un libro para comenzar</div>
+          ) : !currentVerseText ? (
+            <div className="text-center p-4 text-gray-500">Selecciona un capítulo y versículo</div>
+          ) : (
+            <div>
+              <p className="font-semibold mb-2">
+                {bibleIndex.find(b => b.key === selectedBook)?.shortTitle} {selectedChapter}:{selectedVerse}
+              </p>
+              <p className="leading-relaxed">{currentVerseText}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
