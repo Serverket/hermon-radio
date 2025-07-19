@@ -120,13 +120,19 @@ function MultiBibleCard({ isVisible, darkMode }) {
 
   // Render null only if the component should not be visible at all
   if (!isVisible) return null;
-  
+
   return (
     <div 
       className={`w-full p-4 rounded-lg mb-4 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white shadow-md' : 'bg-gray-100 text-gray-800 shadow-blue-500/30 shadow-md'}`}
     >
-      <h2 className="text-xl font-bold mb-3 text-center">Santa Biblia</h2>
-      <h3 className="text-sm text-center mb-4">Reina-Valera 1960</h3>
+      <div className="flex justify-between -mt-3 mb-2">
+        <div className={`py-1 px-2 text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          Santa Biblia
+        </div>
+        <div className={`py-1 px-2 text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          Reina-Valera 1960
+        </div>
+      </div>
       
       {/* Bible navigation selectors */}
       <div className="grid grid-cols-3 gap-2 mb-4">
