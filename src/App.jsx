@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
+import ImageModal from './components/ImageModal';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -56,6 +57,7 @@ function App() {
   );
   const [showDonationInfo, setShowDonationInfo] = useState(false); // Donation modal visibility
   const [showBibleCard, setShowBibleCard] = useState(false); // Bible card visibility (closed by default)
+  const [imageModalOpen, setImageModalOpen] = useState(false); // Image modal visibility
 
   /**
    * Effect for scheduling content updates
@@ -167,11 +169,7 @@ function App() {
             alt="Background texture"
           />
           
-          {/* Dark mode toggle switch */}
-          <label className="toggleDarkBtn" data-aos="fade-left" data-aos-delay="500">
-            <input type="checkbox" checked={darkToggle} onChange={toggleDarkMode} />
-            <span className="bg-gray-400 slideBtnTg round"></span>
-          </label>
+          {/* Dark mode toggle removed from here - moved to header buttons */}
 
           {/* Header panel buttons */}
           <div className="flex justify-between w-[370px] sm:w-96 mb-0">
@@ -197,16 +195,28 @@ function App() {
                 <i className={`text-lg icon-book ${showBibleCard ? 'text-blue-500 dark:text-blue-400' : ''}`} />
               </button>
             </div>
-            <button
-              onClick={toggleDonationInfo}
-              title="Donar"
-              data-aos="fade-down"
-              data-aos-duration="1100"
-              data-aos-once="true"
-              className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
-            >
-              <i className="text-lg icon-heart" />
-            </button>
+            <div className="flex">
+              <button
+                onClick={toggleDonationInfo}
+                title="Donar"
+                data-aos="fade-down"
+                data-aos-duration="1100"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
+              >
+                <i className="text-lg icon-heart" />
+              </button>
+              <button
+                onClick={toggleDarkMode}
+                title={darkToggle ? "Modo claro" : "Modo oscuro"}
+                data-aos="fade-down"
+                data-aos-duration="1300"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-800 hover:bg-yellow-50 dark:hover:bg-gray-900 hover:text-yellow-600 dark:hover:text-gray-800"
+              >
+                <i className={`text-lg ${darkToggle ? 'icon-sun-filled dark:text-gray-200' : 'icon-moon-3'}`} />
+              </button>
+            </div>
           </div>
           
           {/* Main content card */}
@@ -226,13 +236,17 @@ function App() {
                       {currentImage.header}
                     </span>
                     <img
-                      className="z-10 h-48 rounded-xl transition-all ease-in-out md:h-80 hover:scale-110 sm:hover:scale-100"
+                      className="z-10 h-36 rounded-xl transition-all ease-in-out md:h-48 cursor-pointer hover:scale-105"
                       src={currentImage.image}
                       alt={currentImage.name}
+                      onClick={() => setImageModalOpen(true)}
+                      title="Click to enlarge"
                     />
-                    <marquee className="w-8/12 text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
-                      {currentImage.footer}
-                    </marquee>
+                    <div className="w-8/12 text-sm text-center overflow-hidden text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
+                      <marquee>
+                        {currentImage.footer}
+                      </marquee>
+                    </div>
                   </div>
                 </div>
               )}
@@ -277,9 +291,22 @@ function App() {
           </div> */}
         </div>
 
-        {/* Footer component */}
-        <Footer />
-      </div>
+        {/* Footer */}
+      <Footer />
+
+      {/* Image Modal for enlarged view */}
+      {currentImage && (
+        <ImageModal
+          isOpen={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          image={currentImage.image}
+          name={currentImage.name}
+          header={currentImage.header}
+          footer={currentImage.footer}
+          darkMode={darkToggle}
+        />
+      )}
+    </div>
     </div>
   );
 }
