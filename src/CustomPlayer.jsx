@@ -186,7 +186,7 @@ const CustomPlayer = ({ darkMode, src }) => {
 
   return (
     <div className={`w-full max-w-md relative overflow-hidden rounded-xl ${darkMode ? 'bg-gray-800 shadow-md' : 'bg-gray-100 shadow-blue-500/30 shadow-md'}`}>
-      <style jsx>{`
+      <style>{`
         @keyframes audioWave {
           0% { height: 6px; }
           100% { height: 30px; }

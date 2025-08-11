@@ -20,6 +20,10 @@ function MultiBibleCard({ isVisible, darkMode }) {
   
   // Ref for verse text container to allow scrolling
   const verseTextRef = useRef(null);
+  
+  // Refs for pending chapter and verse to set after book data loads
+  const pendingChapter = useRef(null);
+  const pendingVerse = useRef(null);
 
   // Load book data when selected book changes
   useEffect(() => {
@@ -102,6 +106,46 @@ function MultiBibleCard({ isVisible, darkMode }) {
       verseTextRef.current.scrollTop = 0;
     }
   }, [currentVerseText]);
+
+  // Load saved selection from localStorage on mount
+  useEffect(() => {
+    const savedSelection = localStorage.getItem('bibleSelection');
+    if (savedSelection) {
+      try {
+        const { book, chapter, verse } = JSON.parse(savedSelection);
+        setSelectedBook(book);
+        // Save chapter and verse to set after book data loads
+        pendingChapter.current = chapter;
+        pendingVerse.current = verse;
+      } catch (e) {
+        console.error('Failed to parse saved bible selection', e);
+      }
+    }
+  }, []);
+
+  // When book data is loaded and there is a pending chapter and verse, set them
+  useEffect(() => {
+    if (bookData && pendingChapter.current !== null && pendingVerse.current !== null) {
+      setSelectedChapter(pendingChapter.current);
+      // Wait for the next tick to set the verse, to allow the chapter to be processed
+      setTimeout(() => {
+        setSelectedVerse(pendingVerse.current);
+        pendingChapter.current = null;
+        pendingVerse.current = null;
+      }, 50);
+    }
+  }, [bookData]);
+
+  // Save selection to localStorage when it changes
+  useEffect(() => {
+    if (selectedBook && selectedChapter && selectedVerse) {
+      localStorage.setItem('bibleSelection', JSON.stringify({
+        book: selectedBook,
+        chapter: selectedChapter,
+        verse: selectedVerse
+      }));
+    }
+  }, [selectedBook, selectedChapter, selectedVerse]);
 
   // Handle book selection change
   const handleBookChange = (e) => {
@@ -196,110 +240,11 @@ function MultiBibleCard({ isVisible, darkMode }) {
   if (!isVisible) return null;
 
   return (
-    <div 
-      className={`w-full p-4 rounded-lg mb-4 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white shadow-md' : 'bg-gray-100 text-gray-800 shadow-blue-500/30 shadow-md'}`}
-    >
-      <div className="flex justify-between -mt-3 mb-2">
-        <div className={`py-1 px-2 text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          Santa Biblia
-        </div>
-        <div className={`py-1 px-2 text-xs font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          Reina-Valera 1960
-        </div>
-      </div>
-      
-      {/* Bible navigation selectors */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {/* Book selector */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Libro</label>
-          <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
-            value={selectedBook}
-            onChange={handleBookChange}
-            disabled={loading}
-          >
-            <option value="">Seleccionar</option>
-            {bibleIndex.map((book) => (
-              <option key={book.key} value={book.key}>
-                {book.shortTitle}
-              </option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Chapter selector */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Capítulo</label>
-          <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
-            value={selectedChapter}
-            onChange={handleChapterChange}
-            disabled={!selectedBook || loading}
-          >
-            {[...Array(maxChapter)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-        
-        {/* Verse selector */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Versículo</label>
-          <select
-            className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
-            value={selectedVerse}
-            onChange={handleVerseChange}
-            disabled={!selectedBook || !selectedChapter || loading}
-          >
-            {[...Array(maxVerse)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Bible verse display area - wrapper with positioning context */}
-      <div className={`mt-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} relative`}>
-        {/* Navigation arrows - fixed at the top, not part of the scrollable content */}
-        {selectedBook && !loading && !error && currentVerseText && (
-          <div className="absolute top-0 left-0 right-0 flex justify-between items-center">
-            {/* Left button */}
-            <button 
-              onClick={goToPreviousVerse}
-              disabled={isFirstVerse()}
-              className={`px-2 py-1 text-sm ${isFirstVerse() ? 
-                (darkMode ? 'text-gray-600' : 'text-gray-400') : 
-                (darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black')}`}
-              aria-label="Previous verse"
-            >
-              <span aria-hidden="true" className="font-bold">←</span>
-            </button>
-            
-            {/* Right button */}
-            <button 
-              onClick={goToNextVerse}
-              disabled={isLastVerse()}
-              className={`px-2 py-1 text-sm ${isLastVerse() ? 
-                (darkMode ? 'text-gray-600' : 'text-gray-400') : 
-                (darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-black')}`}
-              aria-label="Next verse"
-            >
-              <span aria-hidden="true" className="font-bold">→</span>
-            </button>
-          </div>
-        )}
-        
-        {/* Scrollable text content */}
-        <div 
-          ref={verseTextRef}
-          className="overflow-y-auto px-3 pt-1 pb-3"
-          style={{ height: '6em', minHeight: '6em' }}
-        >
+    <div className={`flex flex-col h-full ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
+      <h2 className="text-center font-bold text-2xl pt-8">Santa Biblia</h2>
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400">Reina-Valera 1960</p>
+      <div className="flex-grow overflow-y-auto">
+        <div className="p-4">
           {loading ? (
             <div className="flex justify-center items-center h-24">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -318,6 +263,80 @@ function MultiBibleCard({ isVisible, darkMode }) {
               <p className="leading-relaxed">{currentVerseText}</p>
             </div>
           )}
+        </div>
+      </div>
+      <div className="mt-auto p-4">
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {/* Book selector */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Libro</label>
+            <select
+              className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'} ${!selectedBook ? 'border-2 border-blue-500 animate-pulse' : ''}`}
+              value={selectedBook}
+              onChange={handleBookChange}
+              disabled={loading}
+            >
+              <option value="">Seleccionar</option>
+              {bibleIndex.map((book) => (
+                <option key={book.key} value={book.key}>
+                  {book.shortTitle}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Chapter selector */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Capítulo</label>
+            <select
+              className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
+              value={selectedChapter}
+              onChange={handleChapterChange}
+              disabled={!selectedBook || loading}
+            >
+              {[...Array(maxChapter)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Verse selector */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Versículo</label>
+            <select
+              className={`w-full p-2 rounded text-sm ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
+              value={selectedVerse}
+              onChange={handleVerseChange}
+              disabled={!selectedBook || !selectedChapter || loading}
+            >
+              {[...Array(maxVerse)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="flex justify-between items-center">
+          {/* Left button */}
+          <button 
+            onClick={goToPreviousVerse}
+            disabled={isFirstVerse()}
+            className={`px-4 py-2 rounded ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-black'} ${isFirstVerse() ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <span aria-hidden="true" className="font-bold">←</span>
+          </button>
+          
+          {/* Right button */}
+          <button 
+            onClick={goToNextVerse}
+            disabled={isLastVerse()}
+            className={`px-4 py-2 rounded ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-black'} ${isLastVerse() ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <span aria-hidden="true" className="font-bold">→</span>
+          </button>
         </div>
       </div>
     </div>

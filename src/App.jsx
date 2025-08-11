@@ -4,6 +4,7 @@ import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
 import ImageModal from './components/ImageModal';
+import BibleModal from './components/BibleModal';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -169,8 +170,6 @@ function App() {
             alt="Background texture"
           />
           
-          {/* Dark mode toggle removed from here - moved to header buttons */}
-
           {/* Header panel buttons */}
           <div className="flex justify-between w-[370px] sm:w-96 mb-0">
             <div className="flex">
@@ -185,6 +184,28 @@ function App() {
                 <i className="text-lg icon-share" />
               </button>
               <button
+                onClick={toggleDonationInfo}
+                title="Donar"
+                data-aos="fade-down"
+                data-aos-duration="1100"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
+              >
+                <i className="text-lg icon-heart" />
+              </button>
+            </div>
+            <div className="flex">
+              <button
+                onClick={toggleDarkMode}
+                title={darkToggle ? "Modo claro" : "Modo oscuro"}
+                data-aos="fade-down"
+                data-aos-duration="1300"
+                data-aos-once="true"
+                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-800 hover:bg-yellow-50 dark:hover:bg-gray-900 hover:text-yellow-600 dark:hover:text-gray-800"
+              >
+                <i className={`text-lg ${darkToggle ? 'icon-sun-filled dark:text-gray-200' : 'icon-moon-3'}`} />
+              </button>
+              <button
                 onClick={toggleBibleCard}
                 title="Biblia"
                 data-aos="fade-down"
@@ -193,28 +214,6 @@ function App() {
                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
               >
                 <i className={`text-lg icon-book ${showBibleCard ? 'text-blue-500 dark:text-blue-400' : ''}`} />
-              </button>
-            </div>
-            <div className="flex">
-              <button
-                onClick={toggleDonationInfo}
-                title="Donar"
-                data-aos="fade-down"
-                data-aos-duration="1100"
-                data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
-              >
-                <i className="text-lg icon-heart" />
-              </button>
-              <button
-                onClick={toggleDarkMode}
-                title={darkToggle ? "Modo claro" : "Modo oscuro"}
-                data-aos="fade-down"
-                data-aos-duration="1300"
-                data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-800 hover:bg-yellow-50 dark:hover:bg-gray-900 hover:text-yellow-600 dark:hover:text-gray-800"
-              >
-                <i className={`text-lg ${darkToggle ? 'icon-sun-filled dark:text-gray-200' : 'icon-moon-3'}`} />
               </button>
             </div>
           </div>
@@ -259,9 +258,6 @@ function App() {
                 />
               </div>
               
-              {/* Bible Card */}
-              <MultiBibleCard isVisible={showBibleCard} darkMode={darkToggle} />
-
               {/* Social media links */}
               <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
                 <a href="https://www.facebook.com/Hermon95.3" target="_blank" rel="noreferrer">
@@ -293,6 +289,9 @@ function App() {
 
         {/* Footer */}
       <Footer />
+
+      {/* Bible Modal */}
+      <BibleModal isOpen={showBibleCard} onClose={() => setShowBibleCard(false)} darkMode={darkToggle} />
 
       {/* Image Modal for enlarged view */}
       {currentImage && (
