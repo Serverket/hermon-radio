@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-/* import ConvaiAssistant from './ConvaiAssistant'; */
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { subscribeOverlay, putOverlay } from './overlayClient';
 import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
@@ -10,6 +11,63 @@ import Footer from './Footer';
 import moment from "moment";
 import "aos/dist/aos.css";
 import AOS from "aos";
+
+// Small tooltip component rendered via portal so it is never clipped by parent overflow
+// Usage: <InfoTip text="Helpful explanation" />
+const InfoTip = ({ text }) => {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const anchorRef = useRef(null);
+
+  const show = () => {
+    if (!anchorRef.current) return;
+    const r = anchorRef.current.getBoundingClientRect();
+    // Position below the anchor, centered with an 8px gap
+    setPos({ top: r.bottom + 8, left: r.left + r.width / 2 });
+    setOpen(true);
+  };
+  const hide = () => setOpen(false);
+
+  useEffect(() => {
+    const onScrollOrResize = () => {
+      if (!open) return;
+      hide(); // simple approach: hide on scroll/resize to avoid stale position
+    };
+    window.addEventListener("scroll", onScrollOrResize, true);
+    window.addEventListener("resize", onScrollOrResize, true);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize, true);
+      window.removeEventListener("resize", onScrollOrResize, true);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <span
+        ref={anchorRef}
+        className="ml-1 inline-block relative cursor-help align-middle"
+        aria-label={text}
+        tabIndex={0}
+        onMouseEnter={show}
+        onFocus={show}
+        onMouseLeave={hide}
+        onBlur={hide}
+      >
+        <span className="h-4 w-4 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600 text-[10px] leading-none text-gray-800 dark:text-gray-200 select-none focus:outline-none">?</span>
+      </span>
+      {open && createPortal(
+        <div
+          role="tooltip"
+          className="fixed z-[9999] whitespace-pre rounded-md bg-gray-900 text-white text-xs px-2 py-1 shadow-lg pointer-events-none"
+          style={{ top: `${pos.top}px`, left: `${pos.left}px`, transform: "translateX(-50%)" }}
+        >
+          {text}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+};
 
 /**
  * Schedule configuration for program images and advertisements
@@ -50,6 +108,9 @@ const randomAds = [
   { image: "AlfayOmega.png", name: "Alfa y Omega", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 ];
 
+// Overlay backend config
+const OVERLAY_BASE_URL = import.meta.env.VITE_OVERLAY_BASE_URL;
+
 function App() {
   // State management
   const [currentImage, setCurrentImage] = useState(null); // Currently displayed program/image
@@ -59,6 +120,18 @@ function App() {
   const [showDonationInfo, setShowDonationInfo] = useState(false); // Donation modal visibility
   const [showBibleCard, setShowBibleCard] = useState(false); // Bible card visibility (closed by default)
   const [imageModalOpen, setImageModalOpen] = useState(false); // Image modal visibility
+  // Overlay state (from backend SSE)
+  const [overlay, setOverlay] = useState({ visible: false, type: 'image', url: '', position: 'inline', fit: 'contain', source: 'url', title: '', text: '', bgColor: '#2563eb', textColor: '#ffffff' });
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [adminAuthed, setAdminAuthed] = useState(false);
+  const [adminUserInput, setAdminUserInput] = useState("");
+  const [adminPassInput, setAdminPassInput] = useState("");
+  const [adminCreds, setAdminCreds] = useState({ user: "", pass: "" });
+  const [adminEnter, setAdminEnter] = useState(false);
+  const [adminMinimized, setAdminMinimized] = useState(false);
+  const [overlayAnim, setOverlayAnim] = useState(false);
+  const [overlayImageModalOpen, setOverlayImageModalOpen] = useState(false);
+  
 
   /**
    * Effect for scheduling content updates
@@ -120,6 +193,80 @@ function App() {
     const newDarkMode = !darkToggle;
     setDarkToggle(newDarkMode);
     localStorage.setItem("darkMode", newDarkMode.toString());
+  };
+
+  // Live overlay via SSE
+  useEffect(() => {
+    if (!OVERLAY_BASE_URL) return;
+    const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => setOverlay((prev) => ({ ...prev, ...data })));
+    return stop;
+  }, []);
+
+  // Animate admin modal on open
+  useEffect(() => {
+    if (adminOpen) {
+      setAdminEnter(false);
+      const id = requestAnimationFrame(() => setAdminEnter(true));
+      return () => cancelAnimationFrame(id);
+    } else {
+      setAdminEnter(false);
+    }
+  }, [adminOpen]);
+
+  // Animate overlay content on changes
+  useEffect(() => {
+    setOverlayAnim(false);
+    const id = requestAnimationFrame(() => setOverlayAnim(true));
+    return () => cancelAnimationFrame(id);
+  }, [overlay.visible, overlay.url, overlay.type, overlay.position, overlay.fit, overlay.text]);
+
+
+  const adminLogin = (e) => {
+    e?.preventDefault?.();
+    if (!adminUserInput || !adminPassInput) { alert('Ingrese usuario y contraseña'); return; }
+    setAdminCreds({ user: adminUserInput, pass: adminPassInput });
+    setAdminAuthed(true);
+  };
+
+  const saveOverlay = async (payload) => {
+    if (!OVERLAY_BASE_URL) { alert('Configure VITE_OVERLAY_BASE_URL'); return; }
+    try {
+      await putOverlay(OVERLAY_BASE_URL, { user: adminCreds.user, pass: adminCreds.pass }, payload);
+    } catch (e) {
+      alert('Error al actualizar la transmisión');
+    }
+  };
+
+  const closeOverlayContent = async () => {
+    // Always hide locally for responsive UX
+    setOverlay((o) => ({ ...o, visible: false }));
+    // If not authenticated or backend URL missing, stop here
+    if (!adminAuthed) return;
+    if (!OVERLAY_BASE_URL) return;
+    try {
+      await saveOverlay({ ...overlay, visible: false });
+    } catch (e) {
+      // Ignore network/backend errors; overlay already hidden locally
+    }
+  };
+
+  const youtubeEmbedUrl = (url) => {
+    if (!url) return '';
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '');
+      let id = '';
+      if (host === 'youtu.be') {
+        id = u.pathname.split('/').filter(Boolean)[0] || '';
+      } else if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+        if (u.pathname.startsWith('/watch')) id = u.searchParams.get('v') || '';
+        else if (u.pathname.startsWith('/embed/')) id = u.pathname.split('/')[2] || '';
+        else if (u.pathname.startsWith('/shorts/')) id = u.pathname.split('/')[2] || '';
+      }
+      return id ? `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&playsinline=1&loop=1` : url;
+    } catch {
+      return url;
+    }
   };
 
   /**
@@ -227,27 +374,55 @@ function App() {
                 Radio Hermón
               </div>
               
-              {/* Program image display */}
-              {currentImage && (
+              {/* Overlay inline or scheduled image/text */}
+              {overlay?.visible && overlay?.position === 'inline' && (overlay?.type === 'text' ? !!overlay?.text : !!overlay?.url) ? (
                 <div className="flex justify-center items-center w-full">
-                  <div className="flex flex-col justify-center items-center space-y-2">
-                    <span className="text-sm font-bold text-slate-700 dark:text-slate-600">
-                      {currentImage.header}
-                    </span>
-                    <img
-                      className="z-10 h-36 rounded-xl transition-all ease-in-out md:h-48 cursor-pointer hover:scale-105"
-                      src={currentImage.image}
-                      alt={currentImage.name}
-                      onClick={() => setImageModalOpen(true)}
-                      title="Click to enlarge"
-                    />
-                    <div className="w-8/12 text-sm text-center overflow-hidden text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
-                      <marquee>
-                        {currentImage.footer}
-                      </marquee>
-                    </div>
+                  <div className={`flex flex-col justify-center items-center space-y-2 w-full transform transition-all duration-300 ${overlayAnim ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-1 scale-95'}`}>
+                    {overlay.type === 'image' && (
+                      // Ajuste → object-fit: 'contain' (show full image, may letterbox) or 'cover' (fill area, may crop)
+                      <img src={overlay.url} alt="superposición" onClick={() => setOverlayImageModalOpen(true)} title="Haz clic para ampliar" className={`w-full h-auto rounded-xl cursor-pointer hover:scale-[1.02] transition-transform ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+                    )}
+                    {overlay.type === 'youtube' && (
+                      <div className="w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '16 / 9' }}>
+                        <iframe
+                          src={youtubeEmbedUrl(overlay.url)}
+                          allow="autoplay; encrypted-media; picture-in-picture"
+                          allowFullScreen
+                          className="w-full h-full"
+                          title="Superposición de YouTube"
+                        />
+                      </div>
+                    )}
+                    {overlay.type === 'text' && (
+                      <div className="w-full rounded-xl px-4 py-3" style={{ backgroundColor: overlay.bgColor }}>
+                        <div className="text-lg sm:text-xl font-semibold whitespace-pre-wrap break-words" style={{ color: overlay.textColor }}>{overlay.text}</div>
+                      </div>
+                    )}
+                    
                   </div>
                 </div>
+              ) : (
+                currentImage && (
+                  <div className="flex justify-center items-center w-full">
+                    <div className="flex flex-col justify-center items-center space-y-2">
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-600">
+                        {currentImage.header}
+                      </span>
+                      <img
+                        className="z-10 h-36 rounded-xl transition-all ease-in-out md:h-48 cursor-pointer hover:scale-105"
+                        src={currentImage.image}
+                        alt={currentImage.name}
+                        onClick={() => setImageModalOpen(true)}
+                        title="Haz clic para ampliar"
+                      />
+                      <div className="w-8/12 text-sm text-center overflow-hidden text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
+                        <marquee>
+                          {currentImage.footer}
+                        </marquee>
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
 
               {/* Audio player */}
@@ -293,6 +468,272 @@ function App() {
       {/* Bible Modal */}
       <BibleModal isOpen={showBibleCard} onClose={() => setShowBibleCard(false)} darkMode={darkToggle} />
 
+      {/* Admin Top Utility Bar */}
+      {adminOpen && (
+        <div className={`fixed top-0 left-0 right-0 z-[220] transition-all duration-200 ${adminEnter ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}>
+          <div className="mx-auto max-w-screen-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2">
+              <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-200">Panel de Transmisión</h3>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setAdminMinimized(!adminMinimized)}
+                  className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
+                  aria-label={adminMinimized ? 'Expandir' : 'Minimizar'}
+                  title={adminMinimized ? 'Expandir' : 'Minimizar'}
+                >
+                  {adminMinimized ? <i className="icon-down-open" /> : <span className="block w-4 h-1 bg-current rounded-sm" />}
+                </button>
+                <button
+                  onClick={() => { setAdminOpen(false); setAdminAuthed(false); setAdminMinimized(false); }}
+                  className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
+                  aria-label="Cerrar"
+                  title="Cerrar"
+                >
+                  <i className="icon-cancel text-xl leading-none" />
+                </button>
+              </div>
+            </div>
+            {!adminMinimized && (
+              <div className="px-3 sm:px-4 pb-3 max-h-[50vh] overflow-y-auto">
+                {!adminAuthed ? (
+                  <form onSubmit={adminLogin} className="flex flex-col sm:flex-row sm:items-end gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Usuario administrador</label>
+                      <input type="text" value={adminUserInput} onChange={(e) => setAdminUserInput(e.target.value)} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese usuario" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
+                      <input type="password" value={adminPassInput} onChange={(e) => setAdminPassInput(e.target.value)} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese contraseña" />
+                    </div>
+                    <button type="submit" className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Desbloquear</button>
+                  </form>
+                ) : (
+                  <div className="space-y-3">
+                    {/* Controls grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* Tipo */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <span className="inline-flex items-center">Tipo<InfoTip text={"Selecciona el contenido a mostrar: Imagen, YouTube o Texto."} /></span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={overlay.type}
+                            onChange={(e) => setOverlay(o => ({ ...o, type: e.target.value }))}
+                            className="w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                          >
+                            <option value="image">Imagen</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="text">Texto</option>
+                          </select>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Presentación */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <span className="inline-flex items-center">Presentación<InfoTip text={"Cómo se muestra: Integrado dentro de la tarjeta o en Pantalla completa."} /></span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={overlay.position}
+                            onChange={(e) => setOverlay(o => ({ ...o, position: e.target.value }))}
+                            className="w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                          >
+                            <option value="inline">Integrado</option>
+                            <option value="fullscreen">Pantalla completa</option>
+                          </select>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Ajuste */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          <span className="inline-flex items-center">Ajuste<InfoTip text={"Controla el encuadre de imágenes: Contener muestra todo (pueden quedar barras), Cubrir llena el área (puede recortar)."} /></span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            value={overlay.fit}
+                            onChange={(e) => setOverlay(o => ({ ...o, fit: e.target.value }))}
+                            disabled={overlay.type !== 'image'}
+                            aria-disabled={overlay.type !== 'image'}
+                            className={`w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm ${overlay.type !== 'image' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <option value="contain">Contener</option>
+                            <option value="cover">Cubrir</option>
+                          </select>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Text or URL */}
+                    <div className="flex flex-col space-y-1">
+                      {overlay.type === 'text' ? (
+                        <>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="inline-flex items-center">Texto<InfoTip text={"Mensaje que se mostrará como sobreimpresión en vivo."} /></span>
+                          </label>
+                          <textarea
+                            value={overlay.text}
+                            onChange={(e) => setOverlay(o => ({ ...o, text: e.target.value }))}
+                            className="w-full min-h-[100px] px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                            placeholder="Escribe el anuncio..."
+                          />
+                          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="flex items-center gap-3">
+                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                                Color de fondo<InfoTip text={"Color de fondo del texto en vivo. Usa el selector o pega un HEX (p.ej., #2563eb)."} />
+                              </label>
+                              <input
+                                type="color"
+                                value={overlay.bgColor || '#2563eb'}
+                                onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
+                                className="h-9 w-12 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                aria-label="Color de fondo"
+                                title="Color de fondo"
+                              />
+                              <input
+                                type="text"
+                                value={overlay.bgColor || ''}
+                                onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
+                                placeholder="#2563eb"
+                                className="w-28 px-2 py-1.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                                aria-label="HEX color"
+                              />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                                Color del texto<InfoTip text={"Color del texto en vivo. Usa el selector o pega un HEX (p.ej., #ffffff)."} />
+                              </label>
+                              <input
+                                type="color"
+                                value={overlay.textColor || '#ffffff'}
+                                onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
+                                className="h-9 w-12 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                aria-label="Color del texto"
+                                title="Color del texto"
+                              />
+                              <input
+                                type="text"
+                                value={overlay.textColor || ''}
+                                onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
+                                placeholder="#ffffff"
+                                className="w-28 px-2 py-1.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                                aria-label="HEX color"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="inline-flex items-center">URL (imagen/YouTube)<InfoTip text={"Pega un enlace directo a una imagen o un enlace de YouTube (https://youtu.be/... o https://www.youtube.com/watch?v=...)."} /></span>
+                          </label>
+                          <input
+                            type="text"
+                            value={overlay.url}
+                            onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
+                            className="w-full px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                            placeholder="https://... o https://youtu.be/..."
+                          />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex items-center gap-3">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <span className="inline-flex items-center">Visible<InfoTip text={"Mostrar u ocultar la superposición en vivo."} /></span>
+                        </label>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={!!overlay.visible}
+                          onClick={() => setOverlay(o => ({ ...o, visible: !o.visible }))}
+                          className={`inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${overlay.visible ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                        >
+                          <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition ${overlay.visible ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                      <button onClick={() => saveOverlay(overlay)} className="inline-flex items-center justify-center px-4 py-2.5 rounded-md font-medium shadow-sm focus:outline-none focus:ring-2 bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 dark:focus:ring-green-400">
+                        Guardar
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Floating Admin trigger (top-right). Invisible by default; appears on hover/focus */}
+      {!adminOpen && (
+        <button
+          onClick={() => setAdminOpen(true)}
+          title="Admin"
+          aria-label="Abrir panel de administración"
+          className="fixed top-3 right-3 z-[221] opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity duration-200 w-10 h-10 flex items-center justify-center bg-gray-100 text-gray-800 rounded-lg shadow dark:bg-gray-900 dark:text-gray-200"
+        >
+          <i className="text-lg icon-lock" />
+        </button>
+      )}
+
+      {/* Fullscreen Overlay */}
+      {overlay?.visible && overlay?.position === 'fullscreen' && (overlay?.type === 'text' ? !!overlay?.text : !!overlay?.url) && (
+        <div
+          className={`fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-6 transition-opacity duration-200 ${overlayAnim ? 'bg-black/70 opacity-100' : 'bg-black/0 opacity-0'}`}
+          onClick={(e) => { if (e.target === e.currentTarget) closeOverlayContent(); }}
+        >
+          <div
+            className={`relative w-full h-full max-w-screen max-h-screen rounded-lg overflow-hidden bg-black transform transition-all duration-200 ${overlayAnim ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button for fullscreen content */}
+            <button
+              onClick={closeOverlayContent}
+              className="absolute top-4 right-4 z-[160] w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none"
+              aria-label="Cerrar"
+              title="Cerrar"
+            >
+              <i className="icon-cancel text-2xl" />
+            </button>
+            {overlay.type === 'image' && (
+              <img src={overlay.url} alt="superposición" onClick={() => setOverlayImageModalOpen(true)} title="Haz clic para ampliar" className={`w-full h-full cursor-zoom-in ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+            )}
+            {overlay.type === 'youtube' && (
+              <iframe
+                src={youtubeEmbedUrl(overlay.url)}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+                title="Superposición de YouTube en pantalla completa"
+              />
+            )}
+            
+            {overlay.type === 'text' && (
+              <div className="w-full h-full flex items-center justify-center p-6">
+                <div className="max-w-4xl text-center text-white">
+                  <div className="inline-block rounded-xl px-6 py-4 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)]" style={{ backgroundColor: overlay.bgColor }}>
+                    <div className="text-3xl md:text-5xl font-bold whitespace-pre-wrap break-words" style={{ color: overlay.textColor }}>{overlay.text}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Image Modal for enlarged view */}
       {currentImage && (
         <ImageModal
@@ -302,6 +743,19 @@ function App() {
           name={currentImage.name}
           header={currentImage.header}
           footer={currentImage.footer}
+          darkMode={darkToggle}
+        />
+      )}
+
+      {/* Overlay image click-to-enlarge modal */}
+      {overlay?.visible && overlay?.url && overlay.type === 'image' && (
+        <ImageModal
+          isOpen={overlayImageModalOpen}
+          onClose={() => setOverlayImageModalOpen(false)}
+          image={overlay.url}
+          name={overlay.title || 'Superposición'}
+          header={overlay.title}
+          footer={''}
           darkMode={darkToggle}
         />
       )}

@@ -6,9 +6,10 @@ Church Radio PWA, crafted with Vite and Tailwind CSS.
 </div>  
 
 ## :gear: Install & Run  
-You'll need at least `node 16` and `bun` to compile everything up:  
+You'll need Node.js 18+.  
 ```
-bun install && bun run dev
+npm install
+npm run dev
 ```
 
 ## :star2: Main Features  
@@ -26,6 +27,18 @@ bun install && bun run dev
 - 🎥 **Media Source Detection**: Automatically identifies whether the provided URL is an audio or video stream.  
 - 🚫 **Enterprise-Level Error Handling**: Implements a robust error handling mechanism that addresses network issues, ensuring users are informed of any playback interruptions effectively.  
 - 🔁 **Persistent Playback State**: Saves user playback preferences, enabling seamless restoration of audio playback after component reloads.  
+
+### **Stream Overlay (Admin) Features:**  
+- 🛠️ **Top Utility Bar**: Fixed, responsive admin bar with minimize/restore and accessible tooltips.
+- 🖼️ **Types**: Image, YouTube, Text.
+- 🧭 **Layouts**: Inline or Fullscreen with smooth entrance animations.
+- 📐 **Fit**: Contain or Cover (images only).
+- 🎨 **Text Styling**: Background color and Text color pickers with HEX inputs; applied to inline and fullscreen.
+- 🔒 **Auth**: Basic Auth to backend; credentials set on the backend.
+- 🔴 **Live Updates**: Server‑Sent Events (SSE) broadcast to all clients.
+- ♿ **Accessibility**: Keyboard focus styles, large close/minimize buttons, and backdrop click-to-close across modals.
+
+See `docs/DEPLOYMENT.md` for deployment and usage details.
 
 ## :shipit: Special Thanks  
 * To this church's flock.  

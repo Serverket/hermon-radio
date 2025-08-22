@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * Image Modal component for displaying enlarged program images
@@ -12,20 +12,30 @@ import React, { useEffect } from 'react';
  * @param {boolean} props.darkMode - Whether dark mode is enabled
  */
 const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) => {
-  // Handle ESC key to close modal
+  const [entered, setEntered] = useState(false);
+  // Handle ESC key to close modal (attach only when open)
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.keyCode === 27) onClose();
     };
-    
     if (isOpen) {
       document.addEventListener('keydown', handleEsc);
     }
-    
     return () => {
       document.removeEventListener('keydown', handleEsc);
     };
   }, [isOpen, onClose]);
+
+  // Animate when opening
+  useEffect(() => {
+    if (!isOpen) {
+      setEntered(false);
+      return;
+    }
+    setEntered(false);
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, [isOpen]);
 
   // Don't render anything if modal is closed
   if (!isOpen) return null;
@@ -39,19 +49,20 @@ const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) 
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 transition-opacity"
+      role="dialog"
+      aria-modal="true"
+      className={`fixed inset-0 z-[250] flex items-center justify-center transition-opacity duration-200 ${entered ? 'bg-black/75 opacity-100' : 'bg-black/0 opacity-0'}`}
       onClick={handleBackdropClick}
     >
-      <div className={`relative max-w-3xl mx-auto rounded-lg overflow-hidden shadow-xl transform transition-all 
+      <div className={`relative w-[92vw] sm:w-auto max-w-3xl mx-auto rounded-lg overflow-hidden shadow-xl transform transition-all duration-200 ${entered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-1'} 
                       ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
         {/* Close button */}
         <button
           onClick={onClose}
-          className={`absolute top-2 right-2 rounded-full w-8 h-8 flex items-center justify-center 
-                    ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
-          aria-label="Close modal"
+          className={"absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none"}
+          aria-label="Cerrar"
         >
-          ×
+          <i className="icon-cancel text-2xl" />
         </button>
         
         {/* Content */}
