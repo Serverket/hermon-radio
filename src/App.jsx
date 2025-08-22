@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { subscribeOverlay, putOverlay } from './overlayClient';
+import { subscribeOverlay, putOverlay, authCheck } from './overlayClient';
 import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
@@ -221,11 +221,19 @@ function App() {
   }, [overlay.visible, overlay.url, overlay.type, overlay.position, overlay.fit, overlay.text]);
 
 
-  const adminLogin = (e) => {
+  const adminLogin = async (e) => {
     e?.preventDefault?.();
     if (!adminUserInput || !adminPassInput) { alert('Ingrese usuario y contraseña'); return; }
-    setAdminCreds({ user: adminUserInput, pass: adminPassInput });
-    setAdminAuthed(true);
+    if (!OVERLAY_BASE_URL) { alert('Configure VITE_OVERLAY_BASE_URL'); return; }
+    const creds = { user: adminUserInput.trim(), pass: adminPassInput };
+    try {
+      await authCheck(OVERLAY_BASE_URL, creds);
+      setAdminCreds(creds);
+      setAdminAuthed(true);
+    } catch (err) {
+      setAdminAuthed(false);
+      alert('Credenciales inválidas');
+    }
   };
 
   const saveOverlay = async (payload) => {

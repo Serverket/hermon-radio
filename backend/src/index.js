@@ -117,6 +117,8 @@ function broadcast(data) {
   }
 }
 
+app.get('/overlay/auth-check', requireAdmin, (req, res) => { res.status(204).end(); });
+
 app.get('/overlay', async (req, res) => {
   res.json(overlay);
 });

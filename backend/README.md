@@ -4,6 +4,7 @@ Express + PostgreSQL service to store and broadcast overlay state. Provides REST
 
 ## Endpoints
 - `GET /overlay` → Returns current state
+- `GET /overlay/auth-check` (Basic Auth) → Validates credentials, returns 204 on success
 - `PUT /overlay` (Basic Auth) → Updates state
 - `GET /overlay/stream` → Server-Sent Events (SSE) feed of state changes
 

@@ -27,6 +27,7 @@ This project is split into two deployables:
 
 5. API Endpoints:
    - `GET /overlay` → current state
+   - `GET /overlay/auth-check` (Basic Auth) → validate admin credentials (returns 204)
    - `PUT /overlay` (Basic Auth) → update state
    - `GET /overlay/stream` → Server-Sent Events (SSE) live updates
 
@@ -40,6 +41,14 @@ This project is split into two deployables:
 3. Environment Variables (Project > Settings > Environment Variables):
    - `VITE_OVERLAY_BASE_URL` = `https://your-backend.onrender.com`
 4. Deploy.
+
+### Admin login flow (frontend)
+
+- The admin panel prompts for username/password.
+- On submit, the frontend calls `GET /overlay/auth-check` with Basic Auth.
+- Only on a 204 response the panel unlocks. Otherwise, it shows “Credenciales inválidas”.
+- Saving changes calls `PUT /overlay` (Basic Auth).
+- All connected clients update in real time via `GET /overlay/stream` (SSE).
 
 ## 3) Local Development
 
