@@ -673,9 +673,37 @@ function App() {
                           <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition ${overlay.visible ? 'translate-x-5' : 'translate-x-1'}`} />
                         </button>
                       </div>
-                      <button onClick={() => saveOverlay(overlay)} className="inline-flex items-center justify-center px-4 py-2.5 rounded-md font-medium shadow-sm focus:outline-none focus:ring-2 bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 dark:focus:ring-green-400">
-                        Guardar
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const defaultOverlay = {
+                              visible: false,
+                              type: 'image',
+                              url: '',
+                              position: 'inline',
+                              fit: 'contain',
+                              source: 'url',
+                              title: '',
+                              text: '',
+                              bgColor: '#2563eb',
+                              textColor: '#ffffff'
+                            };
+                            setOverlay(defaultOverlay);
+                            saveOverlay(defaultOverlay);
+                          }}
+                          className="inline-flex items-center justify-center p-2.5 rounded-md font-medium shadow-sm focus:outline-none focus:ring-2 bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 dark:focus:ring-red-400"
+                          title="Limpiar y restablecer"
+                        >
+                          <i className="icon-trash-1"></i>
+                        </button>
+                        <button 
+                          onClick={() => saveOverlay(overlay)} 
+                          className="inline-flex items-center justify-center px-4 py-2.5 rounded-md font-medium shadow-sm focus:outline-none focus:ring-2 bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 dark:focus:ring-green-400"
+                        >
+                          Transmitir
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
