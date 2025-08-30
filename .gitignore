@@ -30,6 +30,7 @@ bun.lock
 .DS_Store
 *.pem
 package-lock.json
+/backend/media/*
 
 # debug
 npm-debug.log*

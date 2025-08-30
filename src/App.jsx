@@ -6,6 +6,7 @@ import CustomPlayer from './CustomPlayer';
 import DonationInfo from './DonationInfo';
 import ImageModal from './components/ImageModal';
 import BibleModal from './components/BibleModal';
+import HlsPlayer from './components/HlsPlayer';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -110,6 +111,8 @@ const randomAds = [
 
 // Overlay backend config
 const OVERLAY_BASE_URL = import.meta.env.VITE_OVERLAY_BASE_URL;
+// HLS stream URL (e.g., http://localhost:8000/live/stream/index.m3u8)
+const STREAM_HLS_URL = import.meta.env.VITE_STREAM_HLS_URL;
 
 function App() {
   // State management
@@ -120,8 +123,40 @@ function App() {
   const [showDonationInfo, setShowDonationInfo] = useState(false); // Donation modal visibility
   const [showBibleCard, setShowBibleCard] = useState(false); // Bible card visibility (closed by default)
   const [imageModalOpen, setImageModalOpen] = useState(false); // Image modal visibility
-  // Overlay state (from backend SSE)
-  const [overlay, setOverlay] = useState({ visible: false, type: 'image', url: '', position: 'inline', fit: 'contain', source: 'url', title: '', text: '', bgColor: '#2563eb', textColor: '#ffffff' });
+
+  // Load overlay data from localStorage
+  const loadOverlayFromStorage = () => {
+    try {
+      const saved = localStorage.getItem('hermon-radio-overlay');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          visible: false, // Always start with overlay hidden
+          type: parsed.type || 'image',
+          url: parsed.url || '',
+          text: parsed.text || '',
+          bgColor: parsed.bgColor || '#1f2937',
+          textColor: parsed.textColor || '#ffffff',
+          position: parsed.position || 'inline',
+          fit: parsed.fit || 'contain'
+        };
+      }
+    } catch (error) {
+      console.warn('Error loading overlay from localStorage:', error);
+    }
+    return {
+      visible: false,
+      type: 'image',
+      url: '',
+      text: '',
+      bgColor: '#1f2937',
+      textColor: '#ffffff',
+      position: 'inline',
+      fit: 'contain'
+    };
+  };
+
+  const [overlay, setOverlay] = useState(loadOverlayFromStorage());
   const [adminOpen, setAdminOpen] = useState(false);
   const [adminAuthed, setAdminAuthed] = useState(false);
   const [adminUserInput, setAdminUserInput] = useState("");
@@ -212,6 +247,23 @@ function App() {
       setAdminEnter(false);
     }
   }, [adminOpen]);
+
+  // Save overlay data to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('hermon-radio-overlay', JSON.stringify({
+        type: overlay.type,
+        url: overlay.url,
+        text: overlay.text,
+        bgColor: overlay.bgColor,
+        textColor: overlay.textColor,
+        position: overlay.position,
+        fit: overlay.fit
+      }));
+    } catch (error) {
+      console.warn('Error saving overlay to localStorage:', error);
+    }
+  }, [overlay.type, overlay.url, overlay.text, overlay.bgColor, overlay.textColor, overlay.position, overlay.fit]);
 
   // Animate overlay content on changes
   useEffect(() => {
@@ -374,7 +426,7 @@ function App() {
           </div>
           
           {/* Main content card */}
-          <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-b-xl text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50" data-aos="zoom-in" data-aos-delay="700">
+          <div className="w-[370px] sm:w-96 overflow-hidden bg-gray-100 p-5 rounded-b-xl text-white dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-50" {...(overlay.type !== 'hls' && { 'data-aos': 'zoom-in', 'data-aos-delay': '700' })}>
 
             {/* Main content area */}
             <div className="px-6 space-y-2 text-center sm:space-y-3">
@@ -383,9 +435,13 @@ function App() {
               </div>
               
               {/* Overlay inline or scheduled image/text */}
-              {overlay?.visible && overlay?.position === 'inline' && (overlay?.type === 'text' ? !!overlay?.text : !!overlay?.url) ? (
+              {overlay?.visible && overlay?.position === 'inline' && (
+                (overlay?.type === 'text' && !!overlay?.text) ||
+                (overlay?.type === 'image' && !!overlay?.url) ||
+                (overlay?.type === 'youtube' && !!overlay?.url)
+              ) ? (
                 <div className="flex justify-center items-center w-full">
-                  <div className={`flex flex-col justify-center items-center space-y-2 w-full transform transition-all duration-300 ${overlayAnim ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-1 scale-95'}`}>
+                  <div className={`flex flex-col justify-center items-center space-y-2 w-full transform transition-all duration-300 ${overlay.type === 'hls' ? 'opacity-100 translate-y-0 scale-100' : overlayAnim ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-1 scale-95'}`}>
                     {overlay.type === 'image' && (
                       // Ajuste → object-fit: 'contain' (show full image, may letterbox) or 'cover' (fill area, may crop)
                       <img src={overlay.url} alt="superposición" onClick={() => setOverlayImageModalOpen(true)} title="Haz clic para ampliar" className={`w-full h-auto rounded-xl cursor-pointer hover:scale-[1.02] transition-transform ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`} />
@@ -400,6 +456,9 @@ function App() {
                           title="Superposición de YouTube"
                         />
                       </div>
+                    )}
+                    {overlay.type === 'hls' && (
+                      <HlsPlayer url={STREAM_HLS_URL} autoPlay muted />
                     )}
                     {overlay.type === 'text' && (
                       <div className="w-full rounded-xl px-4 py-3" style={{ backgroundColor: overlay.bgColor }}>
@@ -432,6 +491,13 @@ function App() {
                   </div>
                 )
               )}
+
+              {/* Live video (HLS) - Only show when overlay is HLS type and visible */}
+              {STREAM_HLS_URL && overlay.visible && overlay.type === 'hls' && overlay.position === 'inline' ? (
+                <div className="mt-2">
+                  <HlsPlayer url={STREAM_HLS_URL} autoPlay muted />
+                </div>
+              ) : null}
 
               {/* Audio player */}
               <div className="flex justify-center text-sm text-grey-darker" data-aos="fade-right" data-aos-delay="900">
@@ -513,72 +579,156 @@ function App() {
                       <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
                       <input type="password" value={adminPassInput} onChange={(e) => setAdminPassInput(e.target.value)} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese contraseña" />
                     </div>
-                    <button type="submit" className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">Desbloquear</button>
+                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Entrar</button>
                   </form>
                 ) : (
-                  <div className="space-y-3">
-                    {/* Controls grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="space-y-4">
+                    {/* Control Panel */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                       {/* Tipo */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          <span className="inline-flex items-center">Tipo<InfoTip text={"Selecciona el contenido a mostrar: Imagen, YouTube o Texto."} /></span>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 lg:mb-2">
+                          <span className="inline-flex items-center">Tipo<InfoTip text={"Elige qué tipo de contenido mostrar en pantalla."} /></span>
                         </label>
-                        <div className="relative">
-                          <select
-                            value={overlay.type}
-                            onChange={(e) => setOverlay(o => ({ ...o, type: e.target.value }))}
-                            className="w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                        <div className="grid grid-cols-4 gap-1.5 lg:gap-2">
+                          {/* Camera Icon - First */}
+                          <button
+                            type="button"
+                            title="Transmisión en vivo desde cámara"
+                            onClick={() => setOverlay(o => ({ ...o, type: 'hls' }))}
+                            className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${
+                              overlay.type === 'hls' 
+                                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400' 
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                            }`}
                           >
-                            <option value="image">Imagen</option>
-                            <option value="youtube">YouTube</option>
-                            <option value="text">Texto</option>
-                          </select>
-                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
-                          </span>
+                            <i className="icon-videocam text-sm lg:text-base mb-0.5 lg:mb-1"></i>
+                            <span className="text-2xs lg:text-xs font-medium">Cámara</span>
+                          </button>
+
+                          {/* Image Icon - Second */}
+                          <button
+                            type="button"
+                            title="Mostrar imagen"
+                            onClick={() => setOverlay(o => ({ ...o, type: 'image' }))}
+                            className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${
+                              overlay.type === 'image' 
+                                ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                            }`}
+                          >
+                            <i className="icon-picture text-sm lg:text-base mb-0.5 lg:mb-1"></i>
+                            <span className="text-2xs lg:text-xs font-medium">Imagen</span>
+                          </button>
+
+                          {/* Text Icon - Third */}
+                          <button
+                            type="button"
+                            title="Mostrar mensaje de texto"
+                            onClick={() => setOverlay(o => ({ ...o, type: 'text' }))}
+                            className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${
+                              overlay.type === 'text' 
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                            }`}
+                          >
+                            <i className="icon-edit text-sm lg:text-base mb-0.5 lg:mb-1"></i>
+                            <span className="text-2xs lg:text-xs font-medium">Texto</span>
+                          </button>
+
+                          {/* YouTube Icon - Fourth */}
+                          <button
+                            type="button"
+                            title="Mostrar video de YouTube"
+                            onClick={() => setOverlay(o => ({ ...o, type: 'youtube' }))}
+                            className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${
+                              overlay.type === 'youtube' 
+                                ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                            }`}
+                          >
+                            <i className="icon-video text-sm lg:text-base mb-0.5 lg:mb-1"></i>
+                            <span className="text-2xs lg:text-xs font-medium">YouTube</span>
+                          </button>
                         </div>
                       </div>
 
-                      {/* Presentación */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          <span className="inline-flex items-center">Presentación<InfoTip text={"Cómo se muestra: Integrado dentro de la tarjeta o en Pantalla completa."} /></span>
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={overlay.position}
-                            onChange={(e) => setOverlay(o => ({ ...o, position: e.target.value }))}
-                            className="w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
-                          >
-                            <option value="inline">Integrado</option>
-                            <option value="fullscreen">Pantalla completa</option>
-                          </select>
-                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
-                          </span>
+                      {/* Presentación & Ajuste Combined */}
+                      <div className="grid grid-cols-2 gap-2 lg:space-y-4 lg:grid-cols-1 lg:gap-0">
+                        {/* Presentación */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 lg:mb-2">
+                            <span className="inline-flex items-center">Presentación<InfoTip text={"Cómo se muestra: Integrado dentro de la tarjeta o en Pantalla completa."} /></span>
+                          </label>
+                          <div className="grid grid-cols-2 gap-1">
+                            <button
+                              type="button"
+                              title="Integrado - Muestra dentro de la tarjeta principal"
+                              onClick={() => setOverlay(o => ({ ...o, position: 'inline' }))}
+                              className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${
+                                overlay.position === 'inline'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                              }`}
+                            >
+                              <i className="icon-th-large text-xs mb-1"></i>
+                              <span className="text-2xs font-medium">Integrado</span>
+                            </button>
+                            <button
+                              type="button"
+                              title="Pantalla completa - Ocupa toda la pantalla"
+                              onClick={() => setOverlay(o => ({ ...o, position: 'fullscreen' }))}
+                              className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${
+                                overlay.position === 'fullscreen'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                              }`}
+                            >
+                              <i className="icon-window-maximize text-xs mb-1"></i>
+                              <span className="text-2xs font-medium">Completa</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Ajuste */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          <span className="inline-flex items-center">Ajuste<InfoTip text={"Controla el encuadre de imágenes: Contener muestra todo (pueden quedar barras), Cubrir llena el área (puede recortar)."} /></span>
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={overlay.fit}
-                            onChange={(e) => setOverlay(o => ({ ...o, fit: e.target.value }))}
-                            disabled={overlay.type !== 'image'}
-                            aria-disabled={overlay.type !== 'image'}
-                            className={`w-full appearance-none pr-9 px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm ${overlay.type !== 'image' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          >
-                            <option value="contain">Contener</option>
-                            <option value="cover">Cubrir</option>
-                          </select>
-                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
-                            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd"/></svg>
-                          </span>
+                        {/* Ajuste */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 lg:mb-2">
+                            <span className="inline-flex items-center">Ajuste<InfoTip text={"Controla el encuadre de imágenes: Contener muestra todo, Cubrir llena el área."} /></span>
+                          </label>
+                          <div className="grid grid-cols-2 gap-1">
+                            <button
+                              type="button"
+                              title="Contener - Muestra la imagen completa con posibles barras negras"
+                              onClick={() => setOverlay(o => ({ ...o, fit: 'contain' }))}
+                              disabled={overlay.type !== 'image'}
+                              className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${
+                                overlay.fit === 'contain'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                  : overlay.type !== 'image'
+                                  ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                              }`}
+                            >
+                              <i className="icon-resize-small text-xs mb-1"></i>
+                              <span className="text-2xs font-medium">Contener</span>
+                            </button>
+                            <button
+                              type="button"
+                              title="Cubrir - Llena toda el área, puede recortar la imagen"
+                              onClick={() => setOverlay(o => ({ ...o, fit: 'cover' }))}
+                              disabled={overlay.type !== 'image'}
+                              className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${
+                                overlay.fit === 'cover'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                  : overlay.type !== 'image'
+                                  ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                              }`}
+                            >
+                              <i className="icon-resize-full text-xs mb-1"></i>
+                              <span className="text-2xs font-medium">Cubrir</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -593,72 +743,93 @@ function App() {
                           <textarea
                             value={overlay.text}
                             onChange={(e) => setOverlay(o => ({ ...o, text: e.target.value }))}
-                            className="w-full min-h-[100px] px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                            className="w-full min-h-[80px] px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
                             placeholder="Escribe el anuncio..."
                           />
-                          <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div className="flex items-center gap-3">
-                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
-                                Color de fondo<InfoTip text={"Color de fondo del texto en vivo. Usa el selector o pega un HEX (p.ej., #2563eb)."} />
+                          <div className="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2">
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                                Fondo<InfoTip text={"Color de fondo del texto."} />
                               </label>
                               <input
                                 type="color"
                                 value={overlay.bgColor || '#2563eb'}
                                 onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
-                                className="h-9 w-12 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                className="h-8 w-10 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
                                 aria-label="Color de fondo"
-                                title="Color de fondo"
                               />
                               <input
                                 type="text"
                                 value={overlay.bgColor || ''}
                                 onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
                                 placeholder="#2563eb"
-                                className="w-28 px-2 py-1.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                                className="w-24 px-2 py-1 text-xs rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                 aria-label="HEX color"
                               />
                             </div>
-                            <div className="flex items-center gap-3">
-                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
-                                Color del texto<InfoTip text={"Color del texto en vivo. Usa el selector o pega un HEX (p.ej., #ffffff)."} />
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                                Texto<InfoTip text={"Color del texto."} />
                               </label>
                               <input
                                 type="color"
                                 value={overlay.textColor || '#ffffff'}
                                 onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
-                                className="h-9 w-12 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                className="h-8 w-10 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
                                 aria-label="Color del texto"
-                                title="Color del texto"
                               />
                               <input
                                 type="text"
                                 value={overlay.textColor || ''}
                                 onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
                                 placeholder="#ffffff"
-                                className="w-28 px-2 py-1.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                                className="w-24 px-2 py-1 text-xs rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                 aria-label="HEX color"
                               />
                             </div>
                           </div>
                         </>
+                      ) : overlay.type === 'hls' ? (
+                        <>
+                          <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-3">
+                            <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                              <span className="text-sm font-medium">Cámara lista</span>
+                            </div>
+                            <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                              Configurada para recibir transmisión desde OBS en vivo.
+                            </p>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            <span className="inline-flex items-center">URL (imagen/YouTube)<InfoTip text={"Pega un enlace directo a una imagen o un enlace de YouTube (https://youtu.be/... o https://www.youtube.com/watch?v=...)."} /></span>
+                            <span className="inline-flex items-center">
+                              URL ({overlay.type === 'image' ? 'imagen' : 'YouTube'})
+                              <InfoTip text={
+                                overlay.type === 'image' ? "Pega un enlace directo a una imagen (JPG, PNG, GIF, etc.)" :
+                                "Pega un enlace de YouTube (https://youtu.be/... o https://www.youtube.com/watch?v=...)"
+                              } />
+                            </span>
                           </label>
                           <input
                             type="text"
                             value={overlay.url}
                             onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
+                            placeholder={
+                              overlay.type === 'image' ? "https://ejemplo.com/imagen.jpg" :
+                              "https://youtu.be/..."
+                            }
                             className="w-full px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
-                            placeholder="https://... o https://youtu.be/..."
                           />
                         </>
                       )}
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                           <span className="inline-flex items-center">Visible<InfoTip text={"Mostrar u ocultar la superposición en vivo."} /></span>
@@ -726,13 +897,17 @@ function App() {
       )}
 
       {/* Fullscreen Overlay */}
-      {overlay?.visible && overlay?.position === 'fullscreen' && (overlay?.type === 'text' ? !!overlay?.text : !!overlay?.url) && (
+      {overlay?.visible && overlay?.position === 'fullscreen' && (
+        overlay?.type === 'text' ? !!overlay?.text : 
+        overlay?.type === 'hls' ? true :
+        !!overlay?.url
+      ) && (
         <div
-          className={`fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-6 transition-opacity duration-200 ${overlayAnim ? 'bg-black/70 opacity-100' : 'bg-black/0 opacity-0'}`}
+          className={`fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-6 transition-opacity duration-200 ${overlay.type === 'hls' ? 'bg-black/70 opacity-100' : overlayAnim ? 'bg-black/70 opacity-100' : 'bg-black/0 opacity-0'}`}
           onClick={(e) => { if (e.target === e.currentTarget) closeOverlayContent(); }}
         >
           <div
-            className={`relative w-full h-full max-w-screen max-h-screen rounded-lg overflow-hidden bg-black transform transition-all duration-200 ${overlayAnim ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+            className={`relative w-full h-full max-w-screen max-h-screen rounded-lg overflow-hidden bg-black transform transition-all duration-200 ${overlay.type === 'hls' ? 'opacity-100 scale-100' : overlayAnim ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button for fullscreen content */}
@@ -756,12 +931,21 @@ function App() {
                 title="Superposición de YouTube en pantalla completa"
               />
             )}
-            
+            {overlay.type === 'hls' && (
+              <div className="w-full h-full flex items-center justify-center bg-black">
+                <HlsPlayer 
+                  url={STREAM_HLS_URL} 
+                  autoPlay 
+                  muted 
+                  className="max-w-full max-h-full object-contain" 
+                />
+              </div>
+            )}
             {overlay.type === 'text' && (
               <div className="w-full h-full flex items-center justify-center p-6">
                 <div className="max-w-4xl text-center text-white">
                   <div className="inline-block rounded-xl px-6 py-4 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)]" style={{ backgroundColor: overlay.bgColor }}>
-                    <div className="text-3xl md:text-5xl font-bold whitespace-pre-wrap break-words" style={{ color: overlay.textColor }}>{overlay.text}</div>
+                    <div className="text-2xl sm:text-4xl lg:text-6xl font-bold whitespace-pre-wrap" style={{ color: overlay.textColor }}>{overlay.text}</div>
                   </div>
                 </div>
               </div>

@@ -1,15 +1,23 @@
 <div id="header" align="center">  
 <img src="./src/assets/hermon-radio.webp" alt="Cover" title="Cover">  
 
-# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v1.0.0-brightgreen) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
-Church Radio PWA, crafted with Vite and Tailwind CSS.  
+# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v2.0.0-brightgreen) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
+Church Radio PWA with advanced streaming overlays, crafted with Vite and Tailwind CSS.  
 </div>  
 
 ## :gear: Install & Run  
-You'll need Node.js 18+.  
-```
+You'll need Node.js 18+ or Bun.  
+
+### Using npm:
+```bash
 npm install
 npm run dev
+```
+
+### Using Bun (recommended):
+```bash
+bun install
+bun run dev:bun
 ```
 
 ## :star2: Main Features  
@@ -29,14 +37,23 @@ npm run dev
 - 🔁 **Persistent Playback State**: Saves user playback preferences, enabling seamless restoration of audio playback after component reloads.  
 
 ### **Stream Overlay (Admin) Features:**  
-- 🛠️ **Top Utility Bar**: Fixed, responsive admin bar with minimize/restore and accessible tooltips.
-- 🖼️ **Types**: Image, YouTube, Text.
-- 🧭 **Layouts**: Inline or Fullscreen with smooth entrance animations.
-- 📐 **Fit**: Contain or Cover (images only).
-- 🎨 **Text Styling**: Background color and Text color pickers with HEX inputs; applied to inline and fullscreen.
-- 🔒 **Auth**: Basic Auth to backend; credentials set on the backend.
-- 🔴 **Live Updates**: Server‑Sent Events (SSE) broadcast to all clients.
-- ♿ **Accessibility**: Keyboard focus styles, large close/minimize buttons, and backdrop click-to-close across modals.
+- 🛠️ **Intuitive Admin Panel**: Responsive overlay controls with icon-based interface and tooltips.
+- 🖼️ **Content Types**: Image, YouTube, Text, and Live Camera (HLS) streaming.
+- 🧭 **Display Modes**: Inline (integrated in card) or Fullscreen with intuitive icon buttons.
+- 📐 **Image Fitting**: Contain (show full image) or Cover (fill area) with visual icon indicators.
+- 🎨 **Text Styling**: Background and text color pickers with live preview.
+- 📱 **Responsive Layout**: Optimized mobile interface with side-by-side controls to save space.
+- 💾 **Data Persistence**: localStorage automatically saves all content and settings across sessions.
+- 🔒 **Authentication**: Secure admin access with backend credential validation.
+- 🔴 **Real-time Broadcasting**: Server-Sent Events (SSE) for instant updates to all connected clients.
+- 🎬 **Cross-Platform Streaming**: Seamless switching between content types without interference.
+- ♿ **Accessibility**: Full keyboard navigation, ARIA labels, and high-contrast focus indicators.
+
+### **Enhanced User Experience:**
+- 🖱️ **Click-to-Enlarge**: Program images open in full-size modal gallery.
+- 🔄 **Smooth Transitions**: Optimized animations that don't interfere with live streaming.
+- 📊 **Visual Feedback**: Color-coded controls and status indicators for intuitive operation.
+- 🌙 **Dark Mode Support**: Complete dark/light theme compatibility across all components.
 
 See `docs/DEPLOYMENT.md` for deployment and usage details.
 

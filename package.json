@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:bun": "bunx vite",
+    "build:bun": "bunx vite build",
+    "preview:bun": "bunx vite preview"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
@@ -15,7 +18,8 @@
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-h5-audio-player": "^3.9.3"
+    "react-h5-audio-player": "^3.9.3",
+    "hls.js": "^1.6.11"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
