@@ -76,30 +76,37 @@ const InfoTip = ({ text }) => {
  */
 const imageSchedule = [
   // Monday
-  { day: 1, time: "09:00", duration: 120, image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 1, time: "13:00", duration: 180, image: "Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
-  { day: 1, time: "22:00", duration: 60, image: "LaFeeslaPalabradeDios.jpeg", name: "La Fe es la Palabra de Dios", header: "Estás en sintonía de", footer: "Dios te bendiga" },
+  { day: 1, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 1, time: "13:00", duration: 180, image: "/programs/regular/Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
+  { day: 1, time: "22:00", duration: 60, image: "/programs/regular/LaFeeslaPalabradeDios.jpeg", name: "La Fe es la Palabra de Dios", header: "Estás en sintonía de", footer: "Dios te bendiga" },
   
   // Tuesday
-  { day: 2, time: "09:00", duration: 120, image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 2, time: "16:00", duration: 180, image: "LaFevieneporeloír.png", name: "La Fe viene por el oír", header: 'Estás en sintonía de', footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 2, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 2, time: "16:00", duration: 180, image: "/programs/regular/LaFevieneporeloír.png", name: "La Fe viene por el oír", header: 'Estás en sintonía de', footer: "¡Comunícate con nosotros para patrocinarnos!" },
   // Wednesday
-  { day: 3, time: "09:00", duration: 120, image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.png", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "16:00", duration: 120, image: "/programs/regular/Momentoscristianos.jpg", name: "Momentos Cristianos", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   // Thursday
-  { day: 4, time: "09:00", duration: 120, image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "13:00", duration: 120, image: "/programs/regular/Mujeresdevaloryfe.jpg", name: "Mujeres de Valor y Fe", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "20:00", duration: 60, image: "/programs/regular/Horadeldiscipulado.jpg", name: "Hora del Discipulado", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Friday
-  { day: 5, time: "09:00", duration: 120, image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 5, time: "18:00", duration: 60, image: "AlfayOmega.png", name: "Alfa y Omega", header: 'Patrocinador: "Panadería La Nonna, el mejor pan, del horno a tu boca | www.longyu.store', footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 5, time: "19:00", duration: 120, image: "Tiempoderefrigerio.png", name: "Tiempo de Refrigerio", header: "Estás en sintonía de", footer: "Patrocinadores: Pincho Pocholin | Kiosco La Bendición | Iglesia Tiempo de Refrigerio | Escríbenos al 0424 315 71 26" },
+  { day: 5, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.png", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "18:00", duration: 60, image: "/programs/regular/AlfayOmega.png", name: "Alfa y Omega", header: 'Patrocinador: "Panadería La Nonna, el mejor pan, del horno a tu boca | www.longyu.store', footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "19:00", duration: 120, image: "/programs/regular/Tiempoderefrigerio.png", name: "Tiempo de Refrigerio", header: "Estás en sintonía de", footer: "Patrocinadores: Pincho Pocholin | Kiosco La Bendición | Iglesia Tiempo de Refrigerio | Escríbenos al 0424 315 71 26" },
   
   // Saturday
-  { day: 6, time: "21:00", duration: 60, image: "VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 6, time: "05:00", duration: 120, image: "AmanecerConCristo.png", name: "Amanecer con Cristo", header: "Estás en sintonía de", footer: "Patrocinadores: Inversiones y Variedad Yalex A&B | Inversiones Karvican | Cerrajería El Cóndor" },
+  { day: 6, time: "21:00", duration: 60, image: "/programs/regular/VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 6, time: "05:00", duration: 120, image: "/programs/regular/AmanecerConCristo.png", name: "Amanecer con Cristo", header: "Estás en sintonía de", footer: "Patrocinadores: Inversiones y Variedad Yalex A&B | Inversiones Karvican | Cerrajería El Cóndor" },
+  
+  // Sunday
+  { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.jpeg", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   
   // Special date-range schedules
-  { startDate: "2024-12-04", endDate: "2024-12-07", image: "63aniversario.png", name: "63 Aniversario", header: "Programación de aniversario del 04 al 07 de Diciembre de 6:00 PM a 9:00 PM", footer: 'Deuteronomio 31:6 "Esforzaos y cobrad ánimo; no temáis, ni tengáis miedo de ellos, porque Jehová tu Dios es el que va contigo; no te dejará, ni te desamparará."' },
-  { startDate: "2024-12-31", endDate: "2024-12-31", image: "Cultodefin.jpeg", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes con el predicador Leobaldo Barradas.' },
+  { startDate: "2024-12-31", endDate: "2024-12-31", image: "/programs/regular/Cultodefin.jpeg", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes con el predicador Leobaldo Barradas.' },
 ];
 
 // Advertisement schedule configuration
@@ -111,8 +118,8 @@ const adSchedule = [
 
 // Random advertisements pool
 const randomAds = [
-  { image: "AlfayOmega.png", name: "Alfa y Omega", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { image: "LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { image: "/programs/regular/AlfayOmega.png", name: "Alfa y Omega", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 ];
 
 // Overlay backend config
