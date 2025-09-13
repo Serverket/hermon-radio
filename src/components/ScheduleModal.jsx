@@ -79,7 +79,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50 p-4" 
+      className="fixed inset-0 z-[1000] grid place-items-center bg-black bg-opacity-50 p-4" 
       onClick={onClose}
       data-aos="fade-in"
     >
@@ -88,7 +88,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
         onClick={e => e.stopPropagation()}
         data-aos="zoom-in"
         data-aos-duration="500"
-        style={{ maxHeight: '80vh' }}
+        style={{ height: '90vh', maxHeight: '90vh' }}
       >
         <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-all duration-300 h-full flex flex-col`}>
           <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -102,7 +102,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
             </button>
           </div>
           
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 min-h-0 flex flex-col">
             {/* Days header - hidden on mobile, shown on desktop */}
             <div className="hidden md:grid md:grid-cols-7 gap-2 p-3 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-200 dark:border-gray-700">
               {days.map((day, index) => (
@@ -116,14 +116,14 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
             </div>
             
             {/* Programs grid - horizontal scroll on mobile */}
-            <div className="flex-1 overflow-auto p-3">
+            <div className="flex-1 min-h-0 overflow-y-auto p-3">
               <div className="flex md:grid md:grid-cols-7 gap-2 overflow-x-auto">
                 {scheduleData.map((dayPrograms, dayIndex) => (
                   <div key={dayIndex} className="min-w-[60vw] md:min-w-0 space-y-2">
                     {dayPrograms.map((program, idx) => (
                       <div 
                         key={idx}
-                        className={`p-1.5 md:p-3 rounded-lg cursor-pointer transition-all duration-200 ${program.isSpecial 
+                        className={`p-2 md:p-3 rounded-lg cursor-pointer transition-all duration-200 ${program.isSpecial 
                           ? (isCultoEspecial(program) ? 'bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-700')
                           : 'bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-700'} 
                           ${selectedProgram === program ? 'ring-2 ring-blue-500 dark:ring-blue-400' : 'hover:opacity-90'}`}
@@ -141,10 +141,10 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
                               ? (isCultoEspecial(program) ? 'bg-yellow-500' : 'bg-red-500')
                               : 'bg-green-500'}`}></span>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-2xs md:text-sm text-gray-800 dark:text-gray-200 truncate">
+                            <div className="font-medium text-xs md:text-sm text-gray-800 dark:text-gray-200 truncate">
                               {program.name}
                             </div>
-                            <div className="text-3xs md:text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            <div className="text-2xs md:text-xs text-gray-600 dark:text-gray-400 mt-1">
                               {program.time} • {formatDuration(program.duration)}
                             </div>
                           </div>
@@ -158,7 +158,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
           </div>
           
           {/* Fixed details panel at the bottom */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
+          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 max-h-[40vh] overflow-y-auto">
             {selectedProgram ? (
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
