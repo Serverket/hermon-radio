@@ -548,8 +548,32 @@ function App() {
                 />
               </div>
               
+              {/* Buttons row below player */}
+              <div className="flex justify-between items-center pt-2 w-full" data-aos="fade-up" data-aos-delay="800">
+                <button 
+                  onClick={() => setShowScheduleModal(true)}
+                  className="flex items-center justify-center px-3 py-1 h-8 text-sm text-gray-800 dark:text-gray-200 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm border border-white/30 dark:border-gray-600 hover:border-white/50 dark:hover:border-gray-400 rounded-lg transition-all duration-300 hover:bg-white/20 dark:hover:bg-gray-700/50 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.3)] hover:scale-[1.03]"
+                  title="Ver Programas"
+                >
+                  <i className="icon-calendar-5 text-lg mr-1" />
+                  Ver Programas
+                </button>
+                <div className="flex space-x-2">
+                  <a href="https://www.facebook.com/Hermon95.3" target="_blank" rel="noreferrer">
+                    <button type="button" className="text-white text-md sm:text-sm hover:text-[#3b5998] bg-[#3b5998] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+                      <i className="icon-facebook-squared" />
+                    </button>
+                  </a>
+                  <a href="https://www.instagram.com/radiohermon/" target="_blank" rel="noreferrer">
+                    <button type="button" className="text-white text-md sm:text-sm hover:text-[#bc2a8d] bg-[#bc2a8d] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+                      <i className="icon-instagram-1" />
+                    </button>
+                  </a>
+                </div>
+              </div>
+              
               {/* Social media links */}
-              <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
+              {/* <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
                 <a href="https://www.facebook.com/Hermon95.3" target="_blank" rel="noreferrer">
                   <button type="button" className="text-white text-md sm:text-sm hover:text-[#3b5998] bg-[#3b5998] hover:bg-gray-200 dark:text-gray-400 dark:bg-gray-800 dark:hover:text-gray-800 dark:hover:bg-gray-400 hover:drop-shadow-md w-42 icon-facebook-squared active:no-underline no-underline focus:outline-none rounded-full px-3 py-1 text-center inline-flex items-center justify-center transition-all duration-200">
                     Facebook
@@ -560,7 +584,7 @@ function App() {
                     Instagram
                   </button>
                 </a>
-              </div>
+              </div> */}
             </div>
 
             {/* Donation information modal */}
@@ -872,14 +896,6 @@ function App() {
                             </button>
                           </div>
                           <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setShowScheduleModal(true)}
-                              className="inline-flex items-center justify-center p-2.5 rounded-md font-medium shadow-sm focus:outline-none focus:ring-2 bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 dark:focus:ring-blue-400"
-                              title="Ver programación"
-                            >
-                              <i className="icon-calendar"></i>
-                            </button>
                             <button
                               type="button"
                               onClick={() => {
