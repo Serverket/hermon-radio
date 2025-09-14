@@ -79,20 +79,20 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
 
   return createPortal(
     <div 
-      className="fixed inset-0 z-[1000] grid place-items-center bg-black bg-opacity-50 p-4" 
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50 p-2 sm:p-3 md:p-4" 
       onClick={onClose}
       data-aos="fade-in"
     >
       <div 
-        className={`w-full max-w-4xl rounded-xl p-4 sm:p-6 transform transition-all duration-300 ${darkMode ? 'dark' : ''}`}
+        className={`w-full max-w-7xl rounded-xl p-2 sm:p-3 md:p-4 lg:p-6 transform transition-all duration-300 ${darkMode ? 'dark' : ''}`}
         onClick={e => e.stopPropagation()}
         data-aos="zoom-in"
         data-aos-duration="500"
         style={{ height: '90vh', maxHeight: '90vh' }}
       >
         <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden transition-all duration-300 h-full flex flex-col`}>
-          <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200">Programación Semanal</h2>
+          <div className="p-3 sm:p-4 md:p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200">Programación Semanal</h2>
             <button 
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none transition-colors duration-200 p-1"
@@ -115,15 +115,15 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
               ))}
             </div>
             
-            {/* Programs grid - horizontal scroll on mobile */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-3">
-              <div className="flex md:grid md:grid-cols-7 gap-2 overflow-x-auto">
+            {/* Programs grid - horizontal scroll on mobile/tablet */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-1 sm:p-2 md:p-3">
+              <div className="flex lg:grid lg:grid-cols-7 gap-1 sm:gap-2 lg:gap-3 overflow-x-auto lg:overflow-x-visible scrollbar-hide snap-x snap-mandatory">
                 {scheduleData.map((dayPrograms, dayIndex) => (
-                  <div key={dayIndex} className="min-w-[60vw] md:min-w-0 space-y-2">
+                  <div key={dayIndex} className="min-w-[220px] sm:min-w-[250px] lg:min-w-0 flex-shrink-0 space-y-1 sm:space-y-2 snap-center">
                     {dayPrograms.map((program, idx) => (
                       <div 
                         key={idx}
-                        className={`p-2 md:p-3 rounded-lg cursor-pointer transition-all duration-200 ${program.isSpecial 
+                        className={`p-2 sm:p-3 rounded-lg cursor-pointer transition-all duration-200 touch-manipulation ${program.isSpecial 
                           ? (isCultoEspecial(program) ? 'bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700' : 'bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-700')
                           : 'bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-700'} 
                           ${selectedProgram === program ? 'ring-2 ring-blue-500 dark:ring-blue-400' : 'hover:opacity-90'}`}
@@ -132,8 +132,8 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
                           setSelectedProgram(program === selectedProgram ? null : program);
                         }}
                       >
-                        {/* Day indicator for mobile */}
-                        <div className="block md:hidden text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                        {/* Day indicator for mobile/tablet */}
+                        <div className="block lg:hidden text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                           {days[dayIndex].substring(0,3)}
                         </div>
                         <div className="flex items-start">
@@ -158,7 +158,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
           </div>
           
           {/* Fixed details panel at the bottom */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 max-h-[40vh] overflow-y-auto">
+          <div className="border-t border-gray-200 dark:border-gray-700 p-2 sm:p-3 md:p-4 bg-white dark:bg-gray-800 max-h-[30vh] sm:max-h-[35vh] md:max-h-[40vh] overflow-y-auto">
             {selectedProgram ? (
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
