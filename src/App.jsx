@@ -94,6 +94,7 @@ const imageSchedule = [
 
   // Thursday
   { day: 4, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "11:00", duration: 120, image: "/programs/regular/BuenConsejoBiblico.png", name: "Un Buen Consejo Bíblico", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 4, time: "13:00", duration: 120, image: "/programs/regular/Mujeresdevaloryfe.jpg", name: "Mujeres de Valor y Fe", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 4, time: "20:00", duration: 60, image: "/programs/regular/Horadeldiscipulado.jpg", name: "Hora del Discipulado", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 4, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
