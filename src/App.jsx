@@ -47,7 +47,7 @@ const InfoTip = ({ text }) => {
     <>
       <span
         ref={anchorRef}
-        className="ml-1 inline-block relative cursor-help align-middle"
+        className="inline-block relative ml-1 align-middle cursor-help"
         aria-label={text}
         tabIndex={0}
         onMouseEnter={show}
@@ -430,7 +430,7 @@ function App() {
                 data-aos="fade-down"
                 data-aos-duration="700"
                 data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
+                className="px-4 py-2 mr-1 text-gray-800 bg-gray-100 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
               >
                 <i className="text-lg icon-share" />
               </button>
@@ -440,7 +440,7 @@ function App() {
                 data-aos="fade-down"
                 data-aos-duration="1100"
                 data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-red-600 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
+                className="px-4 py-2 text-red-600 bg-gray-100 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-red-400 hover:text-red-500 hover:bg-red-50"
               >
                 <i className="text-lg icon-heart" />
               </button>
@@ -452,7 +452,7 @@ function App() {
                 data-aos="fade-down"
                 data-aos-duration="1300"
                 data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg mr-1 transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-800 hover:bg-yellow-50 dark:hover:bg-gray-900 hover:text-yellow-600 dark:hover:text-gray-800"
+                className="px-4 py-2 mr-1 text-gray-800 bg-gray-100 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-800 hover:bg-yellow-50 dark:hover:bg-gray-900 hover:text-yellow-600 dark:hover:text-gray-800"
               >
                 <i className={`text-lg ${darkToggle ? 'icon-sun-filled dark:text-gray-200' : 'icon-moon-3'}`} />
               </button>
@@ -462,7 +462,7 @@ function App() {
                 data-aos="fade-down"
                 data-aos-duration="900"
                 data-aos-once="true"
-                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
+                className="px-4 py-2 text-gray-800 bg-gray-100 rounded-t-lg transition-colors duration-700 ease-in-out dark:bg-gray-900 dark:text-gray-200 hover:text-blue-500 hover:bg-blue-50"
               >
                 <i className={`text-lg icon-book ${showBibleCard ? 'text-blue-500 dark:text-blue-400' : ''}`} />
               </button>
@@ -487,11 +487,36 @@ function App() {
                 <div className="flex justify-center items-center w-full">
                   <div className={`flex flex-col justify-center items-center space-y-2 w-full transform transition-all duration-300 ${overlay.type === 'hls' ? 'opacity-100 translate-y-0 scale-100' : overlayAnim ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-1 scale-95'}`}>
                     {overlay.type === 'image' && (
-                      // Ajuste → object-fit: 'contain' (show full image, may letterbox) or 'cover' (fill area, may crop)
-                      <img src={overlay.url} alt="superposición" onClick={() => setOverlayImageModalOpen(true)} title="Haz clic para ampliar" className={`w-full h-auto rounded-xl cursor-pointer hover:scale-[1.02] transition-transform ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+                      <div className="relative w-full">
+                        <img
+                          src={overlay.url}
+                          alt="superposición"
+                          onClick={() => setOverlayImageModalOpen(true)}
+                          title="Haz clic para ampliar"
+                          className={`w-full h-auto rounded-xl cursor-pointer hover:scale-[1.02] transition-transform ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`}
+                        />
+                        {/* Text overlay for images in inline mode */}
+                        {overlay.text && (
+                          <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+                            <div className="max-w-4xl text-center text-white pointer-events-auto">
+                              <div
+                                className="inline-block rounded-xl px-4 py-3 drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)]"
+                                style={{ backgroundColor: overlay.bgColor }}
+                              >
+                                <div
+                                  className="text-lg font-semibold whitespace-pre-wrap break-words sm:text-xl"
+                                  style={{ color: overlay.textColor }}
+                                >
+                                  {overlay.text}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     )}
                     {overlay.type === 'youtube' && (
-                      <div className="w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '16 / 9' }}>
+                      <div className="overflow-hidden w-full bg-black rounded-xl" style={{ aspectRatio: '16 / 9' }}>
                         <iframe
                           src={youtubeEmbedUrl(overlay.url)}
                           allow="autoplay; encrypted-media; picture-in-picture"
@@ -505,8 +530,8 @@ function App() {
                       <HlsPlayer url={STREAM_HLS_URL} autoPlay muted />
                     )}
                     {overlay.type === 'text' && (
-                      <div className="w-full rounded-xl px-4 py-3" style={{ backgroundColor: overlay.bgColor }}>
-                        <div className="text-lg sm:text-xl font-semibold whitespace-pre-wrap break-words" style={{ color: overlay.textColor }}>{overlay.text}</div>
+                      <div className="px-4 py-3 w-full rounded-xl" style={{ backgroundColor: overlay.bgColor }}>
+                        <div className="text-lg font-semibold whitespace-pre-wrap break-words sm:text-xl" style={{ color: overlay.textColor }}>{overlay.text}</div>
                       </div>
                     )}
                     
@@ -520,13 +545,13 @@ function App() {
                         {currentImage.header}
                       </span>
                       <img
-                        className="z-10 h-36 rounded-xl transition-all ease-in-out md:h-48 cursor-pointer hover:scale-105"
+                        className="z-10 h-36 rounded-xl transition-all ease-in-out cursor-pointer md:h-48 hover:scale-105"
                         src={currentImage.image}
                         alt={currentImage.name}
                         onClick={() => setImageModalOpen(true)}
                         title="Haz clic para ampliar"
                       />
-                      <div className="w-8/12 text-sm text-center overflow-hidden text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
+                      <div className="overflow-hidden w-8/12 text-sm text-center text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
                         <marquee>
                           {currentImage.footer}
                         </marquee>
@@ -558,7 +583,7 @@ function App() {
                   className="flex items-center justify-center px-3 py-1 h-8 text-sm text-gray-800 dark:text-gray-200 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm border border-white/30 dark:border-gray-600 hover:border-white/50 dark:hover:border-gray-400 rounded-lg transition-all duration-300 hover:bg-white/20 dark:hover:bg-gray-700/50 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.3)] hover:scale-[1.03]"
                   title="Ver Programas"
                 >
-                  <i className="icon-calendar-5 text-lg mr-1" />
+                  <i className="mr-1 text-lg icon-calendar-5" />
                   Ver Programas
                 </button>
                 <div className="flex space-x-2">
@@ -606,14 +631,14 @@ function App() {
 
           {/* Admin Top Utility Bar */}
           {adminOpen && (
-            <div className={`fixed top-0 left-0 right-0 z-[220] transition-all duration-200 ${adminEnter ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}>
-              <div className="mx-auto max-w-screen-lg bg-white/90 dark:bg-gray-900/90 backdrop-blur border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="flex items-center justify-between px-3 sm:px-4 py-2">
-                  <h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-gray-200">Panel de Transmisión</h3>
-                  <div className="flex items-center gap-1">
+            <div className={`fixed top-0 left-0 right-0 z-[220] transition-all duration-200 ${adminEnter ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
+              <div className="mx-auto max-w-screen-lg border-b border-gray-200 shadow-sm backdrop-blur bg-white/90 dark:bg-gray-900/90 dark:border-gray-700">
+                <div className="flex justify-between items-center px-3 py-2 sm:px-4">
+                  <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">Panel de Transmisión</h3>
+                  <div className="flex gap-1 items-center">
                     <button
                       onClick={() => setAdminMinimized(!adminMinimized)}
-                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
+                      className="flex justify-center items-center w-8 h-8 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
                       aria-label={adminMinimized ? 'Expandir' : 'Minimizar'}
                       title={adminMinimized ? 'Expandir' : 'Minimizar'}
                     >
@@ -621,39 +646,40 @@ function App() {
                     </button>
                     <button
                       onClick={() => { setAdminOpen(false); setAdminAuthed(false); setAdminMinimized(false); }}
-                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
+                      className="flex justify-center items-center w-8 h-8 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none"
                       aria-label="Cerrar"
                       title="Cerrar"
                     >
-                      <i className="icon-cancel text-xl leading-none" />
+                      <i className="text-xl leading-none icon-cancel" />
                     </button>
                   </div>
                 </div>
                 {!adminMinimized && (
                   <div className="px-3 sm:px-4 pb-3 max-h-[50vh] overflow-y-auto">
                     {!adminAuthed ? (
-                      <form onSubmit={adminLogin} className="flex flex-col sm:flex-row sm:items-end gap-3">
+                      <form onSubmit={adminLogin} className="flex flex-col gap-3 sm:flex-row sm:items-end">
                         <div className="flex-1">
                           <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Usuario administrador</label>
-                          <input type="text" value={adminUserInput} onChange={(e) => setAdminUserInput(e.target.value)} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese usuario" />
+                          <input type="text" value={adminUserInput} onChange={(e) => setAdminUserInput(e.target.value)} className="px-3 py-2 w-full text-gray-800 bg-white rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese usuario" />
                         </div>
                         <div className="flex-1">
                           <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Contraseña</label>
-                          <input type="password" value={adminPassInput} onChange={(e) => setAdminPassInput(e.target.value)} className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese contraseña" />
+                          <input type="password" value={adminPassInput} onChange={(e) => setAdminPassInput(e.target.value)} className="px-3 py-2 w-full text-gray-800 bg-white rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400" placeholder="Ingrese contraseña" />
                         </div>
-                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Entrar</button>
+                        <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Entrar</button>
                       </form>
                     ) : (
                       <div className="space-y-4">
                         {/* Control Panel */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-4">
                           {/* Tipo */}
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 lg:mb-2">
                               <span className="inline-flex items-center">Tipo<InfoTip text={"Elige qué tipo de contenido mostrar en pantalla."} /></span>
                             </label>
                             <div className="grid grid-cols-4 gap-1.5 lg:gap-2">
-                              {/* Camera Icon - First */}
+                              {/* Camera Icon - Temporarily commented out due to deployment limitations */}
+                              {/*
                               <button
                                 type="button"
                                 title="Transmisión en vivo desde cámara"
@@ -664,8 +690,9 @@ function App() {
                                   }`}
                               >
                                 <i className="icon-videocam text-sm lg:text-base mb-0.5 lg:mb-1"></i>
-                                <span className="text-2xs lg:text-xs font-medium">Cámara</span>
+                                <span className="font-medium text-2xs lg:text-xs">Cámara</span>
                               </button>
+                              */}
 
                               {/* Image Icon - Second */}
                               <button
@@ -678,7 +705,7 @@ function App() {
                                   }`}
                               >
                                 <i className="icon-picture text-sm lg:text-base mb-0.5 lg:mb-1"></i>
-                                <span className="text-2xs lg:text-xs font-medium">Imagen</span>
+                                <span className="font-medium text-2xs lg:text-xs">Imagen</span>
                               </button>
 
                               {/* Text Icon - Third */}
@@ -692,7 +719,7 @@ function App() {
                                   }`}
                               >
                                 <i className="icon-edit text-sm lg:text-base mb-0.5 lg:mb-1"></i>
-                                <span className="text-2xs lg:text-xs font-medium">Texto</span>
+                                <span className="font-medium text-2xs lg:text-xs">Texto</span>
                               </button>
 
                               {/* YouTube Icon - Fourth */}
@@ -706,7 +733,7 @@ function App() {
                                   }`}
                               >
                                 <i className="icon-video text-sm lg:text-base mb-0.5 lg:mb-1"></i>
-                                <span className="text-2xs lg:text-xs font-medium">YouTube</span>
+                                <span className="font-medium text-2xs lg:text-xs">YouTube</span>
                               </button>
                             </div>
                           </div>
@@ -728,8 +755,8 @@ function App() {
                                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
-                                  <i className="icon-th-large text-xs mb-1"></i>
-                                  <span className="text-2xs font-medium">Integrado</span>
+                                  <i className="mb-1 text-xs icon-th-large"></i>
+                                  <span className="font-medium text-2xs">Integrado</span>
                                 </button>
                                 <button
                                   type="button"
@@ -740,8 +767,8 @@ function App() {
                                       : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
-                                  <i className="icon-window-maximize text-xs mb-1"></i>
-                                  <span className="text-2xs font-medium">Completa</span>
+                                  <i className="mb-1 text-xs icon-window-maximize"></i>
+                                  <span className="font-medium text-2xs">Completa</span>
                                 </button>
                               </div>
                             </div>
@@ -764,8 +791,8 @@ function App() {
                                         : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
-                                  <i className="icon-resize-small text-xs mb-1"></i>
-                                  <span className="text-2xs font-medium">Contener</span>
+                                  <i className="mb-1 text-xs icon-resize-small"></i>
+                                  <span className="font-medium text-2xs">Contener</span>
                                 </button>
                                 <button
                                   type="button"
@@ -779,8 +806,8 @@ function App() {
                                         : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
-                                  <i className="icon-resize-full text-xs mb-1"></i>
-                                  <span className="text-2xs font-medium">Cubrir</span>
+                                  <i className="mb-1 text-xs icon-resize-full"></i>
+                                  <span className="font-medium text-2xs">Cubrir</span>
                                 </button>
                               </div>
                             </div>
@@ -800,16 +827,16 @@ function App() {
                                 className="w-full min-h-[80px] px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
                                 placeholder="Escribe el anuncio..."
                               />
-                              <div className="mt-2 grid grid-cols-1 lg:grid-cols-2 gap-2">
-                                <div className="flex items-center gap-2">
-                                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                              <div className="grid grid-cols-1 gap-2 mt-2 lg:grid-cols-2">
+                                <div className="flex gap-2 items-center">
+                                  <label className="inline-flex items-center text-xs font-medium text-gray-700 dark:text-gray-300">
                                     Fondo<InfoTip text={"Color de fondo del texto."} />
                                   </label>
                                   <input
                                     type="color"
                                     value={overlay.bgColor || '#2563eb'}
                                     onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
-                                    className="h-8 w-10 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                    className="p-1 w-10 h-8 bg-transparent rounded border border-gray-300 cursor-pointer dark:border-gray-600"
                                     aria-label="Color de fondo"
                                   />
                                   <input
@@ -817,19 +844,19 @@ function App() {
                                     value={overlay.bgColor || ''}
                                     onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
                                     placeholder="#2563eb"
-                                    className="w-24 px-2 py-1 text-xs rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                    className="px-2 py-1 w-24 text-xs placeholder-gray-400 text-gray-800 rounded-md border border-gray-300 bg-white/60 dark:bg-gray-900/60 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                     aria-label="HEX color"
                                   />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300 inline-flex items-center">
+                                <div className="flex gap-2 items-center">
+                                  <label className="inline-flex items-center text-xs font-medium text-gray-700 dark:text-gray-300">
                                     Texto<InfoTip text={"Color del texto."} />
                                   </label>
                                   <input
                                     type="color"
                                     value={overlay.textColor || '#ffffff'}
                                     onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
-                                    className="h-8 w-10 p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                                    className="p-1 w-10 h-8 bg-transparent rounded border border-gray-300 cursor-pointer dark:border-gray-600"
                                     aria-label="Color del texto"
                                   />
                                   <input
@@ -837,45 +864,114 @@ function App() {
                                     value={overlay.textColor || ''}
                                     onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
                                     placeholder="#ffffff"
-                                    className="w-24 px-2 py-1 text-xs rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                    className="px-2 py-1 w-24 text-xs placeholder-gray-400 text-gray-800 rounded-md border border-gray-300 bg-white/60 dark:bg-gray-900/60 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                     aria-label="HEX color"
                                   />
                                 </div>
                               </div>
                             </>
-                          ) : overlay.type === 'hls' ? (
-                            <>
-                              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-3">
-                                <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                  </svg>
-                                  <span className="text-sm font-medium">Cámara lista</span>
-                                </div>
-                                <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                                  Configurada para recibir transmisión desde OBS en vivo.
-                                </p>
-                              </div>
-                            </>
-                          ) : (
+                          ) : overlay.type === 'image' ? (
                             <>
                               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 <span className="inline-flex items-center">
-                                  URL ({overlay.type === 'image' ? 'imagen' : 'YouTube'})
-                                  <InfoTip text={
-                                    overlay.type === 'image' ? "Pega un enlace directo a una imagen (JPG, PNG, GIF, etc.)" :
-                                      "Pega un enlace de YouTube (https://youtu.be/... o https://www.youtube.com/watch?v=...)"
-                                  } />
+                                  URL de imagen
+                                  <InfoTip text={"Pega un enlace directo a una imagen (JPG, PNG, GIF, etc.)"} />
                                 </span>
                               </label>
                               <input
                                 type="text"
                                 value={overlay.url}
                                 onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
-                                placeholder={
-                                  overlay.type === 'image' ? "https://ejemplo.com/imagen.jpg" :
-                                    "https://youtu.be/..."
-                                }
+                                placeholder="https://ejemplo.com/imagen.jpg"
+                                className="w-full px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
+                              />
+
+                              {/* Text overlay for images */}
+                              <div className="mt-4 border-gray-200 dark:border-gray-600">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  <span className="inline-flex items-center">Texto superpuesto<InfoTip text={"Texto que aparecerá sobre la imagen."} /></span>
+                                </label>
+                                <textarea
+                                  value={overlay.text || ''}
+                                  onChange={(e) => setOverlay(o => ({ ...o, text: e.target.value }))}
+                                  className="w-full min-h-[80px] px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm mt-2"
+                                  placeholder="Escribe el texto que aparecerá sobre la imagen..."
+                                />
+                                <div className="grid grid-cols-1 gap-2 mt-2 lg:grid-cols-2">
+                                  <div className="flex gap-2 items-center">
+                                    <label className="inline-flex items-center text-xs font-medium text-gray-700 dark:text-gray-300">
+                                      Fondo<InfoTip text={"Color de fondo del texto sobre la imagen."} />
+                                    </label>
+                                    <input
+                                      type="color"
+                                      value={overlay.bgColor || '#2563eb'}
+                                      onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
+                                      className="p-1 w-10 h-8 bg-transparent rounded border border-gray-300 cursor-pointer dark:border-gray-600"
+                                      aria-label="Color de fondo"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={overlay.bgColor || ''}
+                                      onChange={(e) => setOverlay(o => ({ ...o, bgColor: e.target.value }))}
+                                      placeholder="#2563eb"
+                                      className="px-2 py-1 w-24 text-xs placeholder-gray-400 text-gray-800 rounded-md border border-gray-300 bg-white/60 dark:bg-gray-900/60 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                      aria-label="HEX color"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2 items-center">
+                                    <label className="inline-flex items-center text-xs font-medium text-gray-700 dark:text-gray-300">
+                                      Texto<InfoTip text={"Color del texto sobre la imagen."} />
+                                    </label>
+                                    <input
+                                      type="color"
+                                      value={overlay.textColor || '#ffffff'}
+                                      onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
+                                      className="p-1 w-10 h-8 bg-transparent rounded border border-gray-300 cursor-pointer dark:border-gray-600"
+                                      aria-label="Color del texto"
+                                    />
+                                    <input
+                                      type="text"
+                                      value={overlay.textColor || ''}
+                                      onChange={(e) => setOverlay(o => ({ ...o, textColor: e.target.value }))}
+                                      placeholder="#ffffff"
+                                      className="px-2 py-1 w-24 text-xs placeholder-gray-400 text-gray-800 rounded-md border border-gray-300 bg-white/60 dark:bg-gray-900/60 dark:border-gray-600 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                      aria-label="HEX color"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          ) : overlay.type === 'hls' ? (
+                            <>
+                              {/* Temporarily commented out - HLS streaming not available on current deployment */}
+                              {/*
+                              <div className="p-3 bg-purple-50 rounded-lg border border-purple-200 dark:bg-purple-900/20 dark:border-purple-700">
+                                <div className="flex gap-2 items-center text-purple-700 dark:text-purple-300">
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                  </svg>
+                                  <span className="text-sm font-medium">Cámara lista</span>
+                                </div>
+                                <p className="mt-1 text-xs text-purple-600 dark:text-purple-400">
+                                  Configurada para recibir transmisión desde OBS en vivo.
+                                </p>
+                              </div>
+                              */}
+                              {/* HLS status section commented out - will show when streaming is available */}
+                            </>
+                          ) : (
+                            <>
+                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span className="inline-flex items-center">
+                                  URL de YouTube
+                                  <InfoTip text={"Pega un enlace de YouTube (https://youtu.be/... o https://www.youtube.com/watch?v=...)"} />
+                                </span>
+                              </label>
+                              <input
+                                type="text"
+                                value={overlay.url}
+                                onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
+                                placeholder="https://youtu.be/..."
                                 className="w-full px-3 py-2.5 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 backdrop-blur-sm shadow-sm"
                               />
                             </>
@@ -883,8 +979,8 @@ function App() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
+                        <div className="flex gap-3 justify-between items-center">
+                          <div className="flex gap-3 items-center">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               <span className="inline-flex items-center">Visible<InfoTip text={"Mostrar u ocultar la superposición en vivo."} /></span>
                             </label>
@@ -954,7 +1050,7 @@ function App() {
           {overlay?.visible && overlay?.position === 'fullscreen' && (
             overlay?.type === 'text' ? !!overlay?.text :
               overlay?.type === 'hls' ? true :
-                !!overlay?.url
+              !!overlay?.url
           ) && (
               <div
                 className={`fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-6 transition-opacity duration-200 ${overlay.type === 'hls' ? 'bg-black/70 opacity-100' : overlayAnim ? 'bg-black/70 opacity-100' : 'bg-black/0 opacity-0'}`}
@@ -971,10 +1067,36 @@ function App() {
                     aria-label="Cerrar"
                     title="Cerrar"
                   >
-                    <i className="icon-cancel text-2xl" />
+                    <i className="text-2xl icon-cancel" />
                   </button>
                   {overlay.type === 'image' && (
-                    <img src={overlay.url} alt="superposición" onClick={() => setOverlayImageModalOpen(true)} title="Haz clic para ampliar" className={`w-full h-full cursor-zoom-in ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`} />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={overlay.url}
+                        alt="superposición"
+                        onClick={() => setOverlayImageModalOpen(true)}
+                        title="Haz clic para ampliar"
+                        className={`w-full h-full cursor-zoom-in ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`}
+                      />
+                      {/* Text overlay for images */}
+                      {overlay.text && (
+                        <div className="flex absolute inset-0 justify-center items-center p-6 pointer-events-none">
+                          <div className="max-w-4xl text-center text-white pointer-events-auto">
+                            <div
+                              className="inline-block rounded-xl px-6 py-4 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)]"
+                              style={{ backgroundColor: overlay.bgColor }}
+                            >
+                              <div
+                                className="text-2xl font-bold whitespace-pre-wrap sm:text-4xl lg:text-6xl"
+                                style={{ color: overlay.textColor }}
+                              >
+                                {overlay.text}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                   {overlay.type === 'youtube' && (
                     <iframe
@@ -986,20 +1108,20 @@ function App() {
                     />
                   )}
                   {overlay.type === 'hls' && (
-                    <div className="w-full h-full flex items-center justify-center bg-black">
+                    <div className="flex justify-center items-center w-full h-full bg-black">
                       <HlsPlayer
                         url={STREAM_HLS_URL}
                         autoPlay
                         muted
-                        className="max-w-full max-h-full object-contain"
+                        className="object-contain max-w-full max-h-full"
                       />
                     </div>
                   )}
                   {overlay.type === 'text' && (
-                    <div className="w-full h-full flex items-center justify-center p-6">
+                    <div className="flex justify-center items-center p-6 w-full h-full">
                       <div className="max-w-4xl text-center text-white">
                         <div className="inline-block rounded-xl px-6 py-4 drop-shadow-[0_6px_18px_rgba(0,0,0,0.45)]" style={{ backgroundColor: overlay.bgColor }}>
-                          <div className="text-2xl sm:text-4xl lg:text-6xl font-bold whitespace-pre-wrap" style={{ color: overlay.textColor }}>{overlay.text}</div>
+                          <div className="text-2xl font-bold whitespace-pre-wrap sm:text-4xl lg:text-6xl" style={{ color: overlay.textColor }}>{overlay.text}</div>
                         </div>
                       </div>
                     </div>
