@@ -18,7 +18,18 @@ const formatDuration = (minutes) => {
   return `${minutes} min`;
 };
 
-// Helper function to check if program is Culto Especial de Fin de Año
+// Helper function to format time from 24-hour to 12-hour format with AM/PM
+const formatTime = (time) => {
+  if (!time || time === 'Todo el día') return time;
+  
+  const [hour, minute] = time.split(':').map(Number);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const formattedHour = hour % 12 || 12;
+  
+  return `${formattedHour}:${minute.toString().padStart(2, '0')} ${period}`;
+};
+
+// Helper function to check if program is Special End-of-Year Service
 const isCultoEspecial = (program) => {
   return program.name === "Culto Especial de Fin de Año";
 };
@@ -145,7 +156,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
                               {program.name}
                             </div>
                             <div className="text-2xs md:text-xs text-gray-600 dark:text-gray-400 mt-1">
-                              {program.time} • {formatDuration(program.duration)}
+                              {formatTime(program.time)} • {formatDuration(program.duration)}
                             </div>
                           </div>
                         </div>
@@ -167,7 +178,7 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Horario</p>
-                    <p className="font-medium text-gray-800 dark:text-gray-200">{selectedProgram.time}</p>
+                    <p className="font-medium text-gray-800 dark:text-gray-200">{formatTime(selectedProgram.time)}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Duración</p>
