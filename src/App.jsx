@@ -116,7 +116,7 @@ const imageSchedule = [
   { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.jpeg", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Special date-range schedules
-  { startDate: "2025-12-31", endDate: "2025-12-31", image: "/programs/regular/Cultodefin.jpeg", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes.' },
+  { startDate: "2025-12-31", endDate: "2025-12-31", image: "/programs/regular/Cultodefin.png", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes. Visítanos en la Calle Salias N° 2, Edificio Hermón, Diagonal a Bancaribe.' },
 ];
 
 // Helper function to group schedule by day
