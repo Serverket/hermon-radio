@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Slideshow from './Slideshow';
 
 /**
  * Image Modal component for displaying enlarged program images
@@ -6,12 +7,13 @@ import React, { useEffect, useState } from 'react';
  * @param {boolean} props.isOpen - Whether the modal is open
  * @param {Function} props.onClose - Function to close the modal
  * @param {string} props.image - The image source URL
+ * @param {string[]} props.images - Array of images for slideshow
  * @param {string} props.name - The name/title of the image
  * @param {string} props.header - The header text for the image
  * @param {string} props.footer - The footer text for the image
  * @param {boolean} props.darkMode - Whether dark mode is enabled
  */
-const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) => {
+const ImageModal = ({ isOpen, onClose, image, images, name, header, footer, darkMode }) => {
   const [entered, setEntered] = useState(false);
   // Handle ESC key to close modal (attach only when open)
   useEffect(() => {
@@ -48,7 +50,7 @@ const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) 
   };
 
   return (
-    <div 
+    <div
       role="dialog"
       aria-modal="true"
       className={`fixed inset-0 z-[250] flex items-center justify-center transition-opacity duration-200 ${entered ? 'bg-black/75 opacity-100' : 'bg-black/0 opacity-0'}`}
@@ -64,7 +66,7 @@ const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) 
         >
           <i className="icon-cancel text-2xl" />
         </button>
-        
+
         {/* Content */}
         <div className="p-4">
           <div className="flex flex-col items-center">
@@ -74,16 +76,27 @@ const ImageModal = ({ isOpen, onClose, image, name, header, footer, darkMode }) 
                 {header}
               </h3>
             )}
-            
-            {/* Image */}
+
+            {/* Image or Slideshow */}
             <div className="w-full flex justify-center my-2">
-              <img 
-                src={image} 
-                alt={name || 'Program image'} 
-                className="max-h-[70vh] object-contain rounded-md"
-              />
+              {images && images.length > 0 ? (
+                <div className="w-full h-[60vh] sm:h-[70vh] min-h-[300px] min-w-[300px] sm:min-w-[500px] bg-black/5 dark:bg-white/5 rounded-md overflow-hidden relative">
+                  <Slideshow
+                    images={images}
+                    interval={4000}
+                    className="w-full h-full"
+                    title={name}
+                  />
+                </div>
+              ) : (
+                <img
+                  src={image}
+                  alt={name || 'Program image'}
+                  className="max-h-[70vh] object-contain rounded-md"
+                />
+              )}
             </div>
-            
+
             {/* Footer */}
             {footer && (
               <div className={`mt-4 text-sm text-center max-w-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>

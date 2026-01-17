@@ -8,6 +8,7 @@ import ImageModal from './components/ImageModal';
 import BibleModal from './components/BibleModal';
 import HlsPlayer from './components/HlsPlayer';
 import ScheduleModal from './components/ScheduleModal';
+import Slideshow from './components/Slideshow';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -114,9 +115,11 @@ const imageSchedule = [
 
   // Sunday
   { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.webp", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 0, time: "16:00", duration: 120, images: ["/programs/regular/seguidoresdecristo1.webp", "/programs/regular/seguidoresdecristo2.webp", "/programs/regular/seguidoresdecristo4.webp"], name: "Seguidores de Cristo", header: "Estás en sintonía de", footer: "¡Escúchanos todos los domingos de 4 a 6 PM!" },
 
   // Special date-range schedules
-  { startDate: "2025-12-31", endDate: "2025-12-31", image: "/programs/regular/Cultodefin.webp", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes. Visítanos en la Calle Salias N° 2, Edificio Hermón, Diagonal a Bancaribe.' },
+  // To activate, uncomment and ensure the year is dynamic or set correctly
+  // { startDate: `${moment().year()}-12-31`, endDate: `${moment().year()}-12-31`, image: "/programs/regular/Cultodefin.webp", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes. Visítanos en la Calle Salias N° 2, Edificio Hermón, Diagonal a Bancaribe.' },
 ];
 
 // Helper function to group schedule by day
@@ -554,17 +557,31 @@ function App() {
               ) : (
                 currentImage && (
                   <div className="flex justify-center items-center w-full">
-                    <div className="flex flex-col justify-center items-center space-y-2">
+                    <div className="flex flex-col justify-center items-center space-y-2 w-full">
                       <span className="text-sm font-bold text-slate-700 dark:text-slate-600">
                         {currentImage.header}
                       </span>
-                      <img
-                        className="z-10 h-36 rounded-xl transition-all ease-in-out cursor-pointer md:h-48 hover:scale-105"
-                        src={currentImage.image}
-                        alt={currentImage.name}
-                        onClick={() => setImageModalOpen(true)}
-                        title="Haz clic para ampliar"
-                      />
+
+                      {currentImage.images ? (
+                        <div className="relative z-10 w-auto h-36 md:h-48 aspect-square rounded-xl overflow-hidden shadow-lg transition-all ease-in-out cursor-pointer hover:scale-105 bg-black/5 dark:bg-white/5">
+                          <Slideshow
+                            images={currentImage.images}
+                            interval={4000}
+                            className="w-full h-full"
+                            onClick={() => setImageModalOpen(true)}
+                            title="Haz clic para ampliar"
+                          />
+                        </div>
+                      ) : (
+                        <img
+                          className="z-10 h-36 rounded-xl transition-all ease-in-out cursor-pointer md:h-48 hover:scale-105"
+                          src={currentImage.image}
+                          alt={currentImage.name}
+                          onClick={() => setImageModalOpen(true)}
+                          title="Haz clic para ampliar"
+                        />
+                      )}
+
                       <div className="overflow-hidden w-8/12 text-sm text-center text-gray-800 drop-shadow-md md:w-full dark:text-gray-200">
                         <marquee>
                           {currentImage.footer}
@@ -1150,6 +1167,7 @@ function App() {
               isOpen={imageModalOpen}
               onClose={() => setImageModalOpen(false)}
               image={currentImage.image}
+              images={currentImage.images}
               name={currentImage.name}
               header={currentImage.header}
               footer={currentImage.footer}
