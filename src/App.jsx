@@ -77,46 +77,46 @@ const InfoTip = ({ text }) => {
  */
 const imageSchedule = [
   // Monday
-  { day: 1, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 1, time: "13:00", duration: 180, image: "/programs/regular/Diosysusmaravillas.jpg", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
-  { day: 1, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 1, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 1, time: "13:00", duration: 180, image: "/programs/regular/Diosysusmaravillas.webp", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
+  { day: 1, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Tuesday
-  { day: 2, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 2, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 2, time: "16:00", duration: 120, image: "/programs/regular/LaFevieneporeloír.png", name: "La Fe viene por el oír", header: 'Estás en sintonía de', footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 2, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 2, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 2, time: "16:00", duration: 120, image: "/programs/regular/LaFevieneporeloír.webp", name: "La Fe viene por el oír", header: 'Estás en sintonía de', footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Wednesday
-  { day: 3, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 3, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.png", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 3, time: "13:00", duration: 120, image: "/programs/regular/PalabraSaludyVida.jpg", name: "Palabra, Salud y Vida", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 3, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 3, time: "16:00", duration: 120, image: "/programs/regular/Momentoscristianos.jpg", name: "Momentos Cristianos", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.webp", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "13:00", duration: 120, image: "/programs/regular/PalabraSaludyVida.webp", name: "Palabra, Salud y Vida", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 3, time: "16:00", duration: 120, image: "/programs/regular/Momentoscristianos.webp", name: "Momentos Cristianos", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Thursday
-  { day: 4, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 4, time: "11:00", duration: 120, image: "/programs/regular/BuenConsejoBiblico.png", name: "Un Buen Consejo Bíblico", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 4, time: "13:00", duration: 120, image: "/programs/regular/Mujeresdevaloryfe.jpg", name: "Mujeres de Valor y Fe", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 4, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 4, time: "20:00", duration: 60, image: "/programs/regular/Horadeldiscipulado.jpg", name: "Hora del Discipulado", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "11:00", duration: 120, image: "/programs/regular/BuenConsejoBiblico.webp", name: "Un Buen Consejo Bíblico", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "13:00", duration: 120, image: "/programs/regular/Mujeresdevaloryfe.webp", name: "Mujeres de Valor y Fe", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 4, time: "20:00", duration: 60, image: "/programs/regular/Horadeldiscipulado.webp", name: "Hora del Discipulado", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Friday
-  { day: 5, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 5, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.png", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 5, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.png", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 5, time: "18:00", duration: 60, image: "/programs/regular/AlfayOmega.png", name: "Alfa y Omega", header: "Estás en sintonía de", footer: 'Patrocinadores: Panadería La Nonna | Academia Twin Tonges | @longyu.shop' },
-  { day: 5, time: "19:00", duration: 120, image: "/programs/regular/Tiempoderefrigerio.png", name: "Tiempo de Refrigerio", header: "Estás en sintonía de", footer: "Patrocinadores: Pincho Pocholin | Kiosco La Bendición | Iglesia Tiempo de Refrigerio | Escríbenos al 0424 315 71 26" },
+  { day: 5, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.webp", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "18:00", duration: 60, image: "/programs/regular/AlfayOmega.webp", name: "Alfa y Omega", header: "Estás en sintonía de", footer: 'Patrocinadores: Panadería La Nonna | Academia Twin Tonges | @longyu.shop' },
+  { day: 5, time: "19:00", duration: 120, image: "/programs/regular/Tiempoderefrigerio.webp", name: "Tiempo de Refrigerio", header: "Estás en sintonía de", footer: "Patrocinadores: Pincho Pocholin | Kiosco La Bendición | Iglesia Tiempo de Refrigerio | Escríbenos al 0424 315 71 26" },
 
   // Saturday
-  { day: 6, time: "05:00", duration: 120, image: "/programs/regular/AmanecerConCristo.png", name: "Amanecer con Cristo", header: "Estás en sintonía de", footer: "Patrocinadores: Inversiones y Variedad Yalex A&B | Inversiones Karvican | Cerrajería El Cóndor" },
-  { day: 6, time: "16:00", duration: 120, image: "/programs/regular/EnOndaConCristo.jpeg", name: "En Onda Con Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 6, time: "21:00", duration: 60, image: "/programs/regular/VivenciasenCristo.jpeg", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 6, time: "05:00", duration: 120, image: "/programs/regular/AmanecerConCristo.webp", name: "Amanecer con Cristo", header: "Estás en sintonía de", footer: "Patrocinadores: Inversiones y Variedad Yalex A&B | Inversiones Karvican | Cerrajería El Cóndor" },
+  { day: 6, time: "16:00", duration: 120, image: "/programs/regular/EnOndaConCristo.webp", name: "En Onda Con Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 6, time: "21:00", duration: 60, image: "/programs/regular/VivenciasenCristo.webp", name: "Vivencias en Cristo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Sunday
-  { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.jpeg", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.webp", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Special date-range schedules
-  { startDate: "2025-12-31", endDate: "2025-12-31", image: "/programs/regular/Cultodefin.png", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes. Visítanos en la Calle Salias N° 2, Edificio Hermón, Diagonal a Bancaribe.' },
+  { startDate: "2025-12-31", endDate: "2025-12-31", image: "/programs/regular/Cultodefin.webp", name: "Culto Especial de Fin de Año", header: "Culto Especial de Fin de Año | 8:30 PM", footer: 'Ven y adoremos juntos a nuestro Dios, será una noche de bendición, de alegría, de alabanzas al Rey de Reyes. Visítanos en la Calle Salias N° 2, Edificio Hermón, Diagonal a Bancaribe.' },
 ];
 
 // Helper function to group schedule by day
@@ -149,7 +149,7 @@ const adSchedule = [
 
 // Random advertisements pool
 const randomAds = [
-  { image: "/programs/regular/LasSagradasEscrituras.png", name: "Escudriñando Las Sagradas Escrituras", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "No te pierdas el programa", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 ];
 
 // Overlay backend config
@@ -237,7 +237,7 @@ function App() {
         const nowTime = moment(currentTime, 'HH:mm');
         const scheduleTime = moment(schedule.time, 'HH:mm');
         const scheduleEndTime = moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes');
-        
+
         return (
           schedule.day === currentDay &&
           nowTime.isSameOrAfter(scheduleTime) &&
@@ -253,7 +253,7 @@ function App() {
         const nowTime = moment(currentTime, 'HH:mm');
         const scheduleTime = moment(schedule.time, 'HH:mm');
         const scheduleEndTime = moment(schedule.time, 'HH:mm').add(schedule.duration, 'minutes');
-        
+
         return (
           schedule.day === currentDay &&
           nowTime.isSameOrAfter(scheduleTime) &&
@@ -548,7 +548,7 @@ function App() {
                         <div className="text-lg font-semibold whitespace-pre-wrap break-words sm:text-xl" style={{ color: overlay.textColor }}>{overlay.text}</div>
                       </div>
                     )}
-                    
+
                   </div>
                 </div>
               ) : (
@@ -589,10 +589,10 @@ function App() {
                   src="https://app0102.sonicpanelradio.com/8840/stream"
                 />
               </div>
-              
+
               {/* Buttons row below player */}
               <div className="flex justify-between items-center pt-2 w-full" data-aos="fade-up" data-aos-delay="800">
-                <button 
+                <button
                   onClick={() => setShowScheduleModal(true)}
                   className="flex items-center justify-center px-3 py-1 h-8 text-sm text-gray-800 dark:text-gray-200 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm border border-white/30 dark:border-gray-600 hover:border-white/50 dark:hover:border-gray-400 rounded-lg transition-all duration-300 hover:bg-white/20 dark:hover:bg-gray-700/50 hover:shadow-[0_0_10px_2px_rgba(255,255,255,0.3)] hover:scale-[1.03]"
                   title="Ver Programas"
@@ -613,7 +613,7 @@ function App() {
                   </a>
                 </div>
               </div>
-              
+
               {/* Social media links */}
               {/* <div className="flex flex-row justify-center items-center pt-2 space-x-2 text-center" data-aos="fade-up" data-aos-delay="800">
                 <a href="https://www.facebook.com/Hermon95.3" target="_blank" rel="noreferrer">
@@ -714,8 +714,8 @@ function App() {
                                 title="Mostrar imagen"
                                 onClick={() => setOverlay(o => ({ ...o, type: 'image' }))}
                                 className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${overlay.type === 'image'
-                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                   }`}
                               >
                                 <i className="icon-picture text-sm lg:text-base mb-0.5 lg:mb-1"></i>
@@ -728,8 +728,8 @@ function App() {
                                 title="Mostrar mensaje de texto"
                                 onClick={() => setOverlay(o => ({ ...o, type: 'text' }))}
                                 className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${overlay.type === 'text'
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                   }`}
                               >
                                 <i className="icon-edit text-sm lg:text-base mb-0.5 lg:mb-1"></i>
@@ -742,8 +742,8 @@ function App() {
                                 title="Mostrar video de YouTube"
                                 onClick={() => setOverlay(o => ({ ...o, type: 'youtube' }))}
                                 className={`flex flex-col items-center justify-center p-1.5 lg:p-2 rounded-lg border-2 transition-all ${overlay.type === 'youtube'
-                                    ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                  ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                   }`}
                               >
                                 <i className="icon-video text-sm lg:text-base mb-0.5 lg:mb-1"></i>
@@ -765,8 +765,8 @@ function App() {
                                   title="Integrado - Muestra dentro de la tarjeta principal"
                                   onClick={() => setOverlay(o => ({ ...o, position: 'inline' }))}
                                   className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${overlay.position === 'inline'
-                                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
                                   <i className="mb-1 text-xs icon-th-large"></i>
@@ -777,8 +777,8 @@ function App() {
                                   title="Pantalla completa - Ocupa toda la pantalla"
                                   onClick={() => setOverlay(o => ({ ...o, position: 'fullscreen' }))}
                                   className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${overlay.position === 'fullscreen'
-                                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
                                   <i className="mb-1 text-xs icon-window-maximize"></i>
@@ -799,10 +799,10 @@ function App() {
                                   onClick={() => setOverlay(o => ({ ...o, fit: 'contain' }))}
                                   disabled={overlay.type !== 'image'}
                                   className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${overlay.fit === 'contain'
-                                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                                      : overlay.type !== 'image'
-                                        ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                    : overlay.type !== 'image'
+                                      ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
                                   <i className="mb-1 text-xs icon-resize-small"></i>
@@ -814,10 +814,10 @@ function App() {
                                   onClick={() => setOverlay(o => ({ ...o, fit: 'cover' }))}
                                   disabled={overlay.type !== 'image'}
                                   className={`flex flex-col items-center justify-center p-2 rounded-md border transition-all ${overlay.fit === 'cover'
-                                      ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                                      : overlay.type !== 'image'
-                                        ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                                        : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
+                                    ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                    : overlay.type !== 'image'
+                                      ? 'border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 bg-white/60 dark:bg-gray-900/60 text-gray-700 dark:text-white'
                                     }`}
                                 >
                                   <i className="mb-1 text-xs icon-resize-full"></i>
@@ -1064,7 +1064,7 @@ function App() {
           {overlay?.visible && overlay?.position === 'fullscreen' && (
             overlay?.type === 'text' ? !!overlay?.text :
               overlay?.type === 'hls' ? true :
-              !!overlay?.url
+                !!overlay?.url
           ) && (
               <div
                 className={`fixed inset-0 z-[150] flex items-center justify-center p-2 md:p-6 transition-opacity duration-200 ${overlay.type === 'hls' ? 'bg-black/70 opacity-100' : overlayAnim ? 'bg-black/70 opacity-100' : 'bg-black/0 opacity-0'}`}
