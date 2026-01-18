@@ -145,9 +145,11 @@ const groupScheduleByDay = (schedule) => {
 
 // Advertisement schedule configuration
 const adSchedule = [
-  { day: 1, time: "10:00", duration: 30 }, // Monday 10AM
-  { day: 3, time: "14:00", duration: 45 }, // Wednesday 2PM
-  { day: 0, time: "16:00", duration: 60 }, // Sunday 4PM
+  { day: 1, time: "12:00", duration: 45 }, // Monday 12PM (Free 11-13)
+  { day: 2, time: "12:00", duration: 45 }, // Tuesday 12PM (Free 11-15)
+  { day: 3, time: "12:00", duration: 45 }, // Wednesday 12PM (Free 12-13)
+  { day: 4, time: "17:00", duration: 45 }, // Thursday 5PM (Free 16-20)
+  { day: 5, time: "13:00", duration: 45 }, // Friday 1PM (Free 12-15)
 ];
 
 // Random advertisements pool
