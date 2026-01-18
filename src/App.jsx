@@ -115,7 +115,7 @@ const imageSchedule = [
 
   // Sunday
   { day: 0, time: "07:00", duration: 120, image: "/programs/regular/Micasayyo.webp", name: "Mi Casa y Yo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
-  { day: 0, time: "16:00", duration: 120, images: ["/programs/regular/seguidoresdecristo1.webp", "/programs/regular/seguidoresdecristo2.webp", "/programs/regular/seguidoresdecristo4.webp"], name: "Seguidores de Cristo", header: "Estás en sintonía de", footer: "¡Escúchanos todos los domingos de 4 a 6 PM!" },
+  { day: 0, time: "16:00", duration: 120, images: ["/programs/regular/seguidoresdecristo1.webp", "/programs/regular/seguidoresdecristo2.webp", "/programs/regular/seguidoresdecristo4.webp"], name: "Seguidores de Cristo", header: "Estás en sintonía de", footer: "¿Con qué limpiará el joven su camino? Con guardar tu palabra. - Salmos 119:9" },
 
   // Special date-range schedules
   // To activate, uncomment and ensure the year is dynamic or set correctly
