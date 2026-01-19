@@ -9,6 +9,7 @@ import BibleModal from './components/BibleModal';
 import HlsPlayer from './components/HlsPlayer';
 import ScheduleModal from './components/ScheduleModal';
 import Slideshow from './components/Slideshow';
+import AnimatedBackground from './components/AnimatedBackground';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -433,12 +434,8 @@ function App() {
       <div className={`h-screen w-full ${darkToggle && "dark"}`}>
         {/* Main content container */}
         <div className="flex flex-col justify-center items-center w-full h-screen dark:bg-gray-800">
-          {/* Background texture */}
-          <img
-            src="/charlie-brown.svg"
-            className="object-cover absolute w-full h-screen bg-center bg-no-repeat bg-cover opacity-5 dark:opacity-10"
-            alt="Background texture"
-          />
+          {/* Animated Background */}
+          <AnimatedBackground darkMode={darkToggle} />
 
           {/* Header panel buttons */}
           <div className="flex justify-between w-[370px] sm:w-96 mb-0">

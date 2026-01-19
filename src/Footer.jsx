@@ -3,11 +3,11 @@ import Church from "./assets/hermon-church.webp";
 
 const Footer = () => {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <div className="flex fixed inset-x-0 bottom-0 z-20 justify-center items-center no-underline focus:underline-none focus:no-underline">
-      <div 
-        className="mx-auto h-12 w-[370px] sm:w-96 bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 rounded-full relative overflow-hidden transition-all duration-300"
+      <div
+        className="mx-auto h-12 w-[370px] sm:w-96 bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 rounded-t-xl relative overflow-hidden transition-all duration-300"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -17,9 +17,9 @@ const Footer = () => {
           src={Church}
           alt="Church"
         />
-        
+
         {/* Church name - fades out on hover */}
-        <div 
+        <div
           className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
         >
           <div className="flex items-center space-x-2 z-10">
@@ -27,9 +27,9 @@ const Footer = () => {
             <span className="filter drop-shadow-md font-bold text-lg md:text-xl text-gray-800 dark:text-gray-200">Iglesia Hermón</span>
           </div>
         </div>
-        
+
         {/* Content that appears on hover */}
-        <div 
+        <div
           className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'} flex flex-col justify-center items-center h-full`}
         >
           {/* Social media links */}
@@ -47,7 +47,7 @@ const Footer = () => {
               </button>
             </a>
           </div>
-          
+
           {/* Small copyright */}
           <div className="text-gray-800 dark:text-gray-400 text-[10px] mt-1">
             © {new Date().getFullYear()} Fundación Cultural Hermón RTV
