@@ -38,14 +38,14 @@ bun run dev:bun
 
 ### **Stream Overlay (Admin) Features:**  
 - 🛠️ **Intuitive Admin Panel**: Responsive overlay controls with icon-based interface and tooltips.
-- 🖼️ **Content Types**: Image, YouTube, Text, and Live Camera (HLS) streaming.
+- 🖼️ **Content Types**: Image, YouTube, Text, and optional Live Camera (HLS) streaming.
 - 🧭 **Display Modes**: Inline (integrated in card) or Fullscreen with intuitive icon buttons.
 - 📐 **Image Fitting**: Contain (show full image) or Cover (fill area) with visual icon indicators.
 - 🎨 **Text Styling**: Background and text color pickers with live preview.
 - 📱 **Responsive Layout**: Optimized mobile interface with side-by-side controls to save space.
 - 💾 **Data Persistence**: localStorage automatically saves all content and settings across sessions.
-- 🔒 **Authentication**: Secure admin access with backend credential validation.
-- 🔴 **Real-time Broadcasting**: Server-Sent Events (SSE) for instant updates to all connected clients.
+- 🔒 **Authentication**: Basic auth enforced via Vercel Edge Functions.
+- 🔁 **Instant Sync**: Lightweight polling keeps clients updated with the latest overlay state.
 - 🎬 **Cross-Platform Streaming**: Seamless switching between content types without interference.
 - ♿ **Accessibility**: Full keyboard navigation, ARIA labels, and high-contrast focus indicators.
 
@@ -55,7 +55,43 @@ bun run dev:bun
 - 📊 **Visual Feedback**: Color-coded controls and status indicators for intuitive operation.
 - 🌙 **Dark Mode Support**: Complete dark/light theme compatibility across all components.
 
-See `docs/DEPLOYMENT.md` for deployment and usage details.
+## 🚀 Deployment (Vercel front + API)
+
+- Single Vercel project for frontend SPA and Edge API (`api/hermon/*`).
+- Overlay state stored in Vercel Edge Config (fallback to in-memory when tokens missing).
+
+### Prerequisites
+- Vercel account with Edge Config.
+- Node.js 18+ or Bun locally.
+- Optional Edge Config instance: `vercel edge-config create hermon-overlay`.
+
+### Environment Variables
+| Name | Purpose |
+| --- | --- |
+| `VERCEL_ADMIN_USER` | Basic auth user for admin panel |
+| `VERCEL_ADMIN_PASS` | Basic auth password |
+| `VITE_OVERLAY_BASE_URL` | e.g. `https://backend-hermon.vercel.app/api/hermon` |
+| `EDGE_CONFIG_ID` | Edge Config ID (omit for in-memory dev) |
+| `EDGE_CONFIG_READ_TOKEN` | Read token (`vercel edge-config tokens create --read`) |
+| `EDGE_CONFIG_WRITE_TOKEN` | Write token (`vercel edge-config tokens create --write`) |
+| `VITE_STREAM_HLS_URL` | *(optional)* HLS source when live |
+
+### Deploy Steps
+1. Link repo in Vercel (Framework: Vite, build `npm run build`, output `dist`).
+2. Populate env vars above.
+3. Deploy; Vercel bundles frontend + Edge Functions automatically.
+4. Frontend polls `GET /api/hermon/overlay` every 10s; admin updates via `PUT` with Basic Auth.
+
+### Local Development
+1. Copy `.env.example` ➜ `.env.local`, adjust `VITE_OVERLAY_BASE_URL` (e.g. `http://localhost:3000/api/hermon`).
+2. Run `npm run dev` (frontend) and `vc dev` if emulating Vercel functions.
+3. Without Edge Config tokens, state resets between restarts (expected).
+
+### Troubleshooting
+- 401 admin login → check `VERCEL_ADMIN_*` values.
+- Overlay stale → confirm Edge Config tokens/ID and redeploy.
+- Edge Config failures → reissue tokens and update Vercel env.
+- HLS optional; player hides gracefully when `VITE_STREAM_HLS_URL` missing.
 
 ## :shipit: Special Thanks  
 * To this church's flock.  
@@ -63,4 +99,4 @@ See `docs/DEPLOYMENT.md` for deployment and usage details.
 
 ## :brain: Acknowledgments  
 
-*"Whoever loves discipline loves knowledge, but whoever hates correction is stupid."*  
+*"Whoever loves discipline loves knowledge, but whoever hates correction is stupid."*

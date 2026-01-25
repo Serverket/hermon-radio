@@ -1,16 +1,50 @@
-export function subscribeOverlay(baseUrl, onData) {
+export function subscribeOverlay(baseUrl, onData, { intervalMs = 10000 } = {}) {
   if (!baseUrl) return () => {};
-  const url = `${baseUrl.replace(/\/$/, '')}/overlay/stream`;
-  const es = new EventSource(url, { withCredentials: false });
-  es.onmessage = (evt) => {
-    try { onData(JSON.parse(evt.data)); } catch {}
+  const root = baseUrl.replace(/\/$/, '');
+  let stopped = false;
+  let timerId = null;
+  let lastSignature = null;
+
+  const controller = new AbortController();
+
+  const schedule = () => {
+    if (stopped) return;
+    timerId = setTimeout(fetchOnce, intervalMs);
   };
-  es.onerror = () => { /* keep open; browser will retry */ };
-  return () => es.close();
+
+  const fetchOnce = async () => {
+    if (stopped) return;
+    try {
+      const res = await fetch(`${root}/overlay`, {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-store' },
+        signal: controller.signal
+      });
+      if (!res.ok) throw new Error('overlay-fetch-failed');
+      const data = await res.json();
+      const signature = JSON.stringify(data);
+      if (signature !== lastSignature) {
+        lastSignature = signature;
+        onData(data);
+      }
+    } catch (err) {
+      // swallow errors to keep polling
+    } finally {
+      schedule();
+    }
+  };
+
+  fetchOnce();
+
+  return () => {
+    stopped = true;
+    controller.abort();
+    if (timerId) clearTimeout(timerId);
+  };
 }
 
 export async function authCheck(baseUrl, creds) {
-  const url = `${baseUrl.replace(/\/$/, '')}/overlay/auth-check`;
+  const url = `${baseUrl.replace(/\/$/, '')}/auth-check`;
   const headers = {};
   if (creds?.user && creds?.pass) {
     headers['Authorization'] = 'Basic ' + btoa(`${creds.user}:${creds.pass}`);
