@@ -66,16 +66,22 @@ bun run dev:bun
 - Optional Edge Config instance: `vercel edge-config create hermon-overlay`.
 
 ### Environment Variables
+
+**Frontend (project: hermon-radio)**
+| Name | Purpose |
+| --- | --- |
+| `VITE_OVERLAY_BASE_URL` | Overlay API base, e.g. `https://hermon-api.vercel.app/api/hermon` |
+| `VITE_STREAM_HLS_URL` | *(optional)* HLS source when live |
+
+**Edge API (project: hermon-radio-api)**
 | Name | Purpose |
 | --- | --- |
 | `VERCEL_ADMIN_USER` | Basic auth user for admin panel |
 | `VERCEL_ADMIN_PASS` | Basic auth password |
-| `VITE_OVERLAY_BASE_URL` | e.g. `https://backend-hermon.vercel.app/api/hermon` |
 | `EDGE_CONFIG` | Connection string (`https://edge-config.vercel.com/<id>/config?token=<uuid>`) |
 | `EDGE_CONFIG_ID` | *(optional)* Manual override for Edge Config ID |
 | `EDGE_CONFIG_READ_TOKEN` | *(optional)* Manual override for read token |
 | `EDGE_CONFIG_WRITE_TOKEN` | *(optional)* Manual override for write token |
-| `VITE_STREAM_HLS_URL` | *(optional)* HLS source when live |
 
 ### Deploy Steps
 1. Link repo in Vercel (Framework: Vite, build `npm run build`, output `dist`).
