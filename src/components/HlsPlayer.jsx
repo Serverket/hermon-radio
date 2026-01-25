@@ -38,6 +38,8 @@ export default function HlsPlayer({ url, autoPlay = true, muted = true, poster, 
 
   // Health check function to monitor stream availability
   const checkStreamHealth = async () => {
+    if (!url) return false;
+
     try {
       const response = await fetch(url, {
         method: 'HEAD',
@@ -71,6 +73,11 @@ export default function HlsPlayer({ url, autoPlay = true, muted = true, poster, 
 
   // Initialize stream connection
   const initializeStream = () => {
+    if (!url) {
+      setStreamStatus('error');
+      return;
+    }
+
     setStreamStatus('connecting');
     const video = videoRef.current;
     if (!video || !url) return;
@@ -176,11 +183,19 @@ export default function HlsPlayer({ url, autoPlay = true, muted = true, poster, 
 
   useEffect(() => {
     retryCountRef.current = 0;
-    initializeStream();
-    startHealthMonitoring();
+    if (url) {
+      initializeStream();
+      startHealthMonitoring();
+    } else {
+      setStreamStatus('error');
+    }
 
     return cleanup;
   }, [url, autoPlay]);
+
+  if (!url) {
+    return null;
+  }
 
   return (
     <div className="w-full relative">
