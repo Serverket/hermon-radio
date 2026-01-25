@@ -96,7 +96,7 @@ function normalizeState(body) {
 function corsHeaders(allowMethods, includeCredentials = false) {
   const headers = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Headers": "authorization, content-type, cache-control",
     "Access-Control-Allow-Methods": allowMethods
   };
 

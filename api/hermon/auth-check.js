@@ -21,7 +21,7 @@ export default async function handler(request) {
 function corsHeaders() {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type",
+    "Access-Control-Allow-Headers": "authorization, content-type, cache-control",
     "Access-Control-Allow-Methods": "GET, OPTIONS"
   };
 }
