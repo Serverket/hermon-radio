@@ -71,14 +71,15 @@ bun run dev:bun
 | `VERCEL_ADMIN_USER` | Basic auth user for admin panel |
 | `VERCEL_ADMIN_PASS` | Basic auth password |
 | `VITE_OVERLAY_BASE_URL` | e.g. `https://backend-hermon.vercel.app/api/hermon` |
-| `EDGE_CONFIG_ID` | Edge Config ID (omit for in-memory dev) |
-| `EDGE_CONFIG_READ_TOKEN` | Read token (`vercel edge-config tokens create --read`) |
-| `EDGE_CONFIG_WRITE_TOKEN` | Write token (`vercel edge-config tokens create --write`) |
+| `EDGE_CONFIG` | Connection string (`https://edge-config.vercel.com/<id>/config?token=<uuid>`) |
+| `EDGE_CONFIG_ID` | *(optional)* Manual override for Edge Config ID |
+| `EDGE_CONFIG_READ_TOKEN` | *(optional)* Manual override for read token |
+| `EDGE_CONFIG_WRITE_TOKEN` | *(optional)* Manual override for write token |
 | `VITE_STREAM_HLS_URL` | *(optional)* HLS source when live |
 
 ### Deploy Steps
 1. Link repo in Vercel (Framework: Vite, build `npm run build`, output `dist`).
-2. Populate env vars above.
+2. Populate env vars above (set `EDGE_CONFIG` via Vercel Edge Config → “Connect to project”).
 3. Deploy; Vercel bundles frontend + Edge Functions automatically.
 4. Frontend polls `GET /api/hermon/overlay` every 10s; admin updates via `PUT` with Basic Auth.
 

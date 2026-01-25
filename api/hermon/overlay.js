@@ -93,7 +93,7 @@ function normalizeState(body) {
   };
 }
 
-function corsHeaders(allowMethods, includeCredentials = true) {
+function corsHeaders(allowMethods, includeCredentials = false) {
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "authorization, content-type",

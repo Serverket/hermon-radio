@@ -12,7 +12,10 @@ const DEFAULT_OVERLAY_STATE = {
   updated_at: new Date().toISOString()
 };
 
-const { EDGE_CONFIG_ID, EDGE_CONFIG_READ_TOKEN, EDGE_CONFIG_WRITE_TOKEN } = process.env;
+const EDGE_CONFIG_CONNECTION = process.env.EDGE_CONFIG || "";
+const EDGE_CONFIG_ID = deriveEdgeConfigId();
+const EDGE_CONFIG_READ_TOKEN = deriveEdgeConfigToken("read");
+const EDGE_CONFIG_WRITE_TOKEN = deriveEdgeConfigToken("write");
 
 function cloneDefaultState() {
   return { ...DEFAULT_OVERLAY_STATE, updated_at: new Date().toISOString() };
@@ -81,6 +84,30 @@ export async function getOverlayState() {
 
 export async function setOverlayState(nextState) {
   return writeEdgeConfigState(nextState);
+}
+
+function deriveEdgeConfigId() {
+  if (process.env.EDGE_CONFIG_ID) return process.env.EDGE_CONFIG_ID;
+  if (!EDGE_CONFIG_CONNECTION) return "";
+  try {
+    const url = new URL(EDGE_CONFIG_CONNECTION);
+    const parts = url.pathname.split("/").filter(Boolean);
+    return parts[0] || "";
+  } catch {
+    return "";
+  }
+}
+
+function deriveEdgeConfigToken(type) {
+  const envKey = type === "write" ? "EDGE_CONFIG_WRITE_TOKEN" : "EDGE_CONFIG_READ_TOKEN";
+  if (process.env[envKey]) return process.env[envKey];
+  if (!EDGE_CONFIG_CONNECTION) return "";
+  try {
+    const url = new URL(EDGE_CONFIG_CONNECTION);
+    return url.searchParams.get("token") || "";
+  } catch {
+    return "";
+  }
 }
 
 export function requireAdminAuth(request) {
