@@ -17,7 +17,7 @@ export function subscribeOverlay(baseUrl, onData, { intervalMs = 10000 } = {}) {
     try {
       const res = await fetch(`${root}/overlay`, {
         method: 'GET',
-        headers: { 'Cache-Control': 'no-store' },
+        cache: 'no-store',
         signal: controller.signal
       });
       if (!res.ok) throw new Error('overlay-fetch-failed');

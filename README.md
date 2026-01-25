@@ -5,8 +5,10 @@
 Church Radio PWA with advanced streaming overlays, crafted with Vite and Tailwind CSS.  
 </div>  
 
-## :gear: Install & Run  
-You'll need Node.js 18+ or Bun.  
+### Prerequisites
+- Vercel account with Edge Config.
+- Node.js 18+ or Bun locally.
+- Optional Edge Config instance: `vercel edge-config create hermon-overlay`.
 
 ### Using npm:
 ```bash
@@ -60,10 +62,6 @@ bun run dev:bun
 - Single Vercel project for frontend SPA and Edge API (`api/hermon/*`).
 - Overlay state stored in Vercel Edge Config (fallback to in-memory when tokens missing).
 
-### Prerequisites
-- Vercel account with Edge Config.
-- Node.js 18+ or Bun locally.
-- Optional Edge Config instance: `vercel edge-config create hermon-overlay`.
 
 ### Environment Variables
 
