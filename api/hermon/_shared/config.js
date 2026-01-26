@@ -17,6 +17,12 @@ const EDGE_CONFIG_ID = deriveEdgeConfigId();
 const EDGE_CONFIG_READ_TOKEN = deriveEdgeConfigToken("read");
 const EDGE_CONFIG_WRITE_TOKEN = deriveEdgeConfigToken("write");
 
+export function storageMode() {
+  return EDGE_CONFIG_ID && EDGE_CONFIG_READ_TOKEN && EDGE_CONFIG_WRITE_TOKEN
+    ? "edge-config"
+    : "memory";
+}
+
 function cloneDefaultState() {
   return { ...DEFAULT_OVERLAY_STATE, updated_at: new Date().toISOString() };
 }

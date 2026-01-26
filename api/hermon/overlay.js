@@ -1,4 +1,4 @@
-import { getOverlayState, setOverlayState, requireAdminAuth, jsonResponse } from "./_shared/config.js";
+import { getOverlayState, setOverlayState, requireAdminAuth, jsonResponse, storageMode } from "./_shared/config.js";
 
 export const config = { runtime: "edge" };
 
@@ -28,6 +28,7 @@ async function handleGet() {
     return jsonResponse(state, {
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
+        "X-Overlay-Storage": storageMode(),
         "Cache-Control": "no-store"
       }
     });
@@ -36,6 +37,7 @@ async function handleGet() {
       status: 500,
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
+        "X-Overlay-Storage": storageMode(),
         "Cache-Control": "no-store"
       }
     });
@@ -64,6 +66,7 @@ async function handlePut(request) {
     return jsonResponse(stored, {
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
+        "X-Overlay-Storage": storageMode(),
         "Cache-Control": "no-store"
       }
     });
@@ -72,6 +75,7 @@ async function handlePut(request) {
       status: 500,
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
+        "X-Overlay-Storage": storageMode(),
         "Cache-Control": "no-store"
       }
     });
