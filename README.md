@@ -47,7 +47,7 @@ bun run dev:bun
 - 📱 **Responsive Layout**: Optimized mobile interface with side-by-side controls to save space.
 - 💾 **Data Persistence**: localStorage automatically saves all content and settings across sessions.
 - 🔒 **Authentication**: Basic auth enforced via Vercel Edge Functions.
-- 🔁 **Instant Sync**: Lightweight polling keeps clients updated with the latest overlay state.
+- 🔁 **Instant Sync**: CDN-backed polling keeps clients updated with zero additional function load.
 - 🎬 **Cross-Platform Streaming**: Seamless switching between content types without interference.
 - ♿ **Accessibility**: Full keyboard navigation, ARIA labels, and high-contrast focus indicators.
 
@@ -80,12 +80,15 @@ bun run dev:bun
 | `EDGE_CONFIG_ID` | *(optional)* Manual override for Edge Config ID |
 | `EDGE_CONFIG_READ_TOKEN` | *(optional)* Manual override for read token |
 | `EDGE_CONFIG_WRITE_TOKEN` | *(optional)* Manual override for write token |
+| `OVERLAY_CACHE_URL` | *(optional)* Public overlay endpoint URL(s) to purge via SWR invalidate |
+| `OVERLAY_CACHE_TOKEN` | *(optional)* Personal/team token with `swr.invalidate` scope |
+| `OVERLAY_CACHE_TEAM_ID` | *(optional)* Vercel team ID when invalidating under a team |
 
 ### Deploy Steps
 1. Link repo in Vercel (Framework: Vite, build `npm run build`, output `dist`).
 2. Populate env vars above (set `EDGE_CONFIG` via Vercel Edge Config → “Connect to project”).
 3. Deploy; Vercel bundles frontend + Edge Functions automatically.
-4. Frontend polls `GET /api/hermon/overlay` every 10s; admin updates via `PUT` with Basic Auth.
+4. Frontend polls `GET /api/hermon/overlay` every 10s (served from CDN cache); admin updates via `PUT` with Basic Auth.
 
 ### Local Development
 1. Copy `.env.example` ➜ `.env.local`, adjust `VITE_OVERLAY_BASE_URL` (e.g. `http://localhost:3000/api/hermon`).

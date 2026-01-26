@@ -1,4 +1,12 @@
-import { getOverlayState, setOverlayState, requireAdminAuth, jsonResponse, storageMode } from "./_shared/config.js";
+import {
+  getOverlayState,
+  setOverlayState,
+  requireAdminAuth,
+  jsonResponse,
+  storageMode,
+  computeOverlayEtag,
+  overlayCacheControlHeader
+} from "./_shared/config.js";
 
 export const config = { runtime: "edge" };
 
@@ -12,7 +20,7 @@ export default async function handler(request) {
   }
 
   if (request.method === "GET") {
-    return handleGet();
+    return handleGet(request);
   }
 
   if (request.method === "PUT") {
@@ -22,23 +30,32 @@ export default async function handler(request) {
   return new Response(null, { status: 405, headers: corsHeaders("PUT, GET, OPTIONS") });
 }
 
-async function handleGet() {
+async function handleGet(request) {
   try {
     const state = await getOverlayState();
-    return jsonResponse(state, {
-      headers: {
-        ...corsHeaders("PUT, GET, OPTIONS", false),
-        "X-Overlay-Storage": storageMode(),
-        "Cache-Control": "no-store"
-      }
-    });
+    const etag = await computeOverlayEtag(state);
+    const ifNoneMatch = request.headers.get("if-none-match");
+
+    const headers = {
+      ...corsHeaders("PUT, GET, OPTIONS", false),
+      "X-Overlay-Storage": storageMode(),
+      "Cache-Control": overlayCacheControlHeader(),
+      "ETag": etag,
+      "Last-Modified": state.updated_at || new Date().toISOString()
+    };
+
+    if (ifNoneMatch && ifNoneMatch === etag) {
+      return new Response(null, { status: 304, headers });
+    }
+
+    return jsonResponse(state, { headers });
   } catch (error) {
     return jsonResponse({ error: "Failed to load overlay" }, {
       status: 500,
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
         "X-Overlay-Storage": storageMode(),
-        "Cache-Control": "no-store"
+        "Cache-Control": "no-cache"
       }
     });
   }
@@ -67,7 +84,7 @@ async function handlePut(request) {
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
         "X-Overlay-Storage": storageMode(),
-        "Cache-Control": "no-store"
+          "Cache-Control": "no-store"
       }
     });
   } catch (error) {
@@ -76,7 +93,7 @@ async function handlePut(request) {
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
         "X-Overlay-Storage": storageMode(),
-        "Cache-Control": "no-store"
+        "Cache-Control": "no-cache"
       }
     });
   }

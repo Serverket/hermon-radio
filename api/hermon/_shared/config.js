@@ -16,6 +16,18 @@ const EDGE_CONFIG_CONNECTION = process.env.EDGE_CONFIG || "";
 const EDGE_CONFIG_ID = deriveEdgeConfigId();
 const EDGE_CONFIG_READ_TOKEN = deriveEdgeConfigToken("read");
 const EDGE_CONFIG_WRITE_TOKEN = deriveEdgeConfigToken("write");
+const OVERLAY_CACHE_URL = process.env.OVERLAY_CACHE_URL || "";
+const OVERLAY_CACHE_TOKEN = process.env.OVERLAY_CACHE_TOKEN || "";
+const OVERLAY_CACHE_TEAM_ID = process.env.OVERLAY_CACHE_TEAM_ID || "";
+
+function memoryStore() {
+  if (!globalThis.__hermonOverlayStore) {
+    globalThis.__hermonOverlayStore = {
+      state: cloneDefaultState()
+    };
+  }
+  return globalThis.__hermonOverlayStore;
+}
 
 export function storageMode() {
   return EDGE_CONFIG_ID && EDGE_CONFIG_READ_TOKEN && EDGE_CONFIG_WRITE_TOKEN
@@ -23,21 +35,26 @@ export function storageMode() {
     : "memory";
 }
 
+export function overlayCacheControlHeader() {
+  return OVERLAY_CACHE_URL && OVERLAY_CACHE_TOKEN
+    ? "public, max-age=0, s-maxage=31536000, stale-while-revalidate=120"
+    : "no-cache";
+}
+
 function cloneDefaultState() {
   return { ...DEFAULT_OVERLAY_STATE, updated_at: new Date().toISOString() };
 }
 
-async function fetchEdgeConfigState() {
+async function fetchEdgeConfigValue(key, fallback) {
   if (!EDGE_CONFIG_ID || !EDGE_CONFIG_READ_TOKEN) {
-    globalThis.__hermonOverlayState = globalThis.__hermonOverlayState || cloneDefaultState();
-    return globalThis.__hermonOverlayState;
+    return fallback;
   }
 
-  const endpoint = `https://edge-config.vercel.com/${EDGE_CONFIG_ID}/item/state?token=${EDGE_CONFIG_READ_TOKEN}`;
+  const endpoint = `https://edge-config.vercel.com/${EDGE_CONFIG_ID}/item/${encodeURIComponent(key)}?token=${EDGE_CONFIG_READ_TOKEN}`;
   const res = await fetch(endpoint, { cache: "no-store" });
 
   if (res.status === 404) {
-    return cloneDefaultState();
+    return fallback;
   }
 
   if (!res.ok) {
@@ -46,7 +63,7 @@ async function fetchEdgeConfigState() {
 
   const payload = await res.json();
   if (payload && typeof payload === "object") {
-    if (payload.item && typeof payload.item.value === "object") {
+    if (payload.item && typeof payload.item.value !== "undefined") {
       return payload.item.value;
     }
     if (!payload.item) {
@@ -54,15 +71,12 @@ async function fetchEdgeConfigState() {
     }
   }
 
-  return cloneDefaultState();
+  return fallback;
 }
 
-async function writeEdgeConfigState(nextState) {
-  const stateWithTimestamp = { ...nextState, updated_at: new Date().toISOString() };
-
+async function patchEdgeConfigItems(items) {
   if (!EDGE_CONFIG_ID || !EDGE_CONFIG_WRITE_TOKEN) {
-    globalThis.__hermonOverlayState = stateWithTimestamp;
-    return stateWithTimestamp;
+    throw new Error("Edge Config write not configured");
   }
 
   const res = await fetch(`https://api.vercel.com/v1/edge-config/${EDGE_CONFIG_ID}/items`, {
@@ -71,30 +85,106 @@ async function writeEdgeConfigState(nextState) {
       Authorization: `Bearer ${EDGE_CONFIG_WRITE_TOKEN}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      items: [
-        {
-          operation: "upsert",
-          key: "state",
-          value: stateWithTimestamp
-        }
-      ]
-    })
+    body: JSON.stringify({ items })
   });
 
   if (!res.ok) {
     throw new Error(`Edge Config write failed (${res.status})`);
   }
+}
 
-  return stateWithTimestamp;
+async function fetchOverlayState() {
+  const store = memoryStore();
+
+  if (!EDGE_CONFIG_ID || !EDGE_CONFIG_READ_TOKEN) {
+    return store.state;
+  }
+
+  const value = await fetchEdgeConfigValue("state", null);
+  if (value && typeof value === "object") {
+    store.state = value;
+    return value;
+  }
+
+  store.state = cloneDefaultState();
+  return store.state;
+}
+
+async function writeOverlayState(nextState) {
+  const store = memoryStore();
+  const stateWithTimestamp = { ...nextState, updated_at: new Date().toISOString() };
+
+  if (!EDGE_CONFIG_ID || !EDGE_CONFIG_WRITE_TOKEN) {
+    store.state = stateWithTimestamp;
+    return store.state;
+  }
+
+  await patchEdgeConfigItems([
+    {
+      operation: "upsert",
+      key: "state",
+      value: stateWithTimestamp
+    }
+  ]);
+
+  store.state = stateWithTimestamp;
+  return store.state;
 }
 
 export async function getOverlayState() {
-  return fetchEdgeConfigState();
+  return fetchOverlayState();
 }
 
 export async function setOverlayState(nextState) {
-  return writeEdgeConfigState(nextState);
+  const stored = await writeOverlayState(nextState);
+  await invalidateOverlayCache();
+  return stored;
+}
+
+export async function computeOverlayEtag(state) {
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(JSON.stringify(state));
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(digest));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    return `"${hashHex}"`;
+  } catch {
+    return `"${Date.now().toString(36)}"`;
+  }
+}
+
+async function invalidateOverlayCache() {
+  if (!OVERLAY_CACHE_URL || !OVERLAY_CACHE_TOKEN) {
+    return;
+  }
+
+  try {
+    const urls = OVERLAY_CACHE_URL.split(",").map((value) => value.trim()).filter(Boolean);
+    if (!urls.length) {
+      return;
+    }
+
+    const body = { urls };
+    if (OVERLAY_CACHE_TEAM_ID) {
+      body.teamId = OVERLAY_CACHE_TEAM_ID;
+    }
+
+    const res = await fetch("https://api.vercel.com/v2/swr/invalidate", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OVERLAY_CACHE_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      console.warn("Failed to invalidate overlay cache", await res.text());
+    }
+  } catch (error) {
+    console.warn("Overlay cache invalidation error", error);
+  }
 }
 
 function deriveEdgeConfigId() {

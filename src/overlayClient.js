@@ -1,44 +1,59 @@
-export function subscribeOverlay(baseUrl, onData, { intervalMs = 10000 } = {}) {
+const DEFAULT_INTERVAL_MS = 10000;
+
+export function subscribeOverlay(baseUrl, onData, options = {}) {
   if (!baseUrl) return () => {};
+
   const root = baseUrl.replace(/\/$/, '');
+  const intervalMs = Math.max(1000, options.intervalMs || DEFAULT_INTERVAL_MS);
+
   let stopped = false;
   let timerId = null;
-  let lastSignature = null;
+  let lastEtag = null;
 
-  const controller = new AbortController();
-
-  const schedule = () => {
+  const fetchOverlay = async () => {
     if (stopped) return;
-    timerId = setTimeout(fetchOnce, intervalMs);
-  };
 
-  const fetchOnce = async () => {
-    if (stopped) return;
     try {
+      const headers = {};
+      if (lastEtag) {
+        headers['If-None-Match'] = lastEtag;
+      }
+
       const res = await fetch(`${root}/overlay`, {
         method: 'GET',
-        cache: 'no-store',
-        signal: controller.signal
+        headers
       });
-      if (!res.ok) throw new Error('overlay-fetch-failed');
-      const data = await res.json();
-      const signature = JSON.stringify(data);
-      if (signature !== lastSignature) {
-        lastSignature = signature;
-        onData(data);
+
+      const etag = res.headers.get('etag');
+      if (etag) {
+        lastEtag = etag;
+      }
+
+      if (res.status === 304 || stopped) {
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error('overlay-fetch-failed');
+      }
+
+      const payload = await res.json();
+      if (!stopped) {
+        onData(payload);
       }
     } catch (err) {
-      // swallow errors to keep polling
+      // ignore errors to keep scheduler alive
     } finally {
-      schedule();
+      if (!stopped) {
+        timerId = setTimeout(fetchOverlay, intervalMs);
+      }
     }
   };
 
-  fetchOnce();
+  timerId = setTimeout(fetchOverlay, 0);
 
   return () => {
     stopped = true;
-    controller.abort();
     if (timerId) clearTimeout(timerId);
   };
 }

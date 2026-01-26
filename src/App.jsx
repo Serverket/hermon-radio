@@ -295,7 +295,7 @@ function App() {
     localStorage.setItem("darkMode", newDarkMode.toString());
   };
 
-  // Live overlay via SSE
+  // Overlay polling served from CDN cache
   useEffect(() => {
     if (!OVERLAY_BASE_URL) return;
     const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => {
