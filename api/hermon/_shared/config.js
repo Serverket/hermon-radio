@@ -45,11 +45,16 @@ async function fetchEdgeConfigState() {
   }
 
   const payload = await res.json();
-  if (!payload || typeof payload.item?.value !== "object") {
-    return cloneDefaultState();
+  if (payload && typeof payload === "object") {
+    if (payload.item && typeof payload.item.value === "object") {
+      return payload.item.value;
+    }
+    if (!payload.item) {
+      return payload;
+    }
   }
 
-  return payload.item.value;
+  return cloneDefaultState();
 }
 
 async function writeEdgeConfigState(nextState) {
