@@ -216,6 +216,7 @@ function App() {
   const [adminMinimized, setAdminMinimized] = useState(false);
   const [overlayAnim, setOverlayAnim] = useState(false);
   const [overlayImageModalOpen, setOverlayImageModalOpen] = useState(false);
+  const ignoreRemoteOverlayRef = useRef(false);
 
 
   /**
@@ -297,9 +298,20 @@ function App() {
   // Live overlay via SSE
   useEffect(() => {
     if (!OVERLAY_BASE_URL) return;
-    const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => setOverlay((prev) => ({ ...prev, ...data })));
+    const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => {
+      setOverlay((prev) => {
+        if (ignoreRemoteOverlayRef.current) {
+          return prev;
+        }
+        return { ...prev, ...data };
+      });
+    });
     return stop;
-  }, []);
+  }, [OVERLAY_BASE_URL]);
+
+  useEffect(() => {
+    ignoreRemoteOverlayRef.current = adminAuthed && adminOpen && !adminMinimized;
+  }, [adminAuthed, adminOpen, adminMinimized]);
 
   // Animate admin modal on open
   useEffect(() => {
