@@ -39,6 +39,7 @@ async function handleGet(request) {
     const headers = {
       ...corsHeaders("PUT, GET, OPTIONS", false),
       "X-Overlay-Storage": storageMode(),
+      // Use the computed cache control header which depends on whether invalidation is configured
       "Cache-Control": overlayCacheControlHeader(),
       "ETag": etag,
       "Last-Modified": state.updated_at || new Date().toISOString()
@@ -84,7 +85,8 @@ async function handlePut(request) {
       headers: {
         ...corsHeaders("PUT, GET, OPTIONS", false),
         "X-Overlay-Storage": storageMode(),
-          "Cache-Control": "no-store"
+        // Ensure successful updates are never cached so that the client immediately sees the change
+        "Cache-Control": "no-store"
       }
     });
   } catch (error) {

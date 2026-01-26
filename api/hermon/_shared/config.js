@@ -36,6 +36,9 @@ export function storageMode() {
 }
 
 export function overlayCacheControlHeader() {
+  // If we have the invalidation secrets, we can use a long-lived cache (1 year)
+  // because we can manually purge it when data changes.
+  // stale-while-revalidate=120 provides a fallback buffer.
   return OVERLAY_CACHE_URL && OVERLAY_CACHE_TOKEN
     ? "public, max-age=0, s-maxage=31536000, stale-while-revalidate=120"
     : "no-cache";
@@ -156,10 +159,12 @@ export async function computeOverlayEtag(state) {
 
 async function invalidateOverlayCache() {
   if (!OVERLAY_CACHE_URL || !OVERLAY_CACHE_TOKEN) {
+    console.warn("Skipping cache invalidation: Missing OVERLAY_CACHE_URL or OVERLAY_CACHE_TOKEN");
     return;
   }
 
   try {
+    // URL can be a comma-separated list of paths to invalidate
     const urls = OVERLAY_CACHE_URL.split(",").map((value) => value.trim()).filter(Boolean);
     if (!urls.length) {
       return;
@@ -170,6 +175,7 @@ async function invalidateOverlayCache() {
       body.teamId = OVERLAY_CACHE_TEAM_ID;
     }
 
+    // Call Vercel's purge endpoint
     const res = await fetch("https://api.vercel.com/v2/swr/invalidate", {
       method: "POST",
       headers: {
@@ -181,6 +187,8 @@ async function invalidateOverlayCache() {
 
     if (!res.ok) {
       console.warn("Failed to invalidate overlay cache", await res.text());
+    } else {
+      console.log("Successfully invalidated overlay cache for:", urls);
     }
   } catch (error) {
     console.warn("Overlay cache invalidation error", error);
