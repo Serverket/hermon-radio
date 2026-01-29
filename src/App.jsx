@@ -79,16 +79,19 @@ const InfoTip = ({ text }) => {
  */
 const imageSchedule = [
   // Monday
+  { day: 1, time: "06:00", duration: 60, image: "/programs/regular/DesayunoEspiritual.webp", name: "Desayuno Espiritual", header: "Estás en sintonía de", footer: "Vivencias, reflexiones y meditaciones a través de la palabra de Dios" },
   { day: 1, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 1, time: "13:00", duration: 180, image: "/programs/regular/Diosysusmaravillas.webp", name: "Dios y sus maravillas", header: "Estás en sintonía de", footer: "Charlas | Música en vivo | Consejos | Reflexión" },
   { day: 1, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Tuesday
+  { day: 2, time: "06:00", duration: 60, image: "/programs/regular/DesayunoEspiritual.webp", name: "Desayuno Espiritual", header: "Estás en sintonía de", footer: "Vivencias, reflexiones y meditaciones a través de la palabra de Dios" },
   { day: 2, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 2, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 2, time: "16:00", duration: 120, image: "/programs/regular/LaFevieneporeloír.webp", name: "La Fe viene por el oír", header: 'Estás en sintonía de', footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Wednesday
+  { day: 3, time: "06:00", duration: 60, image: "/programs/regular/DesayunoEspiritual.webp", name: "Desayuno Espiritual", header: "Estás en sintonía de", footer: "Vivencias, reflexiones y meditaciones a través de la palabra de Dios" },
   { day: 3, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 3, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.webp", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 3, time: "13:00", duration: 120, image: "/programs/regular/PalabraSaludyVida.webp", name: "Palabra, Salud y Vida", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
@@ -96,6 +99,7 @@ const imageSchedule = [
   { day: 3, time: "16:00", duration: 120, image: "/programs/regular/Momentoscristianos.webp", name: "Momentos Cristianos", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Thursday
+  { day: 4, time: "06:00", duration: 60, image: "/programs/regular/DesayunoEspiritual.webp", name: "Desayuno Espiritual", header: "Estás en sintonía de", footer: "Vivencias, reflexiones y meditaciones a través de la palabra de Dios" },
   { day: 4, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 4, time: "11:00", duration: 120, image: "/programs/regular/BuenConsejoBiblico.webp", name: "Un Buen Consejo Bíblico", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 4, time: "13:00", duration: 120, image: "/programs/regular/Mujeresdevaloryfe.webp", name: "Mujeres de Valor y Fe", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
@@ -103,6 +107,7 @@ const imageSchedule = [
   { day: 4, time: "20:00", duration: 60, image: "/programs/regular/Horadeldiscipulado.webp", name: "Hora del Discipulado", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
 
   // Friday
+  { day: 5, time: "06:00", duration: 60, image: "/programs/regular/DesayunoEspiritual.webp", name: "Desayuno Espiritual", header: "Estás en sintonía de", footer: "Vivencias, reflexiones y meditaciones a través de la palabra de Dios" },
   { day: 5, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 5, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.webp", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 5, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
