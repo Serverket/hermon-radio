@@ -120,6 +120,18 @@ function broadcast(data) {
   }
 }
 
+// Health check endpoint for UptimeRobot keepalive
+// Note: Render free tier has 750 hours/month. Pinging every 5 min uses ~730 hours.
+// Consider pinging every 10-14 min to stay safely within quota.
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    clients: clients.size
+  });
+});
+
 app.get('/overlay/auth-check', requireAdmin, (req, res) => { res.status(204).end(); });
 
 app.get('/overlay', async (req, res) => {
