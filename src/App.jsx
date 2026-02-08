@@ -296,10 +296,17 @@ function App() {
     localStorage.setItem("darkMode", newDarkMode.toString());
   };
 
-  // Live overlay via SSE
+  // Live overlay via SSE - skip updates when admin is editing
+  const adminAuthedRef = React.useRef(adminAuthed);
+  useEffect(() => { adminAuthedRef.current = adminAuthed; }, [adminAuthed]);
+
   useEffect(() => {
     if (!OVERLAY_BASE_URL) return;
-    const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => setOverlay((prev) => ({ ...prev, ...data })));
+    const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => {
+      // Skip SSE updates when admin is editing to prevent resetting their work
+      if (adminAuthedRef.current) return;
+      setOverlay((prev) => ({ ...prev, ...data }));
+    });
     return stop;
   }, []);
 
