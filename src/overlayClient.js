@@ -1,12 +1,34 @@
 export function subscribeOverlay(baseUrl, onData) {
-  if (!baseUrl) return () => {};
-  const url = `${baseUrl.replace(/\/$/, '')}/overlay/stream`;
-  const es = new EventSource(url, { withCredentials: false });
+  if (!baseUrl) return () => { };
+  const cleanUrl = baseUrl.replace(/\/$/, '');
+
+  // 1. SSE Connection (Real-time)
+  const sseUrl = `${cleanUrl}/overlay/stream`;
+  const es = new EventSource(sseUrl, { withCredentials: false });
+  es.onopen = () => { /* connected */ };
   es.onmessage = (evt) => {
-    try { onData(JSON.parse(evt.data)); } catch {}
+    try { onData(JSON.parse(evt.data)); } catch (e) { }
   };
-  es.onerror = () => { /* keep open; browser will retry */ };
-  return () => es.close();
+  es.onerror = (err) => { };
+
+  // 2. Polling Fallback (Guarantees delivery every 3s if SSE fails/blocks)
+  // This ensures everyone gets updates eventually, even on restrictive networks.
+  const intervalId = setInterval(async () => {
+    try {
+      const res = await fetch(`${cleanUrl}/overlay`);
+      if (res.ok) {
+        const data = await res.json();
+        onData(data);
+      }
+    } catch (e) {
+      // Silent fail on polling error to avoid log spam
+    }
+  }, 3000);
+
+  return () => {
+    es.close();
+    clearInterval(intervalId);
+  };
 }
 
 export async function authCheck(baseUrl, creds) {

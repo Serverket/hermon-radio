@@ -305,7 +305,18 @@ function App() {
     const stop = subscribeOverlay(OVERLAY_BASE_URL, (data) => {
       // Skip SSE updates when admin is editing to prevent resetting their work
       if (adminAuthedRef.current) return;
-      setOverlay((prev) => ({ ...prev, ...data }));
+
+      // Smart Client Fix: Auto-correct type based on URL if backend sends wrong type
+      let cleanData = { ...data };
+      if (cleanData.url) {
+        if (cleanData.url.includes('vdo.ninja') || cleanData.url.includes('obs.ninja')) {
+          cleanData.type = 'vdoninja';
+        } else if (cleanData.url.includes('youtube.com') || cleanData.url.includes('youtu.be')) {
+          cleanData.type = 'youtube';
+        }
+      }
+
+      setOverlay((prev) => ({ ...prev, ...cleanData }));
     });
     return stop;
   }, []);
@@ -363,8 +374,19 @@ function App() {
 
   const saveOverlay = async (payload) => {
     if (!OVERLAY_BASE_URL) { alert('Configure VITE_OVERLAY_BASE_URL'); return; }
+
+    // Auto-correct type based on URL to prevent user errors or state desync
+    let cleanPayload = { ...payload };
+    if (cleanPayload.url) {
+      if (cleanPayload.url.includes('vdo.ninja') || cleanPayload.url.includes('obs.ninja')) {
+        cleanPayload.type = 'vdoninja';
+      } else if (cleanPayload.url.includes('youtube.com') || cleanPayload.url.includes('youtu.be')) {
+        cleanPayload.type = 'youtube';
+      }
+    }
+
     try {
-      await putOverlay(OVERLAY_BASE_URL, { user: adminCreds.user, pass: adminCreds.pass }, payload);
+      await putOverlay(OVERLAY_BASE_URL, { user: adminCreds.user, pass: adminCreds.pass }, cleanPayload);
     } catch (e) {
       alert('Error al actualizar la transmisión');
     }
@@ -557,8 +579,12 @@ function App() {
                     {overlay.type === 'image' && (
                       <div className="relative w-full">
                         <img
+                          key={overlay.url}
                           src={overlay.url}
-                          alt="superposición"
+                          alt=""
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           onClick={() => setOverlayImageModalOpen(true)}
                           title="Haz clic para ampliar"
                           className={`w-full h-auto rounded-xl cursor-pointer hover:scale-[1.02] transition-transform ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`}
@@ -588,6 +614,7 @@ function App() {
                     {overlay.type === 'youtube' && (
                       <div className="overflow-hidden w-full bg-black rounded-xl" style={{ aspectRatio: '16 / 9' }}>
                         <iframe
+                          key={overlay.url}
                           src={youtubeEmbedUrl(overlay.url)}
                           allow="autoplay; encrypted-media; picture-in-picture"
                           allowFullScreen
@@ -916,7 +943,19 @@ function App() {
                                 <input
                                   type="text"
                                   value={overlay.url}
-                                  onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    let newType = 'image';
+                                    if (val.includes('vdo.ninja') || val.includes('obs.ninja')) newType = 'vdoninja';
+                                    if (val.includes('youtube.com') || val.includes('youtu.be')) newType = 'youtube';
+
+                                    if (newType !== 'image') {
+                                      // Auto-switch type if user pastes a video link
+                                      setOverlay(o => ({ ...o, type: newType, url: val }));
+                                    } else {
+                                      setOverlay(o => ({ ...o, url: val }));
+                                    }
+                                  }}
                                   placeholder="https://ejemplo.com/imagen.jpg"
                                   className="w-full px-3 py-2 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                 />
@@ -1074,8 +1113,12 @@ function App() {
                   {overlay.type === 'image' && (
                     <div className="relative w-full h-full">
                       <img
+                        key={overlay.url}
                         src={overlay.url}
-                        alt="superposición"
+                        alt=""
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
                         onClick={() => setOverlayImageModalOpen(true)}
                         title="Haz clic para ampliar"
                         className={`w-full h-full cursor-zoom-in ${overlay.fit === 'cover' ? 'object-cover' : 'object-contain'}`}
@@ -1102,6 +1145,7 @@ function App() {
                   )}
                   {overlay.type === 'youtube' && (
                     <iframe
+                      key={overlay.url}
                       src={youtubeEmbedUrl(overlay.url)}
                       allow="autoplay; encrypted-media; picture-in-picture"
                       allowFullScreen

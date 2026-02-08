@@ -144,9 +144,15 @@ app.put('/overlay', requireAdmin, async (req, res) => {
   const allowedTypes = ['image', 'youtube', 'text', 'vdoninja', 'twitch', 'custom'];
   const allowedPositions = ['inline', 'fullscreen'];
   const allowedFit = ['contain', 'cover'];
+
+  // Forcecorrect type on backend (ultimate source of truth)
+  let finalType = allowedTypes.includes(b.type) ? b.type : overlay.type;
+  if (b.url && (b.url.includes('vdo.ninja') || b.url.includes('obs.ninja'))) finalType = 'vdoninja';
+  if (b.url && (b.url.includes('youtube.com') || b.url.includes('youtu.be'))) finalType = 'youtube';
+
   const next = {
     visible: Boolean(b.visible),
-    type: allowedTypes.includes(b.type) ? b.type : overlay.type,
+    type: finalType,
     url: typeof b.url === 'string' ? b.url : overlay.url,
     position: allowedPositions.includes(b.position) ? b.position : overlay.position,
     fit: allowedFit.includes(b.fit) ? b.fit : overlay.fit,
