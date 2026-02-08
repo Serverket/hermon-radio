@@ -986,24 +986,25 @@ function App() {
                           )}
 
                           {overlay.type === 'vdoninja' && (
-                            <div className="space-y-1">
+                            <div className="space-y-2">
                               <label className="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">Link de Video (VDO.ninja)<InfoTip text={"Pega el link de VDO.ninja o tu stream principal."} /></label>
-                              <div className="flex gap-2">
+                              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => window.open('https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9push=radiohermon', '_blank', 'noopener,noreferrer')}
+                                  className="inline-flex items-center justify-center px-2.5 py-2 rounded bg-red-600 text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm whitespace-nowrap w-full sm:w-auto"
+                                  title="Abrir la pestaña de la cámara y copiar el enlace que aparece en la parte superior."
+                                >
+                                  <i className="icon-play-2 text-base" aria-hidden="true"></i>
+                                  <span>Iniciar Video</span>
+                                </button>
                                 <input
                                   type="text"
                                   value={overlay.url}
                                   onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
                                   placeholder="https://vdo.ninja/?view=XXXX"
-                                  className="flex-1 px-3 py-2 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                  className="w-full sm:flex-1 px-3 py-2 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                 />
-                                <button
-                                  type="button"
-                                  onClick={() => window.open(vdoNinjaUrl(overlay.url), '_blank')}
-                                  className="px-3 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
-                                  title="Probar link"
-                                >
-                                  <i className="icon-link-ext"></i>
-                                </button>
                               </div>
                             </div>
                           )}
