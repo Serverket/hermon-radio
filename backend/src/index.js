@@ -2,7 +2,6 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import pkg from 'pg';
-import { startNms } from './streaming/nms.js';
 
 const { Pool } = pkg;
 
@@ -20,11 +19,13 @@ if (DATABASE_URL) {
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: (origin, cb) => {
-  if (!origin) return cb(null, true);
-  if (CORS_ORIGINS.includes('*') || CORS_ORIGINS.includes(origin)) return cb(null, true);
-  return cb(new Error('Not allowed by CORS'));
-}, credentials: false }));
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (CORS_ORIGINS.includes('*') || CORS_ORIGINS.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
+  }, credentials: false
+}));
 
 // Basic auth middleware for admin endpoints
 function requireAdmin(req, res, next) {
@@ -93,7 +94,7 @@ async function initDb() {
       updated_at: r.updated_at.toISOString(),
     };
     // Coerce unsupported types to a supported one
-    const allowedTypes = ['image', 'youtube', 'text', 'hls'];
+    const allowedTypes = ['image', 'youtube', 'text', 'vdoninja', 'twitch', 'custom', 'facebook'];
     if (!allowedTypes.includes(overlay.type)) {
       overlay.type = 'image';
     }
@@ -128,7 +129,7 @@ app.get('/overlay', async (req, res) => {
 app.put('/overlay', requireAdmin, async (req, res) => {
   const b = req.body || {};
   // validate
-  const allowedTypes = ['image', 'youtube', 'text', 'hls'];
+  const allowedTypes = ['image', 'youtube', 'text', 'vdoninja', 'twitch', 'custom'];
   const allowedPositions = ['inline', 'fullscreen'];
   const allowedFit = ['contain', 'cover'];
   const next = {
@@ -162,8 +163,6 @@ app.get('/overlay/stream', (req, res) => {
 });
 
 initDb().then(() => {
-  // Optional: start RTMP->HLS streaming server (Node-Media-Server)
-  startNms();
   app.listen(PORT, () => {
     console.log(`Backend listening on :${PORT}`);
   });
