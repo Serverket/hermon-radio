@@ -8,15 +8,100 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
+      includeAssets: [
+        "favicon.ico",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+        "apple-touch-icon.png",
+        "robots.txt",
+        "android-chrome-192x192.png",
+        "android-chrome-512x512.png",
+        "android-chrome-192x192-m.png",
+        "android-chrome-512x512-m.png",
+        "cover.png",
+        "charlie-brown.svg",
+        "programs/**/*.{png,jpg,jpeg,webp}",
+      ],
+      workbox: {
+        globPatterns: ["**/*.{css,html,ico,png,svg,woff2,woff,ttf,webp}"],
+        globIgnores: ["**/node_modules/**"],
+        additionalManifestEntries: [],
+        cleanupOutdatedCaches: true,
+        navigateFallback: "index.html",
+        navigateFallbackAllowlist: [/^\/$/, /^\/[^.]*$/],
+        runtimeCaching: [
+          {
+            urlPattern: /\/assets\/index-.*\.js$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "app-shell-js",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /\/assets\/.*\.js$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "bible-chunks",
+              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 90 },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts",
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /\.(?:woff2?|ttf|otf|eot)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "local-fonts",
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "image-cache",
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /\/overlay/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              networkTimeoutSeconds: 10,
+            },
+          },
+          {
+            urlPattern: /^https:\/\/(app\d*\.sonicpanelradio\.com|cdn\.|cdnjs\.cloudflare\.com|unpkg\.com|jsdelivr\.net)/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "cdn-cache",
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
       manifest: {
         name: "Radio Hermon",
         short_name: "Radio Hermon",
         description: "Un rocío que desciende de lo alto",
         start_url: "/",
+        id: "/",
         display: "standalone",
         background_color: "#ffffff",
-        lang: "en",
+        lang: "es",
         scope: "/",
+        categories: ["entertainment", "music"],
         icons: [
           {
             src: "/android-chrome-192x192.png",
@@ -43,7 +128,7 @@ export default defineConfig({
             purpose: "maskable",
           },
         ],
-        theme_color: "#ffffff",
+        theme_color: "#02e1ba",
       },
       devOptions: {
         enabled: true,

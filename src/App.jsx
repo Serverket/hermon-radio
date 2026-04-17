@@ -9,6 +9,7 @@ import BibleModal from './components/BibleModal';
 import ScheduleModal from './components/ScheduleModal';
 import Slideshow from './components/Slideshow';
 import AnimatedBackground from './components/AnimatedBackground';
+import InstallBanner from './components/InstallBanner';
 import "./styles/tailwind.css";
 import Footer from './Footer';
 import moment from "moment";
@@ -502,6 +503,7 @@ function App() {
 
   return (
     <div className="flex justify-center items-center" data-aos="fade-in" data-aos-delay="200">
+      <InstallBanner />
       <div className={`h-screen w-full ${darkToggle && "dark"}`}>
         {/* Main content container */}
         <div className="flex flex-col justify-center items-center w-full h-screen dark:bg-gray-800">
