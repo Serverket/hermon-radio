@@ -23,29 +23,12 @@ export default defineConfig({
         "programs/**/*.{png,jpg,jpeg,webp}",
       ],
       workbox: {
-        globPatterns: ["**/*.{css,html,ico,png,svg,woff2,woff,ttf,webp}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,woff,ttf,webp}"],
         globIgnores: ["**/node_modules/**"],
-        additionalManifestEntries: [],
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
         navigateFallbackAllowlist: [/^\/$/, /^\/[^.]*$/],
         runtimeCaching: [
-          {
-            urlPattern: /\/assets\/index-.*\.js$/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "app-shell-js",
-              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
-            },
-          },
-          {
-            urlPattern: /\/assets\/.*\.js$/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "bible-chunks",
-              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 90 },
-            },
-          },
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
             handler: "CacheFirst",
