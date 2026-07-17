@@ -26,22 +26,17 @@ const CustomPlayer = ({ darkMode, src }) => {
     try {  
       const response = await fetch(src, {  
         method: 'GET',  
+        mode: 'no-cors',  
         cache: 'no-cache',  
-        headers: {   
-          'Cache-Control': 'no-cache',  
-          'Range': 'bytes=0-1024' // Requesting the first 1024 bytes of the stream  
-        }  
       });  
 
-      // Check if the response is OK and contains audio data  
-      if (!response.ok) throw new Error('Server error');  
-
-      const contentType = response.headers.get('Content-Type');  
-      if (contentType && contentType.includes('audio')) {  
+      // In no-cors mode, response is opaque (type: "opaque") and we can't read
+      // status or headers. A resolved promise means the server is reachable.
+      if (response.type === 'opaque') {  
         retryCount.current = 0;  
         return 'active';  
       } else {  
-        throw new Error('Not audio stream');  
+        throw new Error('Unexpected response type');  
       }  
     } catch (error) {  
       retryCount.current = Math.min(retryCount.current + 1, 5);  

@@ -64,7 +64,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/(app\d*\.sonicpanelradio\.com|cdn\.|cdnjs\.cloudflare\.com|unpkg\.com|jsdelivr\.net)/i,
+            urlPattern: /^https:\/\/(cdn\.|cdnjs\.cloudflare\.com|unpkg\.com|jsdelivr\.net)/i,
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "cdn-cache",
