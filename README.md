@@ -1,7 +1,7 @@
 <div id="header" align="center">  
 <img src="./src/assets/hermon-radio.webp" alt="Cover" title="Cover">  
 
-# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v2.0.0-brightgreen) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
+# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v2.0.0) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
 Church Radio PWA with advanced streaming overlays, crafted with Vite and Tailwind CSS.  
 </div>  
 

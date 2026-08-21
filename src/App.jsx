@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import pkg from "../package.json";
 import { subscribeOverlay, putOverlay, authCheck } from './overlayClient';
 import MultiBibleCard from './MultiBibleCard';
 import CustomPlayer from './CustomPlayer';
@@ -219,6 +220,38 @@ function App() {
   const [adminMinimized, setAdminMinimized] = useState(false);
   const [overlayAnim, setOverlayAnim] = useState(false);
   const [overlayImageModalOpen, setOverlayImageModalOpen] = useState(false);
+  const cameraWindow = useRef(null);
+  const [customVdoLink, setCustomVdoLink] = useState("");
+  const cameraInterval = useRef(null);
+  const [cameraTabOpen, setCameraTabOpen] = useState(false);
+  const [isTransmitting, setIsTransmitting] = useState(false);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updateNote, setUpdateNote] = useState("");
+
+  // Version control polling
+  useEffect(() => {
+    const checkVersion = async () => {
+      try {
+        const res = await fetch(`/release-info.json?t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.version && data.version !== pkg.version) {
+            setUpdateAvailable(true);
+            setUpdateNote(data.note || 'Nueva versión');
+          }
+        }
+      } catch (e) { console.error('Version check failed', e); }
+    };
+    checkVersion();
+    const interval = setInterval(checkVersion, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (cameraInterval.current) clearInterval(cameraInterval.current);
+    };
+  }, []);
 
 
   /**
@@ -507,6 +540,16 @@ function App() {
       <div className={`h-screen w-full ${darkToggle && "dark"}`}>
         {/* Main content container */}
         <div className="flex flex-col justify-center items-center w-full h-screen dark:bg-gray-800">
+          {/* Update Banner */}
+          {updateAvailable && (
+            <div 
+              onClick={() => window.location.reload()}
+              className="absolute top-0 left-0 w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 cursor-pointer text-sm font-medium shadow-md transition-colors z-[300]"
+            >
+              🚀 ¡Nueva versión disponible ({updateNote})! Haz clic aquí para recargar.
+            </div>
+          )}
+
           {/* Animated Background */}
           <AnimatedBackground darkMode={darkToggle} />
 
@@ -756,7 +799,7 @@ function App() {
             <div className={`fixed top-0 left-0 right-0 z-[220] transition-all duration-200 ${adminEnter ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}>
               <div className="mx-auto max-w-screen-lg border-b border-gray-200 shadow-sm backdrop-blur bg-white/90 dark:bg-gray-900/90 dark:border-gray-700">
                 <div className="flex justify-between items-center px-3 py-2 sm:px-4">
-                  <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">Panel de Transmisión</h3>
+                  <h3 className="text-sm font-semibold text-gray-800 sm:text-base dark:text-gray-200">Panel de Transmisión <span className="text-xs font-normal text-gray-500 ml-1">v{pkg.version}</span></h3>
                   <div className="flex gap-1 items-center">
                     <button
                       onClick={() => setAdminMinimized(!adminMinimized)}
@@ -988,25 +1031,97 @@ function App() {
                           )}
 
                           {overlay.type === 'vdoninja' && (
-                            <div className="space-y-2">
-                              <label className="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">Link de Video (VDO.ninja)<InfoTip text={"Pega el link de VDO.ninja o tu stream principal."} /></label>
-                              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div className="space-y-3">
+                              <label className="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">Transmisión en Vivo (VDO.ninja)<InfoTip text={"Controles detallados para la transmisión en vivo."} /></label>
+                              
+                              <div className={`grid gap-2 ${(cameraTabOpen || isTransmitting) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                                 <button
                                   type="button"
-                                  onClick={() => window.open('https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9push=radiohermon', '_blank', 'noopener,noreferrer')}
-                                  className="inline-flex items-center justify-center px-2.5 py-2 rounded bg-red-600 text-white hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm whitespace-nowrap w-full sm:w-auto"
-                                  title="Abrir la pestaña de la cámara y copiar el enlace que aparece en la parte superior."
+                                  onClick={() => {
+                                    let livePushUrl = 'https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9&push=radiohermon_live';
+                                    if (customVdoLink.trim() !== '') livePushUrl = customVdoLink.trim();
+                                    cameraWindow.current = window.open(livePushUrl, '_blank');
+                                    
+                                    setCameraTabOpen(true);
+                                    if (cameraInterval.current) clearInterval(cameraInterval.current);
+                                    cameraInterval.current = setInterval(() => {
+                                      if (cameraWindow.current && cameraWindow.current.closed) {
+                                        setCameraTabOpen(false);
+                                        clearInterval(cameraInterval.current);
+                                      }
+                                    }, 1000);
+                                  }}
+                                  className={`flex flex-col items-center justify-center p-1.5 rounded-lg text-white transition-all shadow focus:outline-none focus:ring-2 ${cameraTabOpen ? 'bg-purple-600 hover:bg-purple-500 focus:ring-purple-500' : 'bg-red-600 hover:bg-red-500 focus:ring-red-500'}`}
+                                  title={cameraTabOpen ? "La cámara se está preparando en otra pestaña" : "Abrir Cámara"}
                                 >
-                                  <i className="icon-play-2 text-base" aria-hidden="true"></i>
-                                  <span>Iniciar Video</span>
+                                  <i className={`icon-videocam text-lg mb-0.5 ${cameraTabOpen ? 'animate-pulse' : ''}`}></i>
+                                  <span className="text-[10px] font-semibold leading-tight text-center">
+                                    {cameraTabOpen ? 'Cámara Abierta' : 'Activar Cámara'}
+                                  </span>
                                 </button>
-                                <input
-                                  type="text"
-                                  value={overlay.url}
-                                  onChange={(e) => setOverlay(o => ({ ...o, url: e.target.value }))}
-                                  placeholder="https://vdo.ninja/?view=XXXX"
-                                  className="w-full sm:flex-1 px-3 py-2 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                />
+
+                                {isTransmitting ? (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const newOverlay = { ...overlay, visible: false };
+                                      setOverlay(newOverlay);
+                                      try { 
+                                        await saveOverlay(newOverlay); 
+                                        setIsTransmitting(false);
+                                      } catch (e) { console.error(e); }
+                                    }}
+                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-orange-600"
+                                    title="Pausar Transmisión"
+                                  >
+                                    <i className="icon-minus text-lg mb-0.5"></i>
+                                    <span className="text-[10px] font-semibold leading-tight text-center">Pausar</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      let liveViewUrl = 'https://vdo.ninja/?view=radiohermon_live&autoplay=1';
+                                      if (customVdoLink.trim() !== '') liveViewUrl = customVdoLink.trim();
+                                      const newOverlay = { ...overlay, type: 'vdoninja', url: liveViewUrl, visible: true };
+                                      setOverlay(newOverlay);
+                                      try { 
+                                        await saveOverlay(newOverlay); 
+                                        setIsTransmitting(true);
+                                      } catch (e) { console.error(e); }
+                                    }}
+                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    title="Transmitir En Vivo"
+                                  >
+                                    <i className="icon-play-2 text-lg mb-0.5"></i>
+                                    <span className="text-[10px] font-semibold leading-tight text-center">Transmitir</span>
+                                  </button>
+                                )}
+
+                                {(cameraTabOpen || isTransmitting) && (
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      if (cameraWindow.current && !cameraWindow.current.closed) {
+                                        cameraWindow.current.close();
+                                      }
+                                      setCameraTabOpen(false);
+                                      if (cameraInterval.current) clearInterval(cameraInterval.current);
+                                      
+                                      const newOverlay = { ...overlay, visible: false };
+                                      setOverlay(newOverlay);
+                                      try { 
+                                        await saveOverlay(newOverlay); 
+                                        setIsTransmitting(false);
+                                      } catch (e) { console.error(e); }
+                                    }}
+                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                    title="Detener Todo"
+                                  >
+                                    <i className="icon-stop text-red-500 text-lg mb-0.5"></i>
+                                    <span className="text-[10px] font-semibold leading-tight text-center">Detener</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           )}
@@ -1025,53 +1140,122 @@ function App() {
                           )}
                         </div>
 
-                        {/* Actions - Compact Row */}
-                        <div className="flex flex-wrap gap-2 items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Visible</span>
-                            <button
-                              type="button"
-                              role="switch"
-                              aria-checked={!!overlay.visible}
-                              onClick={() => setOverlay(o => ({ ...o, visible: !o.visible }))}
-                              className={`inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${overlay.visible ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
-                            >
-                              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${overlay.visible ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                            </button>
+                        {/* Actions - Compact Row or Manual Controls */}
+                        {overlay.type === 'vdoninja' ? (
+                          <details className="group mt-2 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                            <summary className="flex items-center justify-between p-2 cursor-pointer bg-gray-50 dark:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-300 select-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                              <span>🛠️ Controles Manuales (Avanzado)</span>
+                              <i className="icon-down-open transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div className="p-3 bg-white dark:bg-gray-900 space-y-4 border-t border-gray-200 dark:border-gray-700">
+                              <div className="space-y-1">
+                                <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Link personalizado de VDO.ninja (opcional)</label>
+                                <input
+                                  type="text"
+                                  value={customVdoLink}
+                                  onChange={(e) => {
+                                    setCustomVdoLink(e.target.value);
+                                    setOverlay(o => ({ ...o, url: e.target.value }));
+                                  }}
+                                  placeholder="https://vdo.ninja/..."
+                                  className="w-full px-3 py-2 rounded-md border bg-white/60 dark:bg-gray-900/60 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                                />
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-2 items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Visible</span>
+                                  <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={!!overlay.visible}
+                                    onClick={() => {
+                                      let finalUrl = overlay.url;
+                                      if (!finalUrl || finalUrl.trim() === '') {
+                                        finalUrl = customVdoLink.trim() !== '' ? customVdoLink.trim() : 'https://vdo.ninja/?view=radiohermon_live&autoplay=1';
+                                      }
+                                      setOverlay(o => ({ ...o, visible: !o.visible, url: finalUrl }));
+                                    }}
+                                    className={`inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${overlay.visible ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                                  >
+                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${overlay.visible ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                                  </button>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={async () => {
+                                      const defaultOverlay = { visible: false, type: 'image', url: '', position: 'inline', fit: 'contain', source: 'url', title: '', text: '', bgColor: '#2563eb', textColor: '#ffffff' };
+                                      setOverlay(defaultOverlay);
+                                      try {
+                                        await saveOverlay(defaultOverlay);
+                                        setIsTransmitting(false);
+                                      } catch(e) { console.error(e); }
+                                    }}
+                                    className="inline-flex items-center justify-center p-2 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                    title="Limpiar"
+                                  >
+                                    <i className="icon-trash-1"></i>
+                                  </button>
+                                  <button
+                                    onClick={async () => {
+                                      let finalUrl = overlay.url;
+                                      if (!finalUrl || finalUrl.trim() === '') {
+                                        finalUrl = customVdoLink.trim() !== '' ? customVdoLink.trim() : 'https://vdo.ninja/?view=radiohermon_live&autoplay=1';
+                                      }
+                                      const newOverlay = { ...overlay, url: finalUrl };
+                                      setOverlay(newOverlay);
+                                      try { 
+                                        await saveOverlay(newOverlay); 
+                                        setIsTransmitting(newOverlay.visible);
+                                      } catch(e) { console.error(e); }
+                                    }}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+                                  >
+                                    <i className="icon-export"></i>
+                                    Transmitir
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </details>
+                        ) : (
+                          <div className="flex flex-wrap gap-2 items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Visible</span>
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={!!overlay.visible}
+                                onClick={() => setOverlay(o => ({ ...o, visible: !o.visible }))}
+                                className={`inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${overlay.visible ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}
+                              >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${overlay.visible ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                              </button>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const defaultOverlay = { visible: false, type: 'image', url: '', position: 'inline', fit: 'contain', source: 'url', title: '', text: '', bgColor: '#2563eb', textColor: '#ffffff' };
+                                  setOverlay(defaultOverlay);
+                                  saveOverlay(defaultOverlay);
+                                }}
+                                className="inline-flex items-center justify-center p-2 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                title="Limpiar"
+                              >
+                                <i className="icon-trash-1"></i>
+                              </button>
+                              <button
+                                onClick={() => saveOverlay(overlay)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+                              >
+                                <i className="icon-export"></i>
+                                Transmitir
+                              </button>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const defaultOverlay = {
-                                  visible: false,
-                                  type: 'image',
-                                  url: '',
-                                  position: 'inline',
-                                  fit: 'contain',
-                                  source: 'url',
-                                  title: '',
-                                  text: '',
-                                  bgColor: '#2563eb',
-                                  textColor: '#ffffff'
-                                };
-                                setOverlay(defaultOverlay);
-                                saveOverlay(defaultOverlay);
-                              }}
-                              className="inline-flex items-center justify-center p-2 rounded-md text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                              title="Limpiar"
-                            >
-                              <i className="icon-trash-1"></i>
-                            </button>
-                            <button
-                              onClick={() => saveOverlay(overlay)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-                            >
-                              <i className="icon-export"></i>
-                              Transmitir
-                            </button>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     )}
                   </div>
