@@ -1,0 +1,12 @@
+{
+  "current": {
+    "version": "2.0.0",
+    "note": "New Live Streaming UI with optimal handle logic"
+  },
+  "history": [
+    {
+      "version": "1.0.0",
+      "note": "Initial Release"
+    }
+  ]
+}
