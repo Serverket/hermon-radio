@@ -112,6 +112,7 @@ const imageSchedule = [
   { day: 5, time: "09:00", duration: 120, image: "/programs/regular/LasSagradasEscrituras.webp", name: "Escudriñando Las Sagradas Escrituras", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 5, time: "11:00", duration: 60, image: "/programs/regular/Sumergidosensupresencia.webp", name: "Sumergidos en Su Presencia", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
   { day: 5, time: "15:00", duration: 60, image: "/programs/regular/ElClamordeMiPueblo.webp", name: "El Clamor de Mi Pueblo", header: "Estás en sintonía de", footer: "¡Comunícate con nosotros para patrocinarnos!" },
+  { day: 5, time: "16:00", duration: 120, image: "/programs/regular/EncuentroconJesucristo.webp", name: "Encuentro con Jesucristo", header: "Estás en sintonía de", footer: "Una producción del Departamento de Evangelismo con su moderadora Neller de Piñuela" },
   { day: 5, time: "18:00", duration: 60, image: "/programs/regular/AlfayOmega.webp", name: "Alfa y Omega", header: "Estás en sintonía de", footer: 'Patrocinadores: Panadería La Nonna | Academia Twin Tonges | @longyu.shop' },
   { day: 5, time: "19:00", duration: 120, image: "/programs/regular/Tiempoderefrigerio.webp", name: "Tiempo de Refrigerio", header: "Estás en sintonía de", footer: "Patrocinadores: Pincho Pocholin | Kiosco La Bendición | Iglesia Tiempo de Refrigerio | Escríbenos al 0424 315 71 26" },
 
