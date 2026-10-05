@@ -226,6 +226,8 @@ function App() {
   const cameraInterval = useRef(null);
   const [cameraTabOpen, setCameraTabOpen] = useState(false);
   const [isTransmitting, setIsTransmitting] = useState(false);
+  const [externalMode, setExternalMode] = useState(false);
+  const [controlsMinimized, setControlsMinimized] = useState(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [updateNote, setUpdateNote] = useState("");
 
@@ -251,6 +253,7 @@ function App() {
   useEffect(() => {
     return () => {
       if (cameraInterval.current) clearInterval(cameraInterval.current);
+      if (cameraWindow.current) cameraWindow.current.close();
     };
   }, []);
 
@@ -1035,95 +1038,160 @@ function App() {
                             <div className="space-y-3">
                               <label className="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">Transmisión en Vivo (VDO.ninja)<InfoTip text={"Controles detallados para la transmisión en vivo."} /></label>
                               
-                              <div className={`grid gap-2 ${(cameraTabOpen || isTransmitting) ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                              {!cameraTabOpen ? (
                                 <button
                                   type="button"
-                                  onClick={() => {
-                                    let livePushUrl = 'https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9&push=radiohermon_live';
-                                    if (customVdoLink.trim() !== '') livePushUrl = customVdoLink.trim();
-                                    cameraWindow.current = window.open(livePushUrl, '_blank');
-                                    
-                                    setCameraTabOpen(true);
-                                    if (cameraInterval.current) clearInterval(cameraInterval.current);
-                                    cameraInterval.current = setInterval(() => {
-                                      if (cameraWindow.current && cameraWindow.current.closed) {
-                                        setCameraTabOpen(false);
-                                        clearInterval(cameraInterval.current);
-                                      }
-                                    }, 1000);
-                                  }}
-                                  className={`flex flex-col items-center justify-center p-1.5 rounded-lg text-white transition-all shadow focus:outline-none focus:ring-2 ${cameraTabOpen ? 'bg-purple-600 hover:bg-purple-500 focus:ring-purple-500' : 'bg-red-600 hover:bg-red-500 focus:ring-red-500'}`}
-                                  title={cameraTabOpen ? "La cámara se está preparando en otra pestaña" : "Abrir Cámara"}
+                                  onClick={() => setCameraTabOpen(true)}
+                                  className="w-full flex flex-col items-center justify-center py-6 rounded-lg text-white transition-all shadow focus:outline-none focus:ring-2 bg-red-600 hover:bg-red-500 focus:ring-red-500"
                                 >
-                                  <i className={`icon-videocam text-lg mb-0.5 ${cameraTabOpen ? 'animate-pulse' : ''}`}></i>
-                                  <span className="text-[10px] font-semibold leading-tight text-center">
-                                    {cameraTabOpen ? 'Cámara Abierta' : 'Activar Cámara'}
-                                  </span>
+                                  <i className="icon-videocam text-4xl mb-1"></i>
+                                  <span className="font-semibold text-sm">Activar Cámara</span>
                                 </button>
+                              ) : (
+                                <div className="relative w-full aspect-video max-h-48 md:max-h-64 rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-xl group">
+                                  <div className="absolute top-3 right-3 z-20">
+                                    {/* Modo Local/Delegado */}
+                                    {externalMode ? (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setExternalMode(false);
+                                          if (cameraWindow.current) {
+                                            cameraWindow.current.close();
+                                            cameraWindow.current = null;
+                                          }
+                                        }}
+                                        className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-500/80 hover:bg-blue-600 text-white transition-colors shadow-lg backdrop-blur-md focus:outline-none"
+                                        title="Recuperar iframe local"
+                                      >
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                      </button>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          const url = customVdoLink.trim() !== '' ? customVdoLink.trim() : 'https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9&push=radiohermon_live';
+                                          cameraWindow.current = window.open(url, '_blank');
+                                          setExternalMode(true);
+                                        }}
+                                        className="flex items-center justify-center w-9 h-9 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/90 hover:text-white transition-colors shadow-lg backdrop-blur-md focus:outline-none"
+                                        title="Delegar a otra pestaña"
+                                      >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                      </button>
+                                    )}
+                                  </div>
 
-                                {isTransmitting ? (
-                                  <button
-                                    type="button"
-                                    onClick={async () => {
-                                      const newOverlay = { ...overlay, visible: false };
-                                      setOverlay(newOverlay);
-                                      try { 
-                                        await saveOverlay(newOverlay); 
-                                        setIsTransmitting(false);
-                                      } catch (e) { console.error(e); }
-                                    }}
-                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-orange-600"
-                                    title="Pausar Transmisión"
-                                  >
-                                    <i className="icon-minus text-lg mb-0.5"></i>
-                                    <span className="text-[10px] font-semibold leading-tight text-center">Pausar</span>
-                                  </button>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={async () => {
-                                      let liveViewUrl = 'https://vdo.ninja/?view=radiohermon_live&autoplay=1';
-                                      if (customVdoLink.trim() !== '') liveViewUrl = customVdoLink.trim();
-                                      const newOverlay = { ...overlay, type: 'vdoninja', url: liveViewUrl, visible: true };
-                                      setOverlay(newOverlay);
-                                      try { 
-                                        await saveOverlay(newOverlay); 
-                                        setIsTransmitting(true);
-                                      } catch (e) { console.error(e); }
-                                    }}
-                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-green-500"
-                                    title="Transmitir En Vivo"
-                                  >
-                                    <i className="icon-play-2 text-lg mb-0.5"></i>
-                                    <span className="text-[10px] font-semibold leading-tight text-center">Transmitir</span>
-                                  </button>
-                                )}
-
-                                {(cameraTabOpen || isTransmitting) && (
-                                  <button
-                                    type="button"
-                                    onClick={async () => {
-                                      if (cameraWindow.current && !cameraWindow.current.closed) {
-                                        cameraWindow.current.close();
-                                      }
-                                      setCameraTabOpen(false);
-                                      if (cameraInterval.current) clearInterval(cameraInterval.current);
+                                  
+                                  {externalMode ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-gray-300 bg-gray-900 absolute inset-0 z-0">
+                                      <svg className="w-12 h-12 mb-3 text-gray-600 animate-pulse" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                                      <h3 className="text-sm font-bold text-gray-200 mb-1">Cámara Delegada</h3>
+                                      <p className="text-xs text-gray-400 max-w-xs leading-tight mb-8">Estás emitiendo desde otra pestaña para evitar conflictos de recursos locales.</p>
+                                    </div>
+                                  ) : (
+                                    <iframe
+                                      src={customVdoLink.trim() !== '' ? customVdoLink.trim() : 'https://vdo.ninja/?webcam&quality=1&stereo=1&autostart&device=1&muted&codec=vp9&push=radiohermon_live'}
+                                      allow="camera; microphone; autoplay; fullscreen"
+                                      className="w-full h-full object-cover"
+                                    ></iframe>
+                                  )}
+                                  
+                                  {/* Glassmorphism Controls Pill */}
+                                  {!controlsMinimized ? (
+                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 px-2 py-2 bg-black/60 backdrop-blur-md rounded-full shadow-2xl border border-white/10 w-[96%] md:w-auto max-w-md transition-all duration-300 z-10">
                                       
-                                      const newOverlay = { ...overlay, visible: false };
-                                      setOverlay(newOverlay);
-                                      try { 
-                                        await saveOverlay(newOverlay); 
-                                        setIsTransmitting(false);
-                                      } catch (e) { console.error(e); }
-                                    }}
-                                    className="flex flex-col items-center justify-center p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-white transition-all shadow focus:outline-none focus:ring-2 focus:ring-gray-500"
-                                    title="Detener Todo"
-                                  >
-                                    <i className="icon-stop text-red-500 text-lg mb-0.5"></i>
-                                    <span className="text-[10px] font-semibold leading-tight text-center">Detener</span>
-                                  </button>
-                                )}
-                              </div>
+
+
+                                      {isTransmitting ? (
+                                        <button
+                                          type="button"
+                                          onClick={async () => {
+                                            const newOverlay = { ...overlay, visible: false };
+                                            setOverlay(newOverlay);
+                                            try { 
+                                              await saveOverlay(newOverlay); 
+                                              setIsTransmitting(false);
+                                            } catch (e) { console.error(e); }
+                                          }}
+                                          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-orange-500/90 hover:bg-orange-400 text-white text-xs font-semibold tracking-wide transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                          title="Pausar Transmisión"
+                                        >
+                                          <i className="icon-minus text-sm"></i> Pausar
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={async () => {
+                                            let liveViewUrl = 'https://vdo.ninja/?view=radiohermon_live&autoplay=1';
+                                            if (customVdoLink.trim() !== '') liveViewUrl = customVdoLink.trim();
+                                            const newOverlay = { ...overlay, type: 'vdoninja', url: liveViewUrl, visible: true };
+                                            setOverlay(newOverlay);
+                                            try { 
+                                              await saveOverlay(newOverlay); 
+                                              setIsTransmitting(true);
+                                            } catch (e) { console.error(e); }
+                                          }}
+                                          className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-green-500/90 hover:bg-green-400 text-white text-xs font-semibold tracking-wide transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                          title="Transmitir En Vivo"
+                                        >
+                                          <i className="icon-play-2 text-sm"></i> Transmitir
+                                        </button>
+                                      )}
+
+                                      <button
+                                        type="button"
+                                        onClick={async () => {
+                                          setCameraTabOpen(false);
+                                          setExternalMode(false);
+                                          if (cameraWindow.current) {
+                                            cameraWindow.current.close();
+                                            cameraWindow.current = null;
+                                          }
+                                          const newOverlay = { ...overlay, visible: false };
+                                          setOverlay(newOverlay);
+                                          try { 
+                                            await saveOverlay(newOverlay); 
+                                            setIsTransmitting(false);
+                                          } catch (e) { console.error(e); }
+                                        }}
+                                        className="flex-none flex items-center justify-center w-9 h-9 rounded-full bg-red-600/90 hover:bg-red-500 text-white transition-colors focus:outline-none shadow-md"
+                                        title="Cerrar Cámara"
+                                      >
+                                        <i className="icon-stop text-sm"></i>
+                                      </button>
+                                      
+                                      <div className="w-[1px] h-6 bg-white/20 mx-0.5"></div>
+                                      
+                                      <button
+                                        type="button"
+                                        onClick={() => setControlsMinimized(true)}
+                                        className="flex-none flex items-center justify-center w-7 h-7 rounded-full bg-transparent hover:bg-white/10 text-white/60 hover:text-white transition-colors focus:outline-none"
+                                        title="Minimizar Controles"
+                                      >
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={() => setControlsMinimized(false)}
+                                      className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white/80 hover:text-white transition-all shadow-lg z-10"
+                                      title="Restaurar Controles"
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+                                    </button>
+                                  )}
+                                  
+                                  {isTransmitting && (
+                                    <div className="absolute top-3 left-3 bg-red-600/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-md shadow-lg flex items-center gap-1.5 z-10">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                      EN VIVO
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
 
