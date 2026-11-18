@@ -1,124 +1,190 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useSyncExternalStore } from 'react';
+import {
+  isInstallDismissed,
+  snoozeInstallPrompt,
+  dismissInstallPermanently,
+} from '../lib/pwaDismiss';
 
-const DISMISS_KEY = "pwa-install-dismissed";
-const ENGAGEMENT_DELAY_MS = 30_000; // 30 seconds
-const SNOOZE_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const ENGAGEMENT_DELAY_MS = 30_000;
 
-function getDismissRecord() {
-  try {
-    return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function setDismissRecord(record) {
-  localStorage.setItem(DISMISS_KEY, JSON.stringify(record));
-}
-
-function getIsStandalone() {
+function detectStandalone() {
+  if (typeof window === 'undefined') return false;
   return (
-    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: minimal-ui)').matches ||
     window.navigator.standalone === true
   );
 }
 
-function getIsIOS() {
-  return (
-    /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream
-  );
+function detectIOS() {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  const isAppleMobile = /iphone|ipad|ipod/i.test(ua) && !window.MSStream;
+  const isIPadOS = navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1;
+  return isAppleMobile || isIPadOS;
 }
 
-function getIsIOSSafari() {
-  const ua = navigator.userAgent;
-  return (
-    getIsIOS() &&
-    /safari/i.test(ua) &&
-    !/chrome|crios|fxios/i.test(ua)
-  );
+function detectIOSSafari() {
+  if (!detectIOS()) return false;
+  const ua = navigator.userAgent || '';
+  return /safari/i.test(ua) && !/chrome|crios|fxios/i.test(ua);
 }
 
-export default function useInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showBanner, setShowBanner] = useState(false);
-  const [showIOSModal, setShowIOSModal] = useState(false);
-  const [engaged, setEngaged] = useState(false);
-  const promptRef = useRef(null);
+// Module-level shared store so every install CTA observes the exact same single-use prompt
+let deferredPrompt = null;
+let engaged = false;
+let initialized = false;
+let forceDismissedThisSession = false;
+let forceIOSInstructions = false;
 
-  // Track engagement delay
-  useEffect(() => {
-    const timer = setTimeout(() => setEngaged(true), ENGAGEMENT_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, []);
+const listeners = new Set();
+let snapshot = {
+  showBanner: false,
+  showIOSModal: false,
+  canInstallPrompt: false,
+  isStandalone: detectStandalone(),
+};
 
-  // Capture beforeinstallprompt
-  useEffect(() => {
-    const handler = (e) => {
-      e.preventDefault();
-      promptRef.current = e;
-      setDeferredPrompt(e);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+function computeSnapshot() {
+  const standalone = detectStandalone();
+  const dismissed = forceDismissedThisSession || isInstallDismissed();
+  const iosSafari = detectIOSSafari();
 
-  // Listen for appinstalled
-  useEffect(() => {
-    const handler = () => {
-      setDismissRecord({ permanent: true });
-      setShowBanner(false);
-      setShowIOSModal(false);
-      setDeferredPrompt(null);
-      promptRef.current = null;
-    };
-    window.addEventListener("appinstalled", handler);
-    return () => window.removeEventListener("appinstalled", handler);
-  }, []);
-
-  // Decide whether to show banner/modal after engagement delay
-  useEffect(() => {
-    if (!engaged) return;
-    if (getIsStandalone()) return;
-
-    const dismissed = getDismissRecord();
-    if (dismissed.permanent) return;
-    if (dismissed.until && Date.now() < dismissed.until) return;
-
-    if (promptRef.current) {
-      setShowBanner(true);
-    } else if (getIsIOSSafari()) {
-      setShowIOSModal(true);
-    }
-  }, [engaged, deferredPrompt]);
-
-  const installApp = useCallback(async () => {
-    const prompt = promptRef.current;
-    if (!prompt) return;
-    prompt.prompt();
-    const { outcome } = await prompt.userChoice;
-    if (outcome === "accepted") {
-      setDismissRecord({ permanent: true });
-    }
-    setShowBanner(false);
-    setDeferredPrompt(null);
-    promptRef.current = null;
-  }, []);
-
-  const dismissSnooze = useCallback(() => {
-    setDismissRecord({ until: Date.now() + SNOOZE_DURATION_MS });
-    setShowBanner(false);
-    setShowIOSModal(false);
-  }, []);
-
-  const dismissPermanent = useCallback(() => {
-    setDismissRecord({ permanent: true });
-    setShowBanner(false);
-    setShowIOSModal(false);
-  }, []);
+  const shouldPrompt = engaged && !standalone && !dismissed;
+  const showBanner = Boolean(shouldPrompt && deferredPrompt);
+  const showIOSModal =
+    Boolean(forceIOSInstructions && !standalone && !dismissed) ||
+    Boolean(shouldPrompt && !deferredPrompt && iosSafari);
 
   return {
     showBanner,
     showIOSModal,
+    canInstallPrompt: Boolean(deferredPrompt),
+    isStandalone: standalone,
+  };
+}
+
+function syncSnapshot() {
+  const next = computeSnapshot();
+  if (
+    next.showBanner !== snapshot.showBanner ||
+    next.showIOSModal !== snapshot.showIOSModal ||
+    next.canInstallPrompt !== snapshot.canInstallPrompt ||
+    next.isStandalone !== snapshot.isStandalone
+  ) {
+    snapshot = next;
+    listeners.forEach((listener) => listener());
+  }
+}
+
+function initStore() {
+  if (initialized || typeof window === 'undefined') return;
+  initialized = true;
+
+  window.setTimeout(() => {
+    engaged = true;
+    syncSnapshot();
+  }, ENGAGEMENT_DELAY_MS);
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    syncSnapshot();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    dismissInstallPermanently();
+    deferredPrompt = null;
+    forceDismissedThisSession = true;
+    forceIOSInstructions = false;
+    syncSnapshot();
+  });
+
+  ['(display-mode: standalone)', '(display-mode: minimal-ui)'].forEach((query) => {
+    const mql = window.matchMedia(query);
+    if (mql?.addEventListener) {
+      mql.addEventListener('change', syncSnapshot);
+    }
+  });
+}
+
+function subscribe(listener) {
+  initStore();
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot() {
+  initStore();
+  return snapshot;
+}
+
+const SERVER_SNAPSHOT = {
+  showBanner: false,
+  showIOSModal: false,
+  canInstallPrompt: false,
+  isStandalone: false,
+};
+
+function getServerSnapshot() {
+  return SERVER_SNAPSHOT;
+}
+
+/**
+ * Trigger the browser's single-use install prompt and release it after any outcome.
+ * Falls back cleanly if prompt() rejects (e.g. NotAllowedError).
+ */
+export async function installApp() {
+  const promptEvent = deferredPrompt;
+  if (!promptEvent) {
+    if (detectIOS()) {
+      forceIOSInstructions = true;
+      syncSnapshot();
+    }
+    return;
+  }
+
+  // Release immediately since beforeinstallprompt can only be invoked once
+  deferredPrompt = null;
+
+  try {
+    await promptEvent.prompt();
+    const choice = await promptEvent.userChoice;
+    if (choice?.outcome === 'accepted') {
+      dismissInstallPermanently();
+      forceDismissedThisSession = true;
+    } else {
+      forceDismissedThisSession = true;
+      snoozeInstallPrompt();
+    }
+  } catch {
+    forceDismissedThisSession = true;
+    if (detectIOS()) {
+      forceIOSInstructions = true;
+    }
+  } finally {
+    syncSnapshot();
+  }
+}
+
+export function dismissSnooze() {
+  snoozeInstallPrompt();
+  forceDismissedThisSession = true;
+  forceIOSInstructions = false;
+  syncSnapshot();
+}
+
+export function dismissPermanent() {
+  dismissInstallPermanently();
+  forceDismissedThisSession = true;
+  forceIOSInstructions = false;
+  syncSnapshot();
+}
+
+export default function useInstallPrompt() {
+  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return {
+    ...state,
     installApp,
     dismissSnooze,
     dismissPermanent,

@@ -7,9 +7,15 @@ export function subscribeOverlay(baseUrl, onData) {
   const es = new EventSource(sseUrl, { withCredentials: false });
   es.onopen = () => { /* connected */ };
   es.onmessage = (evt) => {
-    try { onData(JSON.parse(evt.data)); } catch (e) { }
+    try {
+      onData(JSON.parse(evt.data));
+    } catch {
+      // Ignore malformed SSE payload
+    }
   };
-  es.onerror = (err) => { };
+  es.onerror = () => {
+    // Polling fallback handles transient SSE errors
+  };
 
   // 2. Polling Fallback (Guarantees delivery every 3s if SSE fails/blocks)
   // This ensures everyone gets updates eventually, even on restrictive networks.

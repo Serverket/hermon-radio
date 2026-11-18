@@ -1,24 +1,32 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Slideshow from './Slideshow';
+import { CloseIcon } from './Icons';
+import { sanitizeAdUrl } from '../utils/programAds';
 
 /**
- * Image Modal component for displaying enlarged program images
- * @param {Object} props - Component properties
- * @param {boolean} props.isOpen - Whether the modal is open
- * @param {Function} props.onClose - Function to close the modal
- * @param {string} props.image - The image source URL
- * @param {string[]} props.images - Array of images for slideshow
- * @param {string} props.name - The name/title of the image
- * @param {string} props.header - The header text for the image
- * @param {string} props.footer - The footer text for the image
- * @param {boolean} props.darkMode - Whether dark mode is enabled
+ * Image Modal component for displaying enlarged program images, muted videos, and optional external link CTA
  */
-const ImageModal = ({ isOpen, onClose, image, images, name, header, footer, darkMode }) => {
+const ImageModal = ({
+  isOpen,
+  onClose,
+  image,
+  images,
+  mediaType = 'image',
+  poster = '',
+  name,
+  header,
+  footer,
+  url = '',
+  linkLabel = 'Visitar ↗',
+  darkMode,
+}) => {
   const [entered, setEntered] = useState(false);
-  // Handle ESC key to close modal (attach only when open)
+
   useEffect(() => {
     const handleEsc = (event) => {
-      if (event.keyCode === 27) onClose();
+      if (event.key === 'Escape' || event.keyCode === 27) onClose();
     };
     if (isOpen) {
       document.addEventListener('keydown', handleEsc);
@@ -28,85 +36,120 @@ const ImageModal = ({ isOpen, onClose, image, images, name, header, footer, dark
     };
   }, [isOpen, onClose]);
 
-  // Animate when opening
   useEffect(() => {
     if (!isOpen) {
       setEntered(false);
-      return;
+      return undefined;
     }
     setEntered(false);
     const id = requestAnimationFrame(() => setEntered(true));
     return () => cancelAnimationFrame(id);
   }, [isOpen]);
 
-  // Don't render anything if modal is closed
   if (!isOpen) return null;
 
-  // Handle click on backdrop to close modal
+  const safeUrl = sanitizeAdUrl(url);
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className={`fixed inset-0 z-[250] flex items-center justify-center transition-opacity duration-200 ${entered ? 'bg-black/75 opacity-100' : 'bg-black/0 opacity-0'}`}
+      aria-label={name || 'Imagen ampliada'}
+      className={`${darkMode ? 'dark' : ''} fixed inset-0 z-[250] flex items-center justify-center p-4 transition-opacity duration-200 backdrop-blur-sm ${
+        entered ? 'bg-slate-900/50 opacity-100' : 'bg-slate-900/0 opacity-0'
+      }`}
       onClick={handleBackdropClick}
     >
-      <div className={`relative w-[92vw] sm:w-auto max-w-3xl mx-auto rounded-lg overflow-hidden shadow-xl transform transition-all duration-200 ${entered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-1'} 
-                      ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className={"absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none"}
-          aria-label="Cerrar"
-        >
-          <i className="icon-cancel text-2xl" />
-        </button>
-
-        {/* Content */}
-        <div className="p-4">
-          <div className="flex flex-col items-center">
-            {/* Header */}
+      <div
+        className={`glass-shell relative w-[94vw] sm:w-[560px] max-w-3xl max-h-[92vh] overflow-y-auto mx-auto rounded-[28px] transform transition-all duration-200 p-5 sm:p-6 space-y-4 ${
+          entered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-1'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 text-left">
             {header && (
-              <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+              <span className="block text-xs font-bold uppercase tracking-wider accent-icon">
                 {header}
-              </h3>
+              </span>
             )}
+            <h3 className="text-lg sm:text-xl font-extrabold text-slate-800 dark:text-white leading-tight break-words">
+              {name || 'Radio Hermón 95.3 FM'}
+            </h3>
+          </div>
 
-            {/* Image or Slideshow */}
-            <div className="w-full flex justify-center my-2">
-              {images && images.length > 0 ? (
-                <div className="w-full h-[60vh] sm:h-[70vh] min-h-[300px] min-w-[300px] sm:min-w-[500px] bg-black/5 dark:bg-white/5 rounded-md overflow-hidden relative">
-                  <Slideshow
-                    images={images}
-                    interval={4000}
-                    className="w-full h-full"
-                    title={name}
-                  />
-                </div>
-              ) : (
-                <img
-                  src={image}
-                  alt={name || 'Program image'}
-                  className="max-h-[70vh] object-contain rounded-md"
-                />
-              )}
-            </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar"
+            className="w-10 h-10 rounded-full glass-pill text-slate-600 dark:text-slate-300 flex items-center justify-center flex-shrink-0 hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-amber-400"
+          >
+            <CloseIcon />
+          </button>
+        </div>
 
-            {/* Footer */}
+        <div className="w-full glass-inner rounded-2xl p-2 flex justify-center overflow-hidden">
+          {images && images.length > 0 ? (
+            <Slideshow
+              images={images}
+              interval={4000}
+              className="rounded-xl shadow-md"
+              imgClassName="max-h-[60vh] sm:max-h-[65vh] w-auto max-w-full object-contain"
+              title={name}
+            />
+          ) : mediaType === 'video' ? (
+            <video
+              src={image}
+              poster={poster || undefined}
+              autoPlay
+              loop
+              muted
+              playsInline
+              controls
+              className="max-h-[60vh] sm:max-h-[65vh] w-auto max-w-full rounded-xl shadow-md bg-black"
+            />
+          ) : (
+            <img
+              src={image}
+              alt={name || 'Program image'}
+              className="max-h-[60vh] sm:max-h-[65vh] w-auto object-contain rounded-xl shadow-md"
+            />
+          )}
+        </div>
+
+        {(footer || safeUrl) && (
+          <div
+            className={`glass-inner rounded-2xl p-3.5 ${
+              footer && safeUrl
+                ? 'flex flex-wrap items-center justify-between gap-3 text-left'
+                : 'flex flex-col sm:flex-row items-center justify-center gap-3 text-center'
+            }`}
+          >
             {footer && (
-              <div className={`mt-4 text-sm text-center max-w-lg ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 flex-1 min-w-[180px]">
                 {footer}
-              </div>
+              </p>
+            )}
+            {safeUrl && (
+              <a
+                href={safeUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="btn-opal-gold px-4 py-2 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1.5 flex-shrink-0 hover:scale-[1.03] transition-transform focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                {linkLabel || 'Visitar ↗'}
+              </a>
             )}
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -1,34 +1,43 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import MultiBibleCard from '../MultiBibleCard';
 
-const BibleModal = ({ isOpen, onClose, darkMode }) => {
+const BibleModal = ({ isOpen, onClose, darkMode, initialSelection = null }) => {
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
-  return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Santa Biblia Reina-Valera 1960"
+      className={`${darkMode ? 'dark' : ''} fixed inset-0 z-[1000] bg-slate-900/35 backdrop-blur-sm flex justify-center items-center p-3 sm:p-6`}
       onClick={onClose}
     >
-      <div 
-        className={`relative w-[90%] h-[90%] md:w-[80%] md:h-[80%] lg:w-[75%] lg:h-[75%] rounded-xl overflow-hidden ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+      <div
+        className="glass-shell rounded-[24px] sm:rounded-[28px] w-full max-w-[760px] h-[92dvh] sm:h-[88vh] max-h-[760px] p-4 sm:p-7 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         data-aos="zoom-in"
+        data-aos-duration="300"
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white focus:outline-none"
-          aria-label="Cerrar"
-          title="Cerrar"
-        >
-          <i className="icon-cancel text-2xl" />
-        </button>
-        <div className="h-full w-full">
-          <div className="h-full w-full p-4 text-xl">
-            <MultiBibleCard darkMode={darkMode} isVisible={true} />
-          </div>
-        </div>
+        <MultiBibleCard
+          darkMode={darkMode}
+          isVisible={true}
+          onClose={onClose}
+          initialSelection={initialSelection}
+        />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -1,47 +1,64 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react/prop-types */
+import { useState, useEffect } from 'react';
 
-const Slideshow = ({ images, interval = 5000, className = "", onClick, title }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
+const Slideshow = ({
+  images,
+  interval = 5000,
+  className = '',
+  imgClassName = '',
+  onClick,
+  title,
+  onSlideChange,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
-        if (!images || images.length <= 1) return;
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
 
-        const timer = setInterval(() => {
-            setIsTransitioning(true);
-            setTimeout(() => {
-                setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-                setIsTransitioning(false);
-            }, 500); // Wait for fade out
-        }, interval);
+  useEffect(() => {
+    if (!images || images.length === 0) return;
+    onSlideChange?.(images[currentIndex]);
+  }, [images, currentIndex, onSlideChange]);
 
-        return () => clearInterval(timer);
-    }, [images, interval]);
+  useEffect(() => {
+    if (!images || images.length <= 1) return undefined;
 
-    if (!images || images.length === 0) return null;
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, interval);
 
-    return (
-        <div className={`relative overflow-hidden ${className}`}>
-            {images.map((img, index) => (
-                <img
-                    key={img}
-                    src={img}
-                    alt={`Slide ${index + 1}`}
-                    onClick={onClick}
-                    title={title}
-                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                        }`}
-                />
-            ))}
+    return () => clearInterval(timer);
+  }, [images, interval]);
 
-            {/* Background placeholder to maintain size if needed, though absolute positioning might require container sizing */}
-            <img
-                src={images[0]}
-                alt="placeholder"
-                className="invisible relative z-[-1]"
-            />
-        </div>
-    );
+  if (!images || images.length === 0) return null;
+
+  const activeSrc = images[currentIndex] || images[0];
+
+  return (
+    <div className={`relative overflow-hidden ${imgClassName ? 'w-fit max-w-full mx-auto' : ''} ${className}`}>
+      {images.map((img, index) => (
+        <img
+          key={img}
+          src={img}
+          alt={`Slide ${index + 1}`}
+          onClick={onClick}
+          title={title}
+          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 ease-in-out ${
+            imgClassName.includes('group-hover') ? 'transition-[opacity,transform]' : ''
+          } ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+        />
+      ))}
+
+      {/* Invisible in-flow spacer matching the active slide's aspect ratio so container corners hug the poster */}
+      <img
+        src={activeSrc}
+        alt=""
+        aria-hidden="true"
+        className={`invisible pointer-events-none block ${imgClassName || 'max-h-full mx-auto'}`}
+      />
+    </div>
+  );
 };
 
 export default Slideshow;

@@ -1,7 +1,7 @@
 <div id="header" align="center">  
-<img src="./src/assets/hermon-radio.webp" alt="Cover" title="Cover">  
+<img src="./public/cover.png" alt="Cover" title="Radio Hermón 95.3 FM">  
 
-# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v2.1.0) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
+# Hermon Radio &middot; ![Release Status](https://img.shields.io/badge/release-v3.0.0-d97706.svg) [![npm version](https://img.shields.io/npm/v/react.svg?style=flat)](https://www.npmjs.com/package/react) [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)  
 Church Radio PWA with advanced streaming overlays, crafted with Vite and Tailwind CSS.  
 </div>  
 
@@ -25,7 +25,7 @@ bun run dev:bun
 ### **Frontend / UI:**  
 - ⚛️ **React**: Utilizes React to create dynamic user interfaces.  
 - 🎨 **Tailwind CSS**: Employs Tailwind CSS for a responsive and modern design.  
-- 🔍 **Fontello**: Integrates Fontello for efficient icon management.  
+- 🎯 **Custom SVG Icons**: Lightweight inline SVG icons with consistent stroke weight.  
 - ⚡ **Vite**: Utilizes Vite as a fast development and build tool for modern web applications.  
 
 ### **Custom Audio Player Features:**  

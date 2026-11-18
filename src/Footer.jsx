@@ -1,60 +1,84 @@
-import React, { useState } from 'react';
-import Church from "./assets/hermon-church.webp";
+import { useState } from 'react';
+import Church from './assets/hermon-church.webp';
+import { ChurchIcon, FacebookIcon, InstagramIcon, XTwitterIcon } from './components/Icons';
 
 const Footer = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="flex fixed inset-x-0 bottom-0 z-20 justify-center items-center no-underline focus:underline-none focus:no-underline">
+    <footer
+      className="fixed inset-x-0 bottom-0 z-20 flex justify-center px-3 pointer-events-none"
+      style={{
+        paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0px))',
+        paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0px))',
+      }}
+    >
       <div
-        className="mx-auto h-12 w-[370px] sm:w-96 bg-gray-100 dark:bg-gray-900 transform filter backdrop-filter backdrop-blur-md bg-opacity-40 firefox:bg-opacity-50 opacity-80 rounded-t-xl relative overflow-hidden transition-all duration-300"
+        className="pointer-events-auto relative w-full max-w-[440px] min-h-[3.5rem] glass-shell rounded-t-2xl border-b-0 overflow-hidden transition-all duration-300"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Background image - blurred but more visible on hover */}
+        {/* Softly frosted church facade texture */}
         <img
-          className={`object-cover absolute inset-0 w-full h-full blur-sm transition-all duration-500 ease-in-out ${isHovered ? 'opacity-40' : 'opacity-10'}`}
           src={Church}
-          alt="Church"
+          alt="Iglesia Evangélica Hermón"
+          className={`object-cover absolute inset-0 w-full h-full blur-[5px] scale-105 transition-opacity duration-500 ${
+            isHovered ? 'opacity-25' : 'opacity-15'
+          }`}
         />
+        <div className="absolute inset-0 bg-white/45 dark:bg-slate-900/50 transition-colors duration-300" />
 
-        {/* Church name - fades out on hover */}
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
-        >
-          <div className="flex items-center space-x-2 z-10">
-            <i className="icon-home-circled text-gray-800 dark:text-gray-200" />
-            <span className="filter drop-shadow-md font-bold text-lg md:text-xl text-gray-800 dark:text-gray-200">Iglesia Hermón</span>
-          </div>
-        </div>
-
-        {/* Content that appears on hover */}
-        <div
-          className={`absolute inset-0 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'} flex flex-col justify-center items-center h-full`}
-        >
-          {/* Social media links */}
-          <div className="flex flex-row justify-center items-center space-x-3 text-center">
-            <a href="https://www.facebook.com/people/Iglesia-Evangelica-Hermon/100064624004737/" className="pointer-cursor" target="_blank" rel="noreferrer">
-              <button type="button" className="text-white bg-[#3b5998] hover:bg-gray-200 hover:text-[#3b5998] dark:bg-gray-800 dark:hover:bg-gray-400 dark:text-gray-400 dark:hover:text-gray-800 hover:drop-shadow-md w-6 h-6 icon-facebook-squared active:no-underline no-underline focus:outline-none rounded-full flex items-center justify-center transition-all duration-200 text-[10px]">
-              </button>
-            </a>
-            <a href="https://x.com/IglesiaHermon/" className="pointer-cursor" target="_blank" rel="noreferrer">
-              <button type="button" className="text-white bg-[#00aced] hover:bg-gray-200 hover:text-[#00aced] dark:bg-gray-800 dark:hover:bg-gray-400 dark:text-gray-400 dark:hover:text-gray-800 hover:drop-shadow-md w-6 h-6 icon-twitter-2 active:no-underline no-underline focus:outline-none rounded-full flex items-center justify-center transition-all duration-200 text-[10px]">
-              </button>
-            </a>
-            <a href="https://instagram.com/iglesiaevangelicahermon/" className="pointer-cursor" target="_blank" rel="noreferrer">
-              <button type="button" className="text-white bg-[#bc2a8d] hover:bg-gray-200 hover:text-[#bc2a8d] dark:bg-gray-800 dark:hover:bg-gray-400 dark:text-gray-400 dark:hover:text-gray-800 hover:drop-shadow-md w-6 h-6 icon-instagram-1 active:no-underline no-underline focus:outline-none rounded-full flex items-center justify-center transition-all duration-200 text-[10px]">
-              </button>
-            </a>
+        <div className="relative z-10 flex items-center justify-between w-full h-14 px-4 sm:px-5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="accent-icon flex-shrink-0">
+              <ChurchIcon />
+            </span>
+            <div className="min-w-0 text-left">
+              <div className="font-bold text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-tight truncate">
+                Iglesia Hermón
+              </div>
+              <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400 truncate">
+                © {new Date().getFullYear()} Fundación Cultural Hermón RTV
+              </div>
+            </div>
           </div>
 
-          {/* Small copyright */}
-          <div className="text-gray-800 dark:text-gray-400 text-[10px] mt-1">
-            © {new Date().getFullYear()} Fundación Cultural Hermón RTV
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <a
+              href="https://www.facebook.com/people/Iglesia-Evangelica-Hermon/100064624004737/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook Iglesia Hermón"
+              title="Facebook"
+              className="glass-pill w-8 h-8 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover-accent-icon transition-all hover:scale-105"
+            >
+              <FacebookIcon />
+            </a>
+            <a
+              href="https://x.com/IglesiaHermon/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="X Iglesia Hermón"
+              title="X"
+              className="glass-pill w-8 h-8 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover-accent-icon transition-all hover:scale-105"
+            >
+              <XTwitterIcon />
+            </a>
+            <a
+              href="https://instagram.com/iglesiaevangelicahermon/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram Iglesia Hermón"
+              title="Instagram"
+              className="glass-pill w-8 h-8 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 hover-accent-icon transition-all hover:scale-105"
+            >
+              <InstagramIcon />
+            </a>
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 
