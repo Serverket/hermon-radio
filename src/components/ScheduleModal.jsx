@@ -5,6 +5,8 @@ import moment from 'moment';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { CalendarIcon, CloseIcon, ImageIcon } from './Icons';
+import ProgramContactActions from './ProgramContactActions';
+import { getProgramContactConfig } from '../utils/programContact';
 
 const formatDuration = (minutes) => {
   if (minutes >= 60) {
@@ -285,12 +287,29 @@ export default function ScheduleModal({ isOpen, onClose, darkMode, schedule }) {
                     </span>
                   </div>
                   <div className="col-span-2 sm:col-span-1">
-                    <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      Descripción
-                    </span>
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                      {selectedProgram.footer}
-                    </span>
+                    {(() => {
+                      const contactConfig = getProgramContactConfig(selectedProgram);
+                      const showFooterText = Boolean(selectedProgram.footer && !contactConfig?.hideRedundantFooter);
+                      const showSponsorAction = Boolean(contactConfig?.showSponsorCta);
+                      if (!showFooterText && !showSponsorAction) return null;
+                      return (
+                        <>
+                          <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            {showFooterText ? 'Descripción' : 'Patrocinio'}
+                          </span>
+                          {showFooterText && (
+                            <span className="font-semibold text-slate-700 dark:text-slate-300">
+                              {selectedProgram.footer}
+                            </span>
+                          )}
+                          <ProgramContactActions
+                            program={selectedProgram}
+                            compact
+                            enableComment={false}
+                          />
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
